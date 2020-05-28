@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -38,11 +39,43 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Container(
-        child: Center(
-          child: Text(
-            'Wakulima Dairy App is coming soon',
-            style: TextStyle(color: Colors.blue),
-          ),
+        padding: EdgeInsets.all(10),
+        child: GridView.count(
+          crossAxisCount: 2,
+          children: <Widget>[
+            Card(
+              elevation: 10,
+              child: Center(
+                  child: Text(
+                'Dairy',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              )),
+            ),
+            Card(
+              elevation: 10,
+              child: Center(
+                  child: Text(
+                'Loans',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              )),
+            ),
+            Card(
+              elevation: 10,
+              child: Center(
+                  child: Text(
+                'Wakulima Products',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              )),
+            ),
+            Card(
+              elevation: 10,
+              child: Center(
+                  child: Text(
+                'Payments',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              )),
+            )
+          ],
         ),
       ),
     );
