@@ -1,25 +1,43 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wakulima/pages/home.dart';
+import 'package:wakulima/views/auth.dart';
+import 'package:wakulima/views/home.dart';
 
-void main() {
-  runApp(MyApp());
+import 'helper/autheticate.dart';
+import 'helper/helperfunctions.dart';
+
+void main() => runApp(MyApp());
+
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class _MyAppState extends State<MyApp> {
+  bool userIsLoggedIn = false;
+  @override
+  void initState() {
+    getLoggedInState();
+    super.initState();
+  }
+
+  getLoggedInState() async {
+    await HelperFunctions.getUserLoggedInSharedPreference().then((value) {
+      userIsLoggedIn = value;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Wakulima',
+      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.lightGreen,
-        accentColor: Colors.deepPurple,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+        primaryColor: Color(0xff145C9E),
+        scaffoldBackgroundColor: Color(0xff1F1F1F),
+        primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Welcome to Wakulima App'),
+      home: userIsLoggedIn ? MyHomePage() : Authenticate(),
     );
   }
 }
-
-

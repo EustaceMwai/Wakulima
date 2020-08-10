@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "71818099545",
+    "firebase_url": "https://wakulima-b976c.firebaseio.com",
+    "project_id": "wakulima-b976c",
+    "storage_bucket": "wakulima-b976c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:71818099545:android:9c9adf21b29dce1b87aa48",
+        "android_client_info": {
+          "package_name": "com.example.wakulima"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "71818099545-grf5fkc529pmloc2k6424nm1p7du08sg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAy51ltlAtBLC2Rx8EbKGJVkrJeFr3JchM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "71818099545-grf5fkc529pmloc2k6424nm1p7du08sg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
