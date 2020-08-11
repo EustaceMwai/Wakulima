@@ -2,12 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'bottom.dart';
+import 'milk.dart';
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -31,7 +28,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text("Wakulima"),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -55,14 +52,22 @@ class _MyHomePageState extends State<MyHomePage> {
                 shrinkWrap: true,
                 crossAxisCount: 2,
                 children: <Widget>[
-                  Card(
-                    elevation: 10,
-                    child: Center(
-                        child: Text(
-                      'Dairy',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    )),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MilkRecords()));
+                    },
+                    child: Card(
+                      elevation: 10,
+                      child: Center(
+                          child: Text(
+                        'Dairy',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      )),
+                    ),
                   ),
                   Card(
                     elevation: 10,

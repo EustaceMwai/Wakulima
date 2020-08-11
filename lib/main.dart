@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wakulima/views/auth.dart';
 import 'package:wakulima/views/home.dart';
 
 import 'helper/autheticate.dart';
