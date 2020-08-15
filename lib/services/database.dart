@@ -15,8 +15,18 @@ class DatabaseMethods {
         .getDocuments();
   }
 
+  getFarmerRecordsByEmail() async {
+    return await Firestore.instance.collection("farmer").getDocuments();
+  }
+
   uploadUserInfo(userMap) {
     Firestore.instance.collection("users").add(userMap).catchError((e) {
+      print(e.toString());
+    });
+  }
+
+  uploadMilkInfo(userMap) {
+    Firestore.instance.collection("farmer").add(userMap).catchError((e) {
       print(e.toString());
     });
   }
