@@ -1,5 +1,6 @@
-import 'package:wakulima/model/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:wakulima/model/user.dart';
+import 'package:wakulima/services/database.dart';
 
 class AuthMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -24,6 +25,10 @@ class AuthMethods {
       AuthResult result = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
       FirebaseUser firebaseUser = result.user;
+
+      //create a user collection
+      DatabaseMethods(userId: firebaseUser.uid)
+          .uploadUserInfo('eustace', DateTime.now().toIso8601String(), 0);
       return _userFromFirebaseUser(firebaseUser);
     } catch (e) {
       print(e.toString());

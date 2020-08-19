@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:wakulima/model/product.dart';
 
 class DatabaseMethods {
+  final String userId;
+  DatabaseMethods({this.userId});
   getUserByUsername(String username) async {
     return await Firestore.instance
         .collection("users")
@@ -10,23 +13,41 @@ class DatabaseMethods {
 
   getUserByUserEmail(String userEmail) async {
     return await Firestore.instance
-        .collection("users")
+        .collection(userId)
         .where("email", isEqualTo: userEmail)
         .getDocuments();
   }
 
   getFarmerRecordsByEmail() async {
-    return await Firestore.instance.collection("farmer").getDocuments();
+    return await Firestore.instance.collection(userId).getDocuments();
   }
 
-  uploadUserInfo(userMap) {
-    Firestore.instance.collection("users").add(userMap).catchError((e) {
+  Future uploadUserInfo(String name, String date, int kilograms) async {
+    return await Firestore.instance.collection(userId).document().setData(
+        {'name': name, 'date': date, 'kilograms': kilograms}).catchError((e) {
       print(e.toString());
     });
   }
 
+  //product list frm snapshot
+  List<Product> _productListSnapshot(QuerySnapshot snapshot) {
+    return snapshot.documents.map((doc) {
+      return Product(
+          name: doc.data['name'] ?? '',
+          date: doc.data['date'] ?? '',
+          kilograms: doc.data['kilograms'] ?? 0);
+    }).toList();
+  }
+
+  Stream<List<Product>> get products {
+    return Firestore.instance
+        .collection(userId)
+        .snapshots()
+        .map(_productListSnapshot);
+  }
+
   uploadMilkInfo(userMap) {
-    Firestore.instance.collection("farmer").add(userMap).catchError((e) {
+    Firestore.instance.collection(userId).add(userMap).catchError((e) {
       print(e.toString());
     });
   }

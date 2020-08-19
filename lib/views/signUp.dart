@@ -29,10 +29,10 @@ class _SignUpState extends State<SignUp> {
 
   signMeUp() {
     if (formKey.currentState.validate()) {
-      Map<String, String> userInfoMap = {
-        "name": userNameTextEditingController.text,
-        "email": emailTextEditingController.text,
-      };
+//      Map<String, String> userInfoMap = {
+//        "name": userNameTextEditingController.text,
+//        "email": emailTextEditingController.text,
+//      };
       HelperFunctions.saveUserEmailSharedPreference(
           emailTextEditingController.text);
       HelperFunctions.saveUserNameInSharedPreference(
@@ -46,7 +46,7 @@ class _SignUpState extends State<SignUp> {
           .then((val) {
 //        print("${val.uid}");
 
-        databaseMethods.uploadUserInfo(userInfoMap);
+//        databaseMethods.uploadUserInfo();
         HelperFunctions.saveUserLoggedInSharedPreference(true);
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => MyHomePage()));

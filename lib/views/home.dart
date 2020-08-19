@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:wakulima/views/product_list.dart';
 
 import 'bottom.dart';
 import 'milk.dart';
@@ -78,14 +79,22 @@ class _MyHomePageState extends State<MyHomePage> {
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     )),
                   ),
-                  Card(
-                    elevation: 10,
-                    child: Center(
-                        child: Text(
-                      'Wakulima Products',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    )),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ProductList()));
+                    },
+                    child: Card(
+                      elevation: 10,
+                      child: Center(
+                          child: Text(
+                        'Sold Milk Records',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      )),
+                    ),
                   ),
                   Card(
                     elevation: 10,
