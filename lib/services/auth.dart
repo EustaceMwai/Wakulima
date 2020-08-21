@@ -27,8 +27,8 @@ class AuthMethods {
       FirebaseUser firebaseUser = result.user;
 
       //create a user collection
-      DatabaseMethods(userId: firebaseUser.uid)
-          .uploadUserInfo('eustace', DateTime.now().toIso8601String(), 0);
+      DatabaseMethods(userId: firebaseUser.uid).uploadUserInfo(
+          firebaseUser.uid, 'eustace', DateTime.now().toIso8601String(), 0);
       return _userFromFirebaseUser(firebaseUser);
     } catch (e) {
       print(e.toString());

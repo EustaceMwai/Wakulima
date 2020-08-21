@@ -1,10 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:wakulima/model/user.dart';
+import 'package:wakulima/services/auth.dart';
 import 'package:wakulima/services/database.dart';
 import 'package:wakulima/widgets/widget.dart';
 
 class MilkRecords extends StatefulWidget {
+  String userId;
+
+  MilkRecords({this.userId});
+
   @override
   _MilkRecordsState createState() => _MilkRecordsState();
 }
@@ -15,11 +21,16 @@ class _MilkRecordsState extends State<MilkRecords> {
   TextEditingController previousMilkController = new TextEditingController();
   TextEditingController cumulativeMilkController = new TextEditingController();
   DatabaseMethods databaseMethods = new DatabaseMethods();
+  AuthMethods authMethods = new AuthMethods();
 
   QuerySnapshot recordsSnapshot;
   FirebaseUser username;
   String name = 'eustace';
   String email;
+
+  User _userFromFirebaseUser(FirebaseUser user) {
+    return user != null ? User(userId: user.uid) : null;
+  }
 
   Widget recordList() {
     return recordsSnapshot != null
@@ -28,6 +39,7 @@ class _MilkRecordsState extends State<MilkRecords> {
             shrinkWrap: true,
             itemBuilder: (context, index) {
               return recordTile(
+                  id: recordsSnapshot.documents[index].data["id"],
                   name: recordsSnapshot.documents[index].data["name"],
                   kilograms: recordsSnapshot.documents[index].data["kilograms"],
                   date: recordsSnapshot.documents[index].data["date"]);
@@ -43,7 +55,7 @@ class _MilkRecordsState extends State<MilkRecords> {
     });
   }
 
-  Widget recordTile({String name, String date, dynamic kilograms}) {
+  Widget recordTile({String id, String name, String date, dynamic kilograms}) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Row(
@@ -52,15 +64,15 @@ class _MilkRecordsState extends State<MilkRecords> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                date,
+                '$date',
                 style: mediumTextStyle(),
               ),
               Text(
-                name,
+                '$name',
                 style: mediumTextStyle(),
               ),
               Text(
-                kilograms,
+                '$kilograms',
                 style: mediumTextStyle(),
               )
             ],
@@ -70,15 +82,15 @@ class _MilkRecordsState extends State<MilkRecords> {
     );
   }
 
-  saveFarmerMilk() {
-    Map<String, dynamic> farmerSale = {
-      "name": name,
-      "date": DateTime.now().toIso8601String(),
-      "Kgs": todayMilkController.text
-    };
-
-    databaseMethods.uploadMilkInfo(farmerSale);
-  }
+//  saveFarmerMilk() {
+//    Map<String, dynamic> farmerSale = {
+//      "id": user.userId,
+//      "name": name,
+//      "date": DateTime.now().toIso8601String(),
+//      "Kgs": todayMilkController.text
+//    };
+//}
+  //  databaseMethods.uploadMilkInfo();
 
   @override
   Widget build(BuildContext context) {
@@ -86,68 +98,98 @@ class _MilkRecordsState extends State<MilkRecords> {
       appBar: appBarMain(context),
       body: SingleChildScrollView(
         child: Container(
-            height: MediaQuery.of(context).size.height - 50,
-            alignment: Alignment.center,
-//          child: StreamBuilder(
-//              stream: Firestore.instance
-//                  .collection(databaseMethods.userId)
-//                  .snapshots(),
-//              builder: (context, snapshot) {
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Form(
-                    key: formKey,
-                    child: Column(
-                      children: <Widget>[
-                        Container(
-                          alignment: Alignment.centerRight,
-                          width: MediaQuery.of(context).size.width,
-                          padding: EdgeInsets.symmetric(vertical: 20),
-                          decoration: BoxDecoration(
-                              gradient: LinearGradient(colors: [
-                                const Color(0xff007EF4),
-                                const Color(0xff2A75BC)
-                              ]),
-                              borderRadius: BorderRadius.circular(30)),
-                          child: Center(
-                            child: Text(
+          height: MediaQuery.of(context).size.height - 50,
+          alignment: Alignment.center,
+          child: StreamBuilder(
+              stream: Firestore.instance.collection("farmers").snapshots(),
+              builder: (context, snapshot) {
+                return Container(
+                  padding: EdgeInsets.symmetric(horizontal: 24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Form(
+                        key: formKey,
+                        child: Column(
+                          children: <Widget>[
+                            Container(
+                              alignment: Alignment.centerRight,
+                              width: MediaQuery.of(context).size.width,
+                              padding: EdgeInsets.symmetric(vertical: 20),
+                              decoration: BoxDecoration(
+                                  gradient: LinearGradient(colors: [
+                                    const Color(0xff007EF4),
+                                    const Color(0xff2A75BC)
+                                  ]),
+                                  borderRadius: BorderRadius.circular(30)),
+                              child: Center(
+                                child: Text(
+                                  DateTime.now().toIso8601String(),
+                                  style: mediumTextStyle(),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 50,
+                            ),
+                            TextFormField(
+                              keyboardType: TextInputType.number,
+                              validator: (val) {
+                                return val.isEmpty ? "Cannot be empty" : null;
+                              },
+                              controller: todayMilkController,
+                              style: simpleTextStyle(),
+                              decoration: InputDecoration(
+                                  hintText: 'Today Milk Kgs',
+                                  fillColor: Colors.white54,
+                                  filled: true,
+                                  enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.white, width: 2.0)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.pink, width: 2.0))),
+                            ),
+                            SizedBox(
+                              height: 50,
+                            ),
+                            recordList(),
+                            SizedBox(
+                              height: 8,
+                            ),
+                            Container(
+                              alignment: Alignment.centerRight,
+                              width: MediaQuery.of(context).size.width,
+                              padding: EdgeInsets.symmetric(vertical: 20),
+                              decoration: BoxDecoration(
+                                  gradient: LinearGradient(colors: [
+                                    const Color(0xff007EF4),
+                                    const Color(0xff2A75BC)
+                                  ]),
+                                  borderRadius: BorderRadius.circular(30)),
+                              child: Center(
+                                child: Text(
+                                  "Cumulative",
+                                  style: mediumTextStyle(),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+//                      saveFarmerMilk();
+                          databaseMethods.uploadMilkInfo(
+                              User.userId,
+                              name,
                               DateTime.now().toIso8601String(),
-                              style: mediumTextStyle(),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 50,
-                        ),
-                        TextFormField(
-                          keyboardType: TextInputType.number,
-                          validator: (val) {
-                            return val.isEmpty ? "Cannot be empty" : null;
-                          },
-                          controller: todayMilkController,
-                          style: simpleTextStyle(),
-                          decoration: InputDecoration(
-                              hintText: 'Today Milk Kgs',
-                              fillColor: Colors.white54,
-                              filled: true,
-                              enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Colors.white, width: 2.0)),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Colors.pink, width: 2.0))),
-                        ),
-                        SizedBox(
-                          height: 50,
-                        ),
-                        recordList(),
-                        SizedBox(
-                          height: 8,
-                        ),
-                        Container(
+                              int.parse(todayMilkController.text));
+                        },
+                        child: Container(
                           alignment: Alignment.centerRight,
                           width: MediaQuery.of(context).size.width,
                           padding: EdgeInsets.symmetric(vertical: 20),
@@ -159,70 +201,42 @@ class _MilkRecordsState extends State<MilkRecords> {
                               borderRadius: BorderRadius.circular(30)),
                           child: Center(
                             child: Text(
-                              "Cumulative",
+                              "Update",
                               style: mediumTextStyle(),
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      saveFarmerMilk();
-                    },
-                    child: Container(
-                      alignment: Alignment.centerRight,
-                      width: MediaQuery.of(context).size.width,
-                      padding: EdgeInsets.symmetric(vertical: 20),
-                      decoration: BoxDecoration(
-                          gradient: LinearGradient(colors: [
-                            const Color(0xff007EF4),
-                            const Color(0xff2A75BC)
-                          ]),
-                          borderRadius: BorderRadius.circular(30)),
-                      child: Center(
-                        child: Text(
-                          "Update",
-                          style: mediumTextStyle(),
+                      ),
+                      SizedBox(
+                        height: 50,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          initiateSearch();
+                        },
+                        child: Container(
+                          alignment: Alignment.centerRight,
+                          width: MediaQuery.of(context).size.width,
+                          padding: EdgeInsets.symmetric(vertical: 20),
+                          decoration: BoxDecoration(
+                              gradient: LinearGradient(colors: [
+                                const Color(0xff007EF4),
+                                const Color(0xff2A75BC)
+                              ]),
+                              borderRadius: BorderRadius.circular(30)),
+                          child: Center(
+                            child: Text(
+                              "show Records",
+                              style: mediumTextStyle(),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
-                  SizedBox(
-                    height: 50,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      initiateSearch();
-                    },
-                    child: Container(
-                      alignment: Alignment.centerRight,
-                      width: MediaQuery.of(context).size.width,
-                      padding: EdgeInsets.symmetric(vertical: 20),
-                      decoration: BoxDecoration(
-                          gradient: LinearGradient(colors: [
-                            const Color(0xff007EF4),
-                            const Color(0xff2A75BC)
-                          ]),
-                          borderRadius: BorderRadius.circular(30)),
-                      child: Center(
-                        child: Text(
-                          "show Records",
-                          style: mediumTextStyle(),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            )
-            // }
-            //),
-            ),
+                );
+              }),
+        ),
       ),
     );
   }
