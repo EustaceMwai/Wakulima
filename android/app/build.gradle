@@ -61,6 +61,7 @@ flutter {
 }
 
 dependencies {
+    implementation 'com.google.firebase:firebase-functions:19.0.2'
     implementation "com.android.support:multidex:1.0.3"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }

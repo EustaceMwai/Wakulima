@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:wakulima/helper/autheticate.dart';
+import 'package:wakulima/services/auth.dart';
 import 'package:wakulima/views/product_list.dart';
 
 import 'bottom.dart';
@@ -11,6 +13,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  AuthMethods authMethods = new AuthMethods();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,8 +25,12 @@ class _MyHomePageState extends State<MyHomePage> {
               title: Text('Choose'),
             ),
             ListTile(
-              title: Text('settings'),
-              onTap: () {},
+              title: Text('Logout'),
+              onTap: () {
+                authMethods.signOut();
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => Authenticate()));
+              },
             )
           ],
         ),

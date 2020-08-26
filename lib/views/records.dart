@@ -91,6 +91,11 @@ class _RecordsState extends State<Records> {
 //    };
 //}
   //  databaseMethods.uploadMilkInfo();
+  @override
+  void initState() {
+    initiateSearch();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
