@@ -27,6 +27,7 @@ class _RecordsState extends State<Records> {
   FirebaseUser username;
   String name = 'eustace';
   String email;
+  double total = 0.0;
 
   User _userFromFirebaseUser(FirebaseUser user) {
     return user != null ? User(userId: user.uid) : null;
@@ -52,6 +53,27 @@ class _RecordsState extends State<Records> {
       setState(() {
         recordsSnapshot = val;
       });
+    });
+  }
+
+  Future queryValues() async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    FirebaseUser user = await _auth.currentUser();
+    Firestore.instance
+        .collection('farmers')
+        .where("id", isEqualTo: user.uid)
+        .getDocuments()
+        .then((val) {
+      double tempTotal =
+          val.documents.fold(0, (tot, doc) => tot + doc.data['kilograms']);
+      setState(() {
+        total = tempTotal;
+      });
+      debugPrint(total.toString());
+      Firestore.instance
+          .collection("users")
+          .document(user.uid)
+          .updateData({"cummulativeRecords": total});
     });
   }
 
@@ -95,6 +117,7 @@ class _RecordsState extends State<Records> {
   void initState() {
     initiateSearch();
     super.initState();
+    queryValues();
   }
 
   @override
@@ -132,7 +155,7 @@ class _RecordsState extends State<Records> {
                             borderRadius: BorderRadius.circular(30)),
                         child: Center(
                           child: Text(
-                            "show Records",
+                            "Total: $total",
                             style: mediumTextStyle(),
                           ),
                         ),

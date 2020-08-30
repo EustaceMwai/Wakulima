@@ -33,6 +33,7 @@ class DatabaseMethods {
         .getDocuments();
   }
 
+
   Future uploadUserInfo(
       String userId, String name, String date, int kilograms) async {
     return await col.document(userId).setData({
