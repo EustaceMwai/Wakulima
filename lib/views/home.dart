@@ -5,6 +5,7 @@ import 'package:wakulima/services/auth.dart';
 import 'package:wakulima/views/product_list.dart';
 
 import 'bottom.dart';
+import 'loan.dart';
 import 'milk.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -77,14 +78,20 @@ class _MyHomePageState extends State<MyHomePage> {
                       )),
                     ),
                   ),
-                  Card(
-                    elevation: 10,
-                    child: Center(
-                        child: Text(
-                      'Loans',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    )),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => Loan()));
+                    },
+                    child: Card(
+                      elevation: 10,
+                      child: Center(
+                          child: Text(
+                        'Loans',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      )),
+                    ),
                   ),
                   GestureDetector(
                     onTap: () {
