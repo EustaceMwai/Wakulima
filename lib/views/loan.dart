@@ -1,25 +1,55 @@
 import 'package:flutter/material.dart';
 
 class Loan extends StatefulWidget {
+  final int total;
+
+  Loan(this.total);
   @override
   _LoanState createState() => _LoanState();
 }
 
 class _LoanState extends State<Loan> {
   final formKey = GlobalKey<FormState>();
+  String selected;
+
   TextEditingController loanAmountController = new TextEditingController();
-  @override
-  void applyLoan() {
-    int total;
-    if (total <= 500) {
-      var loan = List.generate(10000, (i) => i);
-    } else if (total <= 999) {
-      var loan = List.generate(20000, (i) => i);
-    } else if (total <= 1999) {
-      var loan = List.generate(40000, (i) => i);
+
+  dynamic applyLoan() {
+    List<int> loan = [];
+    if (widget.total <= 500) {
+      List<int> loan = [15000, 12000, 9000, 6000, 3000];
+      Widget displayBoard() {
+        List<DropdownMenuItem> menuItemList = loan
+            .map((val) => DropdownMenuItem(value: val, child: Text(val)))
+            .toList();
+        return DropdownButton(
+          value: selected,
+          onChanged: (val) => setState(() => selected = val),
+          items: menuItemList,
+        );
+      }
+    } else if (widget.total <= 999) {
+      List<int> loan = [24000, 21000, 18000, 15000, 12000, 9000, 6000, 3000];
+      Widget displayBoard() {}
+    } else if (widget.total <= 1499) {
+      List<int> loan = [
+        33000,
+        30000,
+        27000,
+        24000,
+        21000,
+        18000,
+        15000,
+        12000,
+        9000,
+        6000,
+        3000
+      ];
     } else {
       //not qualified
+
     }
+    return loan;
   }
 
   var _currencies = [

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:wakulima/model/user.dart';
 import 'package:wakulima/services/auth.dart';
 import 'package:wakulima/services/database.dart';
+import 'package:wakulima/views/qrcode.dart';
 import 'package:wakulima/views/records.dart';
 import 'package:wakulima/widgets/widget.dart';
 
@@ -155,26 +156,6 @@ class _MilkRecordsState extends State<MilkRecords> {
                               height: 50,
                             ),
                             recordList(),
-                            SizedBox(
-                              height: 8,
-                            ),
-                            Container(
-                              alignment: Alignment.centerRight,
-                              width: MediaQuery.of(context).size.width,
-                              padding: EdgeInsets.symmetric(vertical: 20),
-                              decoration: BoxDecoration(
-                                  gradient: LinearGradient(colors: [
-                                    const Color(0xff007EF4),
-                                    const Color(0xff2A75BC)
-                                  ]),
-                                  borderRadius: BorderRadius.circular(30)),
-                              child: Center(
-                                child: Text(
-                                  "Cumulative",
-                                  style: mediumTextStyle(),
-                                ),
-                              ),
-                            ),
                           ],
                         ),
                       ),
@@ -231,6 +212,34 @@ class _MilkRecordsState extends State<MilkRecords> {
                           child: Center(
                             child: Text(
                               "Go to Records",
+                              style: mediumTextStyle(),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 50,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => HomeScreen()));
+                        },
+                        child: Container(
+                          alignment: Alignment.centerRight,
+                          width: MediaQuery.of(context).size.width,
+                          padding: EdgeInsets.symmetric(vertical: 20),
+                          decoration: BoxDecoration(
+                              gradient: LinearGradient(colors: [
+                                const Color(0xff007EF4),
+                                const Color(0xff2A75BC)
+                              ]),
+                              borderRadius: BorderRadius.circular(30)),
+                          child: Center(
+                            child: Text(
+                              "Go to Scan",
                               style: mediumTextStyle(),
                             ),
                           ),

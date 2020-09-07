@@ -81,8 +81,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => Loan()));
+                      // Navigator.push(context,
+                      //     MaterialPageRoute(builder: (context) => Loan()));
                     },
                     child: Card(
                       elevation: 10,

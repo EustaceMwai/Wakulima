@@ -78,27 +78,51 @@ class _RecordsState extends State<Records> {
   }
 
   Widget recordTile({String id, String name, String date, dynamic kilograms}) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      child: Row(
+    return Card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                '$date',
-                style: mediumTextStyle(),
-              ),
-              Text(
-                '$name',
-                style: mediumTextStyle(),
-              ),
-              Text(
-                '$kilograms',
-                style: mediumTextStyle(),
-              )
-            ],
+          Center(
+            child: Text(
+              '$date',
+              // style: mediumTextStyle(),
+            ),
           ),
+          Center(
+            child: Text(
+              '$name',
+              // style: mediumTextStyle(),
+            ),
+          ),
+          Center(
+            child: Text(
+              '$kilograms',
+              // style: mediumTextStyle(),
+            ),
+          ),
+          // Padding(
+          //   padding: EdgeInsets.only(top: 8.0),
+          //   child: Card(
+          //     margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
+          //     child: ListTile(
+          //       leading: CircleAvatar(
+          //         radius: 25.0,
+          //       ),
+          //       title: Text(
+          //         '$date',
+          //         style: mediumTextStyle(),
+          //       ),
+          //       subtitle: Text(
+          //         '$name',
+          //         style: mediumTextStyle(),
+          //       ),
+          //       trailing: Text(
+          //         '$kilograms',
+          //         style: mediumTextStyle(),
+          //       ),
+          //     ),
+          //   ),
+          // )
         ],
       ),
     );
@@ -127,7 +151,7 @@ class _RecordsState extends State<Records> {
       body: SingleChildScrollView(
         child: Container(
           height: MediaQuery.of(context).size.height - 50,
-          alignment: Alignment.center,
+          alignment: Alignment.topCenter,
           child: StreamBuilder(
               stream: Firestore.instance.collection("farmers").snapshots(),
               builder: (context, snapshot) {
@@ -144,7 +168,7 @@ class _RecordsState extends State<Records> {
                         initiateSearch();
                       },
                       child: Container(
-                        alignment: Alignment.centerRight,
+                        alignment: Alignment.bottomCenter,
                         width: MediaQuery.of(context).size.width,
                         padding: EdgeInsets.symmetric(vertical: 20),
                         decoration: BoxDecoration(
