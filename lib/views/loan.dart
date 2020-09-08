@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Loan extends StatefulWidget {
@@ -14,14 +16,16 @@ class Loan extends StatefulWidget {
 
 class _LoanState extends State<Loan> {
   final formKey = GlobalKey<FormState>();
-  String selected;
+  int selected;
 
   TextEditingController loanAmountController = new TextEditingController();
 
-  var loanEligible = applyLoan(widget.total);
+  var loanEligible;
   @override
   void initState() {
-    applyLoan(widget.total);
+    loanEligible = applyLoan(widget.total);
+    print(loanEligible);
+    print(loanEligible["from"]);
     super.initState();
   }
 
@@ -73,14 +77,17 @@ class _LoanState extends State<Loan> {
   //   }
   //   return loan;
   // }
-
   Map applyLoan(int total) {
     var constraints = {};
 
-    if (widget.total <= 500) {
+    if (widget.total >= 500) {
       constraints = {"from": 3000, "to": 15000};
-    } else if (widget.total <= 200) {
+    } else if (widget.total >= 200) {
       constraints = {"from": 1000, "to": 5000};
+    } else if (widget.total >= 1000) {
+      constraints = {"from": 3000, "to": 30000};
+    } else if (widget.total >= 1500) {
+      constraints = {"from": 3000, "to": 45000};
     } else {
       constraints = null;
     }
@@ -99,6 +106,7 @@ class _LoanState extends State<Loan> {
       value: selected,
       onChanged: (val) => setState(() => selected = val),
       items: menuItemList,
+      hint: Text("choose amount"),
     );
   }
 
@@ -112,7 +120,6 @@ class _LoanState extends State<Loan> {
     "Movie",
     "Salary"
   ];
-  String _currentSelectedValue;
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -120,68 +127,64 @@ class _LoanState extends State<Loan> {
       appBar: AppBar(
         title: Text("Loan application"),
       ),
-      body: Column(
-        children: <Widget>[
-          Center(
-            child: displayBoard(),
-          )
-          //show loanns available
-          // Center(
-          //   child: Form(
-          //     child: TextFormField(
-          //       keyboardType: TextInputType.number,
-          //       validator: (val) {
-          //         return val.isEmpty ? "Cannot be empty" : null;
-          //       },
-          //       controller: loanAmountController,
-          //       style: simpleTextStyle(),
-          //       decoration: InputDecoration(
-          //           hintText: 'Loan Amount',
-          //           fillColor: Colors.white54,
-          //           filled: true,
-          //           enabledBorder: OutlineInputBorder(
-          //               borderSide:
-          //                   BorderSide(color: Colors.white, width: 2.0)),
-          //           focusedBorder: OutlineInputBorder(
-          //               borderSide:
-          //                   BorderSide(color: Colors.pink, width: 2.0))),
-          //     ),
-          //   ),
-          // ),
-          // FormField<String>(
-          //   builder: (FormFieldState<String> state) {
-          //     return InputDecorator(
-          //       decoration: InputDecoration(
-          //           labelStyle:
-          //               TextStyle(color: Colors.blueGrey, fontSize: 16.0),
-          //           errorStyle:
-          //               TextStyle(color: Colors.redAccent, fontSize: 16.0),
-          //           hintText: 'Please select expense',
-          //           border: OutlineInputBorder(
-          //               borderRadius: BorderRadius.circular(5.0))),
-          //       isEmpty: _currentSelectedValue == '',
-          //       child: DropdownButtonHideUnderline(
-          //         child: DropdownButton<String>(
-          //           value: _currentSelectedValue,
-          //           isDense: true,
-          //           onChanged: (String newValue) {
-          //             setState(() {
-          //               _currentSelectedValue = newValue;
-          //               state.didChange(newValue);
-          //             });
-          //           },
-          //           items: _currencies.map((String value) {
-          //             return DropdownMenuItem<String>(
-          //               value: value,
-          //               child: Text(value),
-          //             );
-          //           }).toList(),
-          //         ),
-          //       ),
-          //     );
-          //   },
-          // )
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.all(8.0),
+                    child: Card(
+                      child: Center(
+                          child: Text(
+                              " Eligble  amount of loan from: ${loanEligible["from"].toString()} ")),
+                    ),
+                  ),
+                ),
+                Expanded(
+                    child: Container(
+                  padding: EdgeInsets.all(8.0),
+                  child: Card(
+                    child: Center(
+                        child: Text("To: ${loanEligible["to"].toString()} ")),
+                  ),
+                )),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 50,
+                ),
+                displayBoard(),
+              ],
+            ),
+            SizedBox(height: 50),
+            Container(
+              margin: EdgeInsets.all(20),
+              child: FlatButton(
+                child: Text('submit'),
+                color: Colors.blueAccent,
+                textColor: Colors.white,
+                onPressed: () async {
+                  print(selected);
+                  final FirebaseAuth _auth = FirebaseAuth.instance;
+                  final Firestore _firestore = Firestore.instance;
+                  FirebaseUser user = await _auth.currentUser();
+                  Firestore.instance
+                      .collection("loans")
+                      .document(user.uid)
+                      .setData({
+                    'id': user.uid,
+                    'loan': selected,
+                  });
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -165,11 +165,14 @@ class _MilkRecordsState extends State<MilkRecords> {
                       GestureDetector(
                         onTap: () {
 //                      saveFarmerMilk();
-                          databaseMethods.uploadMilkInfo(
-                              User.userId,
-                              name,
-                              DateTime.now().toIso8601String(),
-                              int.parse(todayMilkController.text));
+                          setState(() {
+                            databaseMethods.uploadMilkInfo(
+                                User.userId,
+                                name,
+                                DateTime.now().toIso8601String(),
+                                int.parse(todayMilkController.text));
+                            todayMilkController.clear();
+                          });
                         },
                         child: Container(
                           alignment: Alignment.centerRight,
