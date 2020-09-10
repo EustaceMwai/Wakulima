@@ -26,9 +26,33 @@ class _MilkRecordsState extends State<MilkRecords> {
   AuthMethods authMethods = new AuthMethods();
 
   QuerySnapshot recordsSnapshot;
-  FirebaseUser username;
+
   String name = 'eustace';
-  String email;
+
+  String username;
+
+  @override
+  void initState() {
+    getUserEmail();
+
+    super.initState();
+  }
+
+  getUserEmail() async {
+    FirebaseAuth _auth = FirebaseAuth.instance;
+    String email;
+    String userId;
+    String username;
+    final user = await _auth.currentUser();
+    setState(() {
+      email = user.email;
+      userId = user.uid;
+      username = user.displayName;
+      print(email);
+      print(userId);
+      print(username);
+    });
+  }
 
   User _userFromFirebaseUser(FirebaseUser user) {
     return user != null ? User(userId: user.uid) : null;
@@ -84,15 +108,13 @@ class _MilkRecordsState extends State<MilkRecords> {
     );
   }
 
-//  saveFarmerMilk() {
-//    Map<String, dynamic> farmerSale = {
-//      "id": user.userId,
-//      "name": name,
-//      "date": DateTime.now().toIso8601String(),
-//      "Kgs": todayMilkController.text
-//    };
-//}
-  //  databaseMethods.uploadMilkInfo();
+  saveFarmerMilk() async {
+    FirebaseAuth _auth = FirebaseAuth.instance;
+    final user = await _auth.currentUser();
+    databaseMethods.uploadMilkInfo(User.userId, user.email,
+        DateTime.now().toIso8601String(), int.parse(todayMilkController.text));
+    todayMilkController.clear();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -164,15 +186,7 @@ class _MilkRecordsState extends State<MilkRecords> {
                       ),
                       GestureDetector(
                         onTap: () {
-//                      saveFarmerMilk();
-                          setState(() {
-                            databaseMethods.uploadMilkInfo(
-                                User.userId,
-                                name,
-                                DateTime.now().toIso8601String(),
-                                int.parse(todayMilkController.text));
-                            todayMilkController.clear();
-                          });
+                          saveFarmerMilk();
                         },
                         child: Container(
                           alignment: Alignment.centerRight,

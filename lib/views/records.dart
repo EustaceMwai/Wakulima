@@ -43,7 +43,7 @@ class _RecordsState extends State<Records> {
             itemBuilder: (context, index) {
               return recordTile(
                   id: recordsSnapshot.documents[index].data["id"],
-                  name: recordsSnapshot.documents[index].data["name"],
+                  name: recordsSnapshot.documents[index].data["email"],
                   kilograms: recordsSnapshot.documents[index].data["kilograms"],
                   date: recordsSnapshot.documents[index].data["date"]);
             })
