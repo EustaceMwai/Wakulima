@@ -2,11 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wakulima/helper/autheticate.dart';
 import 'package:wakulima/services/auth.dart';
-import 'package:wakulima/views/product_list.dart';
+import 'package:wakulima/views/users.dart';
 
 import 'bottom.dart';
-import 'loan.dart';
-import 'maps.dart';
+import 'maps2.dart';
 import 'milk.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -96,16 +95,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ProductList()));
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => Users()));
                     },
                     child: Card(
                       elevation: 10,
                       child: Center(
                           child: Text(
-                        'Sold Milk Records',
+                        'Users',
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.bold),
                       )),
@@ -114,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   GestureDetector(
                     onTap: () {
                       Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => Maps()));
+                          MaterialPageRoute(builder: (context) => MapView()));
                     },
                     child: Card(
                       elevation: 10,
