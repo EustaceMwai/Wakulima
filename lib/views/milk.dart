@@ -9,9 +9,9 @@ import 'package:wakulima/views/records.dart';
 import 'package:wakulima/widgets/widget.dart';
 
 class MilkRecords extends StatefulWidget {
-  String userId;
+  String email;
 
-  MilkRecords({this.userId});
+  MilkRecords({this.email});
 
   @override
   _MilkRecordsState createState() => _MilkRecordsState();
@@ -157,6 +157,25 @@ class _MilkRecordsState extends State<MilkRecords> {
                               height: 50,
                             ),
                             TextFormField(
+                              validator: (val) {
+                                return val.isEmpty ? "Cannot be empty" : null;
+                              },
+                              initialValue: widget.email,
+                              style: simpleTextStyle(),
+                              decoration: InputDecoration(
+                                  fillColor: Colors.white54,
+                                  filled: true,
+                                  enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.white, width: 2.0)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.pink, width: 2.0))),
+                            ),
+                            SizedBox(
+                              height: 50,
+                            ),
+                            TextFormField(
                               keyboardType: TextInputType.number,
                               validator: (val) {
                                 return val.isEmpty ? "Cannot be empty" : null;
@@ -185,8 +204,13 @@ class _MilkRecordsState extends State<MilkRecords> {
                         height: 8,
                       ),
                       GestureDetector(
-                        onTap: () {
-                          saveFarmerMilk();
+                        onTap: () async {
+                          // saveFarmerMilk();
+                          await Firestore.instance.collection("farmers").add({
+                            "email": widget.email,
+                            'date': DateTime.now().toIso8601String(),
+                            'kilograms': int.parse(todayMilkController.text),
+                          });
                         },
                         child: Container(
                           alignment: Alignment.centerRight,

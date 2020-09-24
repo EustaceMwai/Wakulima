@@ -42,8 +42,7 @@ class _RecordsState extends State<Records> {
             shrinkWrap: true,
             itemBuilder: (context, index) {
               return recordTile(
-                  id: recordsSnapshot.documents[index].data["id"],
-                  name: recordsSnapshot.documents[index].data["email"],
+                  email: recordsSnapshot.documents[index].data["email"],
                   kilograms: recordsSnapshot.documents[index].data["kilograms"],
                   date: recordsSnapshot.documents[index].data["date"]);
             })
@@ -63,7 +62,7 @@ class _RecordsState extends State<Records> {
     FirebaseUser user = await _auth.currentUser();
     Firestore.instance
         .collection('farmers')
-        .where("id", isEqualTo: user.uid)
+        .where("email", isEqualTo: user.email)
         .getDocuments()
         .then((val) {
       double tempTotal =
@@ -79,7 +78,7 @@ class _RecordsState extends State<Records> {
     });
   }
 
-  Widget recordTile({String id, String name, String date, dynamic kilograms}) {
+  Widget recordTile({String email, String date, dynamic kilograms}) {
     return Card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -92,7 +91,7 @@ class _RecordsState extends State<Records> {
           ),
           Center(
             child: Text(
-              '$name',
+              '$email',
               // style: mediumTextStyle(),
             ),
           ),

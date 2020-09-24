@@ -6,6 +6,8 @@ import 'package:wakulima/services/auth.dart';
 import 'package:wakulima/services/database.dart';
 import 'package:wakulima/widgets/widget.dart';
 
+import 'milk.dart';
+
 class Users extends StatefulWidget {
   String userId;
 
@@ -56,7 +58,10 @@ class _UsersState extends State<Users> {
 
   Widget recordTile({String email}) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => MilkRecords(email: email)));
+      },
       child: Container(
         width: 50,
         height: 50,

@@ -29,7 +29,7 @@ class DatabaseMethods {
     FirebaseUser user = await _auth.currentUser();
     return await Firestore.instance
         .collection("farmers")
-        .where("id", isEqualTo: user.uid)
+        .where("email", isEqualTo: user.email)
         .getDocuments();
   }
 
@@ -37,9 +37,7 @@ class DatabaseMethods {
     final FirebaseAuth _auth = FirebaseAuth.instance;
     final Firestore _firestore = Firestore.instance;
     FirebaseUser user = await _auth.currentUser();
-    return await Firestore.instance
-        .collection("users")
-        .getDocuments();
+    return await Firestore.instance.collection("users").getDocuments();
   }
 
   Future uploadUserInfo(
