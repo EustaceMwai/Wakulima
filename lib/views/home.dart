@@ -4,11 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wakulima/helper/autheticate.dart';
 import 'package:wakulima/services/auth.dart';
+import 'package:wakulima/views/admin.dart';
 import 'package:wakulima/views/users.dart';
 
 import 'bottom.dart';
 import 'maps2.dart';
-import 'milk.dart';
 
 class MyHomePage extends StatefulWidget {
   final String userId;
@@ -25,6 +25,12 @@ class _MyHomePageState extends State<MyHomePage> {
   final Firestore _firestore = Firestore.instance;
   FirebaseUser user;
 
+  String userid;
+  void _getUser() async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    userid = user.uid;
+  }
+
   checkRole(DocumentSnapshot snapshot) {
     if (snapshot.data['admin'] == true) {
       return ListTile(
@@ -35,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Future checkIfAdmin() async {
+  checkIfAdmin() async {
     final FirebaseAuth _auth = FirebaseAuth.instance;
     final Firestore _firestore = Firestore.instance;
     FirebaseUser user = await _auth.currentUser();
@@ -48,8 +54,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     // TODO: implement initState
-    checkIfAdmin();
+
     super.initState();
+    // _getUser();
   }
 
   @override
@@ -63,24 +70,27 @@ class _MyHomePageState extends State<MyHomePage> {
                 automaticallyImplyLeading: false,
                 title: Text('Choose'),
               ),
-              StreamBuilder<DocumentSnapshot>(
-                stream: checkIfAdmin(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<DocumentSnapshot> snapshot) {
-                  if (snapshot.hasError) {
-                    return Text('Error');
-                  }
-                  print("error");
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.waiting:
-                      return Text('Loading...');
-                    case ConnectionState.active:
-                      return checkRole(snapshot.data);
-                    default:
-                      return Text("wait");
-                  }
-                },
-              ),
+              // StreamBuilder<DocumentSnapshot>(
+              //   stream: Firestore.instance
+              //       .collection('users')
+              //       .document(userid)
+              //       .snapshots(),
+              //   builder: (BuildContext context,
+              //       AsyncSnapshot<DocumentSnapshot> snapshot) {
+              //     if (snapshot.hasError) {
+              //       return Text('Error');
+              //     }
+              //     print("error");
+              //     switch (snapshot.connectionState) {
+              //       case ConnectionState.waiting:
+              //         return Text('Loading...');
+              //       case ConnectionState.active:
+              //         return checkRole(snapshot.data);
+              //       default:
+              //         return Text("wait");
+              //     }
+              //   },
+              // ),
               ListTile(
                 title: Text('Logout'),
                 onTap: () {
@@ -120,10 +130,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: <Widget>[
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => MilkRecords()));
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => Admin()));
                     },
                     child: Card(
                       elevation: 10,
