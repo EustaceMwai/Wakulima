@@ -1,3 +1,5 @@
+import 'dart:math' show cos, sqrt, asin;
+
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -17,6 +19,9 @@ class _MapsState extends State<Maps> {
   LatLng _lastPosition = _initialPosition;
   final Set<Marker> _markers = {};
   final Set<Polyline> _polyLines = {};
+  double totalDistance = 0.0;
+  List<LatLng> polylineCoordinates = [];
+  String _placeDistance;
 
   @override
   void initState() {
@@ -128,6 +133,22 @@ class _MapsState extends State<Maps> {
                     ),
                   ),
                 ),
+                SizedBox(height: 10),
+                Positioned(
+                  top: 150.0,
+                  right: 15.0,
+                  left: 15.0,
+                  child: Visibility(
+                    visible: _placeDistance == null ? false : true,
+                    child: Text(
+                      'DISTANCE: $_placeDistance km',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
 
                 // Positioned(
                 //   top: 40,
@@ -178,6 +199,69 @@ class _MapsState extends State<Maps> {
           points: _convertToLatLng(_decodePoly(encondedPoly)),
           color: Colors.black));
     });
+  }
+
+  Future<bool> _calculateDistance(String intendedLocation) async {
+    try {
+      if (_initialPosition != null && _lastPosition != null) {
+        Position _northeastCoordinates;
+        Position _southwestCoordinates;
+
+        // Calculating the distance between the start and the end positions
+        // with a straight path, without considering any route
+
+        List<Placemark> placemark =
+            await Geolocator().placemarkFromAddress(intendedLocation);
+        double latitude = placemark[0].position.latitude;
+        double longitude = placemark[0].position.longitude;
+
+        LatLng destination = LatLng(latitude, longitude);
+        String route = await _googleMapsServices.getRouteCoordinates(
+            _initialPosition, destination);
+
+        await createRoute(route);
+
+        double distanceInMeters = await Geolocator().bearingBetween(
+          _initialPosition.latitude,
+          _initialPosition.longitude,
+          destination.latitude,
+          destination.longitude,
+        );
+        print('DISTANCE: $distanceInMeters');
+
+        double totalDistance = 0.0;
+
+        // Calculating the total distance by adding the distance
+        // between small segments
+        for (int i = 0; i < polylineCoordinates.length - 1; i++) {
+          totalDistance += _coordinateDistance(
+            polylineCoordinates[i].latitude,
+            polylineCoordinates[i].longitude,
+            polylineCoordinates[i + 1].latitude,
+            polylineCoordinates[i + 1].longitude,
+          );
+        }
+
+        setState(() {
+          _placeDistance = totalDistance.toStringAsFixed(2);
+          print('DISTANCE: $_placeDistance km');
+        });
+
+        return true;
+      }
+    } catch (e) {
+      print(e);
+    }
+    return false;
+  }
+
+  double _coordinateDistance(lat1, lon1, lat2, lon2) {
+    var p = 0.017453292519943295;
+    var c = cos;
+    var a = 0.5 -
+        c((lat2 - lat1) * p) / 2 +
+        c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
+    return 12742 * asin(sqrt(a));
   }
 
   // ! CREATE LAGLNG LIST
@@ -248,5 +332,6 @@ class _MapsState extends State<Maps> {
     String route = await _googleMapsServices.getRouteCoordinates(
         _initialPosition, destination);
     createRoute(route);
+    _calculateDistance(intendedLocation);
   }
 }

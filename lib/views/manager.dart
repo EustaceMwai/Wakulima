@@ -7,16 +7,16 @@ import 'package:wakulima/services/database.dart';
 
 import 'milk.dart';
 
-class Users extends StatefulWidget {
+class manager extends StatefulWidget {
   String userId;
 
-  Users({this.userId});
+  manager({this.userId});
 
   @override
-  _UsersState createState() => _UsersState();
+  _managerState createState() => _managerState();
 }
 
-class _UsersState extends State<Users> {
+class _managerState extends State<manager> {
   final formKey = GlobalKey<FormState>();
   TextEditingController todayMilkController = new TextEditingController();
   TextEditingController previousMilkController = new TextEditingController();
@@ -36,14 +36,34 @@ class _UsersState extends State<Users> {
 
   Widget recordList() {
     return recordsSnapshot != null
-        ? ListView.builder(
-            itemCount: recordsSnapshot.documents.length,
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              return recordTile(
-                email: recordsSnapshot.documents[index].data["email"],
-              );
-            })
+        ? Row(
+            children: [
+              ListView.builder(
+                  itemCount: recordsSnapshot.documents.length,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    return recordTile(
+                      email: recordsSnapshot.documents[index].data["email"],
+                      loan: recordsSnapshot.documents[index].data["loan"],
+                      id: recordsSnapshot.documents[index].data["id"],
+                    );
+                  }),
+              Container(
+                margin: EdgeInsets.all(20),
+                child: FlatButton(
+                  child: Text('approve'),
+                  color: Colors.blueAccent,
+                  textColor: Colors.white,
+                  onPressed: () async {
+                    Firestore.instance
+                        .collection("loans")
+                        .where("id", isEqualTo: "id")
+                        .;
+                  },
+                ),
+              )
+            ],
+          )
         : Container();
   }
 
@@ -55,23 +75,39 @@ class _UsersState extends State<Users> {
     });
   }
 
-  Widget recordTile({String email}) {
+  Widget recordTile({String email, int loan, dynamic id}) {
     return GestureDetector(
       onTap: () {
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => MilkRecords(email: email)));
       },
-      child: Container(
-        width: 50,
-        height: 50,
-        child: Card(
-          child: Center(
-            child: Text(
-              '$email',
-              // style: mediumTextStyle(),
+      child: Row(
+        children: [
+          Container(
+            width: 50,
+            height: 50,
+            child: Card(
+              child: Center(
+                child: Text(
+                  '$email',
+                  // style: mediumTextStyle(),
+                ),
+              ),
             ),
           ),
-        ),
+          Container(
+            width: 50,
+            height: 50,
+            child: Card(
+              child: Center(
+                child: Text(
+                  'Loan requested: $loan',
+                  // style: mediumTextStyle(),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -95,14 +131,14 @@ class _UsersState extends State<Users> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Farmers'),
+        title: Text('Farmers Loans'),
       ),
       body: SingleChildScrollView(
         child: Container(
           height: MediaQuery.of(context).size.height - 50,
           alignment: Alignment.topCenter,
           child: StreamBuilder(
-              stream: Firestore.instance.collection("users").snapshots(),
+              stream: Firestore.instance.collection("loans").snapshots(),
               builder: (context, snapshot) {
                 return Container(
                   padding: EdgeInsets.symmetric(horizontal: 24),

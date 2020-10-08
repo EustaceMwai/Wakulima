@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:wakulima/services/auth.dart';
+import 'package:wakulima/services/database.dart';
 
 class Loan extends StatefulWidget {
   final int total;
@@ -19,14 +21,92 @@ class _LoanState extends State<Loan> {
   int selected;
 
   TextEditingController loanAmountController = new TextEditingController();
+  QuerySnapshot recordsSnapshot;
+  DatabaseMethods databaseMethods = new DatabaseMethods();
+  AuthMethods authMethods = new AuthMethods();
 
   var loanEligible;
+
   @override
   void initState() {
+    getDetails();
     loanEligible = applyLoan(widget.total);
     print(loanEligible);
-    print(loanEligible["from"]);
+    // print(loanEligible["from"]);
     super.initState();
+  }
+
+  getDetails() {
+    databaseMethods.getFarmerLoanRecord().then((val) {
+      setState(() {
+        recordsSnapshot = val;
+      });
+    });
+  }
+
+  Widget recordList() {
+    return recordsSnapshot != null
+        ? ListView.builder(
+            itemCount: recordsSnapshot.documents.length,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              return recordTile(
+                  crb: recordsSnapshot.documents[index].data["Crb"],
+                  shares: recordsSnapshot.documents[index].data["shares"]);
+            })
+        : Container();
+  }
+
+  Widget recordTile({String crb, int shares}) {
+    return Container(
+      width: 10.0,
+      height: 100.0,
+      alignment: Alignment.center,
+      child: Card(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Center(
+              child: Text(
+                'CRB status: $crb',
+                // style: mediumTextStyle(),
+              ),
+            ),
+            Center(
+              child: Text(
+                'Number of Shares bought in the sacco: $shares',
+                // style: mediumTextStyle(),
+              ),
+            ),
+
+            // Padding(
+            //   padding: EdgeInsets.only(top: 8.0),
+            //   child: Card(
+            //     margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
+            //     child: ListTile(
+            //       leading: CircleAvatar(
+            //         radius: 25.0,
+            //       ),
+            //       title: Text(
+            //         '$date',
+            //         style: mediumTextStyle(),
+            //       ),
+            //       subtitle: Text(
+            //         '$name',
+            //         style: mediumTextStyle(),
+            //       ),
+            //       trailing: Text(
+            //         '$kilograms',
+            //         style: mediumTextStyle(),
+            //       ),
+            //     ),
+            //   ),
+            // )
+          ],
+        ),
+      ),
+    );
   }
 
   // dynamic applyLoan() {
@@ -88,6 +168,8 @@ class _LoanState extends State<Loan> {
       constraints = {"from": 3000, "to": 30000};
     } else if (widget.total >= 1500) {
       constraints = {"from": 3000, "to": 45000};
+    } else if (widget.total < 200) {
+      constraints = {"from": 500, "to": 1000};
     } else {
       constraints = null;
     }
@@ -130,6 +212,8 @@ class _LoanState extends State<Loan> {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
+            recordList(),
+            Center(child: Text("Buy more shares to increase your loan limit")),
             Row(
               children: [
                 Expanded(
@@ -178,9 +262,24 @@ class _LoanState extends State<Loan> {
                       .document(user.uid)
                       .setData({
                     'id': user.uid,
+                    'email': user.email,
                     'loan': selected,
+                    'loan status': "inactive",
+                    'repayment period': 3
                   });
                 },
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Container(
+              margin: EdgeInsets.all(20),
+              child: FlatButton(
+                child: Text('check loan status'),
+                color: Colors.blueAccent,
+                textColor: Colors.white,
+                onPressed: () async {},
               ),
             ),
           ],

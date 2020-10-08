@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:wakulima/helper/autheticate.dart';
 import 'package:wakulima/services/auth.dart';
 import 'package:wakulima/views/admin.dart';
+import 'package:wakulima/views/records.dart';
 import 'package:wakulima/views/users.dart';
 
 import 'bottom.dart';
+import 'maps.dart';
 import 'maps2.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -117,7 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 elevation: 10,
                 child: Center(
                     child: Text(
-                  'Welcome Eustace',
+                  'Welcome to Wakulima Dairy',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 )),
               ),
@@ -160,14 +162,16 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => Users()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Records()));
                     },
                     child: Card(
                       elevation: 10,
                       child: Center(
                           child: Text(
-                        'Users',
+                        'Dairy Records',
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.bold),
                       )),
@@ -176,7 +180,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   GestureDetector(
                     onTap: () {
                       Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => MapView()));
+                          MaterialPageRoute(builder: (context) => Maps()));
                     },
                     child: Card(
                       elevation: 10,

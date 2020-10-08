@@ -4,19 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:wakulima/model/user.dart';
 import 'package:wakulima/services/auth.dart';
 import 'package:wakulima/services/database.dart';
+import 'package:wakulima/widgets/widget.dart';
 
-import 'milk.dart';
-
-class Users extends StatefulWidget {
+class loanStatus extends StatefulWidget {
   String userId;
 
-  Users({this.userId});
-
   @override
-  _UsersState createState() => _UsersState();
+  _loanStatusState createState() => _loanStatusState();
 }
 
-class _UsersState extends State<Users> {
+class _loanStatusState extends State<loanStatus> {
   final formKey = GlobalKey<FormState>();
   TextEditingController todayMilkController = new TextEditingController();
   TextEditingController previousMilkController = new TextEditingController();
@@ -41,37 +38,70 @@ class _UsersState extends State<Users> {
             shrinkWrap: true,
             itemBuilder: (context, index) {
               return recordTile(
-                email: recordsSnapshot.documents[index].data["email"],
-              );
+                  loan: recordsSnapshot.documents[index].data["loan"],
+                  loanStatus:
+                      recordsSnapshot.documents[index].data["loan status"],
+                  repayment: recordsSnapshot
+                      .documents[index].data["repayment period"]);
             })
         : Container();
   }
 
   initiateSearch() {
-    databaseMethods.getAllUsers().then((val) {
+    databaseMethods.getFarmerRecordsByEmail().then((val) {
       setState(() {
         recordsSnapshot = val;
       });
     });
   }
 
-  Widget recordTile({String email}) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => MilkRecords(email: email)));
-      },
-      child: Container(
-        width: 50,
-        height: 50,
-        child: Card(
-          child: Center(
+  Widget recordTile({int loan, String loanStatus, int repayment}) {
+    return Card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Center(
             child: Text(
-              '$email',
+              'Loan applied: $loan',
               // style: mediumTextStyle(),
             ),
           ),
-        ),
+          Center(
+            child: Text(
+              'THe status of the loan is: $loanStatus',
+              // style: mediumTextStyle(),
+            ),
+          ),
+          Center(
+            child: Text(
+              'The repayment period of your loan is: $repayment',
+              // style: mediumTextStyle(),
+            ),
+          ),
+          // Padding(
+          //   padding: EdgeInsets.only(top: 8.0),
+          //   child: Card(
+          //     margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
+          //     child: ListTile(
+          //       leading: CircleAvatar(
+          //         radius: 25.0,
+          //       ),
+          //       title: Text(
+          //         '$date',
+          //         style: mediumTextStyle(),
+          //       ),
+          //       subtitle: Text(
+          //         '$name',
+          //         style: mediumTextStyle(),
+          //       ),
+          //       trailing: Text(
+          //         '$kilograms',
+          //         style: mediumTextStyle(),
+          //       ),
+          //     ),
+          //   ),
+          // )
+        ],
       ),
     );
   }
@@ -94,15 +124,13 @@ class _UsersState extends State<Users> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Farmers'),
-      ),
+      appBar: appBarMain(context),
       body: SingleChildScrollView(
         child: Container(
           height: MediaQuery.of(context).size.height - 50,
           alignment: Alignment.topCenter,
           child: StreamBuilder(
-              stream: Firestore.instance.collection("users").snapshots(),
+              stream: Firestore.instance.collection("loans").snapshots(),
               builder: (context, snapshot) {
                 return Container(
                   padding: EdgeInsets.symmetric(horizontal: 24),
@@ -112,6 +140,9 @@ class _UsersState extends State<Users> {
                       height: 50,
                     ),
                     recordList(),
+                    SizedBox(
+                      height: 50,
+                    ),
                   ]),
                 );
               }),

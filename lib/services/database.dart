@@ -33,6 +33,26 @@ class DatabaseMethods {
         .getDocuments();
   }
 
+  getFarmerLoanRecord() async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final Firestore _firestore = Firestore.instance;
+    FirebaseUser user = await _auth.currentUser();
+    return await Firestore.instance
+        .collection("users")
+        .where("email", isEqualTo: user.email)
+        .getDocuments();
+  }
+
+  getFarmerLoanState() async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final Firestore _firestore = Firestore.instance;
+    FirebaseUser user = await _auth.currentUser();
+    return await Firestore.instance
+        .collection("loans")
+        .where("email", isEqualTo: user.email)
+        .getDocuments();
+  }
+
   getAllUsers() async {
     final FirebaseAuth _auth = FirebaseAuth.instance;
     final Firestore _firestore = Firestore.instance;
