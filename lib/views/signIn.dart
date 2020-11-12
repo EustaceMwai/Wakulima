@@ -60,7 +60,10 @@ class _SignInState extends State<SignIn> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBarMain(context),
-      body: SingleChildScrollView(
+      body: isLoading
+          ? Container(
+        child: Center(child: CircularProgressIndicator()),
+      ): SingleChildScrollView(
         child: Container(
           height: MediaQuery.of(context).size.height - 50,
           alignment: Alignment.bottomCenter,

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:wakulima/services/auth.dart';
 import 'package:wakulima/services/database.dart';
 
+import 'loanStatus.dart';
+
 class Loan extends StatefulWidget {
   final int total;
 
@@ -19,6 +21,7 @@ class Loan extends StatefulWidget {
 class _LoanState extends State<Loan> {
   final formKey = GlobalKey<FormState>();
   int selected;
+  bool isLoading = false;
 
   TextEditingController loanAmountController = new TextEditingController();
   QuerySnapshot recordsSnapshot;
@@ -209,82 +212,100 @@ class _LoanState extends State<Loan> {
       appBar: AppBar(
         title: Text("Loan application"),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            recordList(),
-            Center(child: Text("Buy more shares to increase your loan limit")),
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.all(8.0),
-                    child: Card(
-                      child: Center(
-                          child: Text(
-                              " Eligble  amount of loan from: ${loanEligible["from"].toString()} ")),
+      body: isLoading
+          ? Container(
+              child: Center(child: CircularProgressIndicator()),
+            )
+          : SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  recordList(),
+                  Center(
+                      child:
+                          Text("Buy more shares to increase your loan limit")),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.all(8.0),
+                          child: Card(
+                            child: Center(
+                                child: Text(
+                                    " Eligible  amount of loan from: ${loanEligible["from"].toString()} ")),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                          child: Container(
+                        padding: EdgeInsets.all(8.0),
+                        child: Card(
+                          child: Center(
+                              child: Text(
+                                  "To: ${loanEligible["to"].toString()} ")),
+                        ),
+                      )),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 50,
+                      ),
+                      displayBoard(),
+                    ],
+                  ),
+                  SizedBox(height: 50),
+                  Container(
+                    margin: EdgeInsets.all(20),
+                    child: FlatButton(
+                      child: Text('submit'),
+                      color: Colors.blueAccent,
+                      textColor: Colors.white,
+                      onPressed: () async {
+                        setState(() {
+                          isLoading = true;
+                        });
+                        print(selected);
+                        final FirebaseAuth _auth = FirebaseAuth.instance;
+                        final Firestore _firestore = Firestore.instance;
+                        FirebaseUser user = await _auth.currentUser();
+                        Firestore.instance
+                            .collection("loans")
+                            .document(user.uid)
+                            .setData({
+                          'id': user.uid,
+                          'email': user.email,
+                          'loan': selected,
+                          'loan status': "inactive",
+                          'repayment period': 3
+                        });
+                        setState(() {
+                          isLoading = false;
+                        });
+                      },
                     ),
                   ),
-                ),
-                Expanded(
-                    child: Container(
-                  padding: EdgeInsets.all(8.0),
-                  child: Card(
-                    child: Center(
-                        child: Text("To: ${loanEligible["to"].toString()} ")),
+                  SizedBox(
+                    height: 20,
                   ),
-                )),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: 50,
-                ),
-                displayBoard(),
-              ],
-            ),
-            SizedBox(height: 50),
-            Container(
-              margin: EdgeInsets.all(20),
-              child: FlatButton(
-                child: Text('submit'),
-                color: Colors.blueAccent,
-                textColor: Colors.white,
-                onPressed: () async {
-                  print(selected);
-                  final FirebaseAuth _auth = FirebaseAuth.instance;
-                  final Firestore _firestore = Firestore.instance;
-                  FirebaseUser user = await _auth.currentUser();
-                  Firestore.instance
-                      .collection("loans")
-                      .document(user.uid)
-                      .setData({
-                    'id': user.uid,
-                    'email': user.email,
-                    'loan': selected,
-                    'loan status': "inactive",
-                    'repayment period': 3
-                  });
-                },
+                  Container(
+                    margin: EdgeInsets.all(20),
+                    child: FlatButton(
+                      child: Text('check loan status'),
+                      color: Colors.blueAccent,
+                      textColor: Colors.white,
+                      onPressed: () async {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => loanStatus()));
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
-            SizedBox(
-              height: 20,
-            ),
-            Container(
-              margin: EdgeInsets.all(20),
-              child: FlatButton(
-                child: Text('check loan status'),
-                color: Colors.blueAccent,
-                textColor: Colors.white,
-                onPressed: () async {},
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

@@ -5,12 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:wakulima/helper/autheticate.dart';
 import 'package:wakulima/services/auth.dart';
 import 'package:wakulima/views/admin.dart';
+import 'package:wakulima/views/adminManager.dart';
 import 'package:wakulima/views/records.dart';
-import 'package:wakulima/views/users.dart';
 
 import 'bottom.dart';
 import 'maps.dart';
-import 'maps2.dart';
 
 class MyHomePage extends StatefulWidget {
   final String userId;
@@ -100,7 +99,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => Authenticate()));
                 },
-              )
+              ),
+              SizedBox(
+                height: 10,
+              ),
             ],
           ),
         ),
@@ -147,14 +149,16 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      // Navigator.push(context,
-                      //     MaterialPageRoute(builder: (context) => Loan()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AdminManager()));
                     },
                     child: Card(
                       elevation: 10,
                       child: Center(
                           child: Text(
-                        'Loans',
+                        'Manager',
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.bold),
                       )),
@@ -162,10 +166,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => Records()));
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => Records()));
                     },
                     child: Card(
                       elevation: 10,

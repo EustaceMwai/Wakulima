@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:wakulima/helper/helperfunctions.dart';
 import 'package:wakulima/services/auth.dart';
@@ -16,9 +18,9 @@ class SignUp extends StatefulWidget {
 class _SignUpState extends State<SignUp> {
   bool isLoading = false;
 
-
   AuthMethods authMethods = new AuthMethods();
   DatabaseMethods databaseMethods = new DatabaseMethods();
+  int randomNumber;
 
   final formKey = GlobalKey<FormState>();
   TextEditingController userNameTextEditingController =
@@ -28,13 +30,20 @@ class _SignUpState extends State<SignUp> {
       new TextEditingController();
   TextEditingController passwordTextEditingController =
       new TextEditingController();
+  // TextEditingController organisationIdEditingController =
+  //     new TextEditingController();
 
   signMeUp() {
     if (formKey.currentState.validate()) {
-//      Map<String, String> userInfoMap = {
-//        "name": userNameTextEditingController.text,
-//        "email": emailTextEditingController.text,
-//      };
+      Map<String, dynamic> userInfoMap = {
+        "name": userNameTextEditingController.text,
+        "email": emailTextEditingController.text,
+        "admin": false,
+        "cumulative Records": 0,
+        "shares": 0,
+        "Crb": "cleared",
+        "farmerId": randomNumber,
+      };
       HelperFunctions.saveUserEmailSharedPreference(
           emailTextEditingController.text);
       HelperFunctions.saveUserNameInSharedPreference(
@@ -48,12 +57,26 @@ class _SignUpState extends State<SignUp> {
           .then((val) {
 //        print("${val.uid}");
 
-//        databaseMethods.uploadUserInfo();
+        databaseMethods.uploadUsersInfo(userInfoMap);
         HelperFunctions.saveUserLoggedInSharedPreference(true);
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => MyHomePage()));
       });
     }
+  }
+
+  // getRandomId() {
+  //   Random random = new Random();
+  //   int randomNumber = random.nextInt(1000) + 100;
+  //   print(randomNumber);
+  // }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    Random random = new Random();
+    randomNumber = random.nextInt(5000) + 100;
+    super.initState();
   }
 
   @override
@@ -108,10 +131,31 @@ class _SignUpState extends State<SignUp> {
                               controller: passwordTextEditingController,
                               style: simpleTextStyle(),
                               decoration: textFieldInputDecoration("password"),
-                            )
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            TextFormField(
+                              validator: (val) {
+                                return val.isEmpty ? "Cannot be empty" : null;
+                              },
+                              initialValue: "Organization Id: $randomNumber ",
+                              // controller: organisationIdEditingController,
+                              style: simpleTextStyle(),
+                              decoration: InputDecoration(
+                                  fillColor: Colors.white54,
+                                  filled: true,
+                                  enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.white, width: 2.0)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.blue, width: 2.0))),
+                            ),
                           ],
                         ),
                       ),
+
                       SizedBox(
                         height: 8,
                       ),
@@ -155,21 +199,21 @@ class _SignUpState extends State<SignUp> {
                       SizedBox(
                         height: 16,
                       ),
-                      Container(
-                        alignment: Alignment.centerRight,
-                        width: MediaQuery.of(context).size.width,
-                        padding: EdgeInsets.symmetric(vertical: 20),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(30)),
-                        child: Center(
-                          child: Text(
-                            "Sign Up With Google",
-                            style:
-                                TextStyle(color: Colors.black87, fontSize: 17),
-                          ),
-                        ),
-                      ),
+                      // Container(
+                      //   alignment: Alignment.centerRight,
+                      //   width: MediaQuery.of(context).size.width,
+                      //   padding: EdgeInsets.symmetric(vertical: 20),
+                      //   decoration: BoxDecoration(
+                      //       color: Colors.white,
+                      //       borderRadius: BorderRadius.circular(30)),
+                      //   child: Center(
+                      //     child: Text(
+                      //       "Your Organisation Id: $randomNumber ",
+                      //       style:
+                      //           TextStyle(color: Colors.black87, fontSize: 17),
+                      //     ),
+                      //   ),
+                      // ),
                       SizedBox(
                         height: 16,
                       ),

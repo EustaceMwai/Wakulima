@@ -60,6 +60,13 @@ class DatabaseMethods {
     return await Firestore.instance.collection("users").getDocuments();
   }
 
+  getAllUserLoans() async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final Firestore _firestore = Firestore.instance;
+    FirebaseUser user = await _auth.currentUser();
+    return await Firestore.instance.collection("loans").getDocuments();
+  }
+
   Future uploadUserInfo(
       String userId, String name, String date, int kilograms) async {
     return await col.document(userId).setData({
@@ -68,6 +75,12 @@ class DatabaseMethods {
       'date': date,
       'kilograms': kilograms
     }).catchError((e) {
+      print(e.toString());
+    });
+  }
+
+  uploadUsersInfo(userMap) {
+    Firestore.instance.collection("wakulima").add(userMap).catchError((e) {
       print(e.toString());
     });
   }

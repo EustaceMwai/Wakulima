@@ -19,11 +19,11 @@ class BottomNaviagtionState extends State<BottomNavigationWidget> {
       style: optionStyle,
     ),
     Text(
-      'Index 1: Business',
+      'Index 1: Dairy',
       style: optionStyle,
     ),
     Text(
-      'Index 2: Help',
+      'Index 2: Veterinary',
       style: optionStyle,
     ),
   ];

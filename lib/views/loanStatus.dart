@@ -44,11 +44,13 @@ class _loanStatusState extends State<loanStatus> {
                   repayment: recordsSnapshot
                       .documents[index].data["repayment period"]);
             })
-        : Container();
+        : Container(
+            child: Text('no loans'),
+          );
   }
 
   initiateSearch() {
-    databaseMethods.getFarmerRecordsByEmail().then((val) {
+    databaseMethods.getFarmerLoanState().then((val) {
       setState(() {
         recordsSnapshot = val;
       });
@@ -62,19 +64,19 @@ class _loanStatusState extends State<loanStatus> {
         children: <Widget>[
           Center(
             child: Text(
-              'Loan applied: $loan',
+              'Loan applied: Ksh $loan',
               // style: mediumTextStyle(),
             ),
           ),
           Center(
             child: Text(
-              'THe status of the loan is: $loanStatus',
+              'The status of the loan is: $loanStatus',
               // style: mediumTextStyle(),
             ),
           ),
           Center(
             child: Text(
-              'The repayment period of your loan is: $repayment',
+              'The repayment period of your loan is: $repayment years',
               // style: mediumTextStyle(),
             ),
           ),
@@ -140,9 +142,6 @@ class _loanStatusState extends State<loanStatus> {
                       height: 50,
                     ),
                     recordList(),
-                    SizedBox(
-                      height: 50,
-                    ),
                   ]),
                 );
               }),

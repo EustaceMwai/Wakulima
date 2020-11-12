@@ -8,16 +8,16 @@ import 'package:wakulima/services/database.dart';
 import 'package:wakulima/views/qrcode.dart';
 import 'package:wakulima/widgets/widget.dart';
 
-class MilkRecords extends StatefulWidget {
+class Milk2Records extends StatefulWidget {
   String email;
 
-  MilkRecords({this.email});
+  Milk2Records({this.email});
 
   @override
-  _MilkRecordsState createState() => _MilkRecordsState();
+  _Milk2RecordsState createState() => _Milk2RecordsState();
 }
 
-class _MilkRecordsState extends State<MilkRecords> {
+class _Milk2RecordsState extends State<Milk2Records> {
   final formKey = GlobalKey<FormState>();
   TextEditingController todayMilkController = new TextEditingController();
   TextEditingController previousMilkController = new TextEditingController();

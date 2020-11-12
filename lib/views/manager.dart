@@ -1,17 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wakulima/model/user.dart';
 import 'package:wakulima/services/auth.dart';
 import 'package:wakulima/services/database.dart';
 
-import 'milk.dart';
-
 class manager extends StatefulWidget {
-  String userId;
-
-  manager({this.userId});
-
   @override
   _managerState createState() => _managerState();
 }
@@ -30,45 +25,81 @@ class _managerState extends State<manager> {
   String email;
   double total = 0.0;
 
+  String ids;
+
   User _userFromFirebaseUser(FirebaseUser user) {
     return user != null ? User(userId: user.uid) : null;
   }
 
   Widget recordList() {
     return recordsSnapshot != null
-        ? Row(
-            children: [
-              ListView.builder(
-                  itemCount: recordsSnapshot.documents.length,
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    return recordTile(
-                      email: recordsSnapshot.documents[index].data["email"],
-                      loan: recordsSnapshot.documents[index].data["loan"],
-                      id: recordsSnapshot.documents[index].data["id"],
-                    );
-                  }),
-              Container(
-                margin: EdgeInsets.all(20),
-                child: FlatButton(
-                  child: Text('approve'),
-                  color: Colors.blueAccent,
-                  textColor: Colors.white,
-                  onPressed: () async {
-                    Firestore.instance
-                        .collection("loans")
-                        .where("id", isEqualTo: "id")
-                        .;
-                  },
-                ),
-              )
-            ],
-          )
+        ? ListView.builder(
+            itemCount: recordsSnapshot.documents.length,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              return recordTile(
+                email: recordsSnapshot.documents[index].data["email"],
+                loan: recordsSnapshot.documents[index].data["loan"],
+                id: recordsSnapshot.documents[index].data["id"],
+              );
+            })
+        : Container();
+  }
+
+  Widget loanList() {
+    return recordsSnapshot != null
+        ? ListView.builder(
+            itemCount: recordsSnapshot.documents.length,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              return FlatButton(
+                child: Text('approve'),
+                color: Colors.blueAccent,
+                textColor: Colors.white,
+                onPressed: () async {
+                  final FirebaseAuth _auth = FirebaseAuth.instance;
+                  final Firestore _firestore = Firestore.instance;
+                  FirebaseUser user = await _auth.currentUser();
+                  Firestore.instance
+                      .collection("loans")
+                      .document(recordsSnapshot.documents[index].data["id"])
+                      .setData({
+                    "loan status": "approved",
+                  }, merge: true);
+                },
+              );
+            })
+        : Container();
+  }
+
+  Widget loanList2() {
+    return recordsSnapshot != null
+        ? ListView.builder(
+            itemCount: recordsSnapshot.documents.length,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              return FlatButton(
+                child: Text('Deny'),
+                color: Colors.redAccent,
+                textColor: Colors.white,
+                onPressed: () async {
+                  final FirebaseAuth _auth = FirebaseAuth.instance;
+                  final Firestore _firestore = Firestore.instance;
+                  FirebaseUser user = await _auth.currentUser();
+                  Firestore.instance
+                      .collection("loans")
+                      .document(recordsSnapshot.documents[index].data["id"])
+                      .setData({
+                    "loan status": "denied",
+                  }, merge: true);
+                },
+              );
+            })
         : Container();
   }
 
   initiateSearch() {
-    databaseMethods.getAllUsers().then((val) {
+    databaseMethods.getAllUserLoans().then((val) {
       setState(() {
         recordsSnapshot = val;
       });
@@ -76,39 +107,65 @@ class _managerState extends State<manager> {
   }
 
   Widget recordTile({String email, int loan, dynamic id}) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => MilkRecords(email: email)));
-      },
-      child: Row(
-        children: [
-          Container(
-            width: 50,
-            height: 50,
-            child: Card(
-              child: Center(
-                child: Text(
-                  '$email',
-                  // style: mediumTextStyle(),
-                ),
-              ),
+    return Column(
+      children: [
+        Card(
+          child: Center(
+            child: Text(
+              '$email',
+              // style: mediumTextStyle(),
             ),
           ),
-          Container(
-            width: 50,
-            height: 50,
-            child: Card(
-              child: Center(
-                child: Text(
-                  'Loan requested: $loan',
-                  // style: mediumTextStyle(),
-                ),
-              ),
+        ),
+        Card(
+          child: Center(
+            child: Text(
+              'Loan requested: Ksh $loan',
+
+              // style: mediumTextStyle(),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
+    );
+  }
+
+  Widget recordTile2({String email, int loan, dynamic id}) {
+    // return Row(
+    //   children: [
+    //     Expanded(
+    //       child: Card(
+    //         child: Center(
+    //           child: Text(
+    //             '$email',
+    //             // style: mediumTextStyle(),
+    //           ),
+    //         ),
+    //       ),
+    //     ),
+    //     Expanded(
+    //       child: Card(
+    //         child: Center(
+    //           child: Text(
+    //             'Loan requested: Ksh $loan',
+    //
+    //             // style: mediumTextStyle(),
+    //           ),
+    //         ),
+    //       ),
+    //     ),
+    //   ],
+    // );
+    return ListView(
+      scrollDirection: Axis.horizontal,
+      children: [
+        Card(
+          child: Text('$email'),
+        ),
+        Card(
+          child: Text('Loan requested: Ksh $loan'),
+        ),
+      ],
     );
   }
 
@@ -140,15 +197,46 @@ class _managerState extends State<manager> {
           child: StreamBuilder(
               stream: Firestore.instance.collection("loans").snapshots(),
               builder: (context, snapshot) {
-                return Container(
-                  padding: EdgeInsets.symmetric(horizontal: 24),
-                  child:
-                      Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                    SizedBox(
-                      height: 50,
+                // return Row(
+                //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                //   // mainAxisSize: MainAxisSize.min,
+                //   // crossAxisAlignment: CrossAxisAlignment.center,
+                //   children: [
+                //     Expanded(child: recordList()),
+                //     // Column(
+                //     //   children: [loanList(), loanList2()],
+                //     // ),
+                //     Expanded(
+                //       child: loanList(),
+                //     ),
+                //     Expanded(child: loanList2()),
+                //
+                //     // Container(
+                //     //   padding: EdgeInsets.all(8.0),
+                //     //   height: 50.0,
+                //     //   width: 20.0,
+                //     //   child: Column(
+                //     //     children: [loanList(), loanList2()],
+                //     //   ),
+                //     // ),
+                //   ],
+                // );
+                return ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    Container(
+                      width: 160.0,
+                      child: recordList(),
                     ),
-                    recordList(),
-                  ]),
+                    Container(
+                      width: 160.0,
+                      child: loanList(),
+                    ),
+                    Container(
+                      width: 160.0,
+                      child: loanList2(),
+                    ),
+                  ],
                 );
               }),
         ),

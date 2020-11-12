@@ -85,7 +85,7 @@ class _RecordsState extends State<Records> {
         children: <Widget>[
           Center(
             child: Text(
-              '$date',
+              'Date and time sold :$date',
               // style: mediumTextStyle(),
             ),
           ),
@@ -97,7 +97,7 @@ class _RecordsState extends State<Records> {
           ),
           Center(
             child: Text(
-              '$kilograms',
+              'Amount of Milk sold: $kilograms litres',
               // style: mediumTextStyle(),
             ),
           ),
@@ -180,7 +180,7 @@ class _RecordsState extends State<Records> {
                             borderRadius: BorderRadius.circular(30)),
                         child: Center(
                           child: Text(
-                            "Total: $total",
+                            "Cumulative amount of  Milk sold: $total litres",
                             style: mediumTextStyle(),
                           ),
                         ),
