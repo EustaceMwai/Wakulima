@@ -52,21 +52,27 @@ class _managerState extends State<manager> {
             itemCount: recordsSnapshot.documents.length,
             shrinkWrap: true,
             itemBuilder: (context, index) {
-              return FlatButton(
-                child: Text('approve'),
-                color: Colors.blueAccent,
-                textColor: Colors.white,
-                onPressed: () async {
-                  final FirebaseAuth _auth = FirebaseAuth.instance;
-                  final Firestore _firestore = Firestore.instance;
-                  FirebaseUser user = await _auth.currentUser();
-                  Firestore.instance
-                      .collection("loans")
-                      .document(recordsSnapshot.documents[index].data["id"])
-                      .setData({
-                    "loan status": "approved",
-                  }, merge: true);
-                },
+              return Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Container(
+                  height: 60.0,
+                  child: FlatButton(
+                    child: Text('approve'),
+                    color: Colors.blueAccent,
+                    textColor: Colors.white,
+                    onPressed: () async {
+                      final FirebaseAuth _auth = FirebaseAuth.instance;
+                      final Firestore _firestore = Firestore.instance;
+                      FirebaseUser user = await _auth.currentUser();
+                      Firestore.instance
+                          .collection("loans")
+                          .document(recordsSnapshot.documents[index].data["id"])
+                          .setData({
+                        "loan status": "approved",
+                      }, merge: true);
+                    },
+                  ),
+                ),
               );
             })
         : Container();
@@ -78,21 +84,27 @@ class _managerState extends State<manager> {
             itemCount: recordsSnapshot.documents.length,
             shrinkWrap: true,
             itemBuilder: (context, index) {
-              return FlatButton(
-                child: Text('Deny'),
-                color: Colors.redAccent,
-                textColor: Colors.white,
-                onPressed: () async {
-                  final FirebaseAuth _auth = FirebaseAuth.instance;
-                  final Firestore _firestore = Firestore.instance;
-                  FirebaseUser user = await _auth.currentUser();
-                  Firestore.instance
-                      .collection("loans")
-                      .document(recordsSnapshot.documents[index].data["id"])
-                      .setData({
-                    "loan status": "denied",
-                  }, merge: true);
-                },
+              return Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Container(
+                  height: 60.0,
+                  child: FlatButton(
+                    child: Text('Deny'),
+                    color: Colors.redAccent,
+                    textColor: Colors.white,
+                    onPressed: () async {
+                      final FirebaseAuth _auth = FirebaseAuth.instance;
+                      final Firestore _firestore = Firestore.instance;
+                      FirebaseUser user = await _auth.currentUser();
+                      Firestore.instance
+                          .collection("loans")
+                          .document(recordsSnapshot.documents[index].data["id"])
+                          .setData({
+                        "loan status": "denied",
+                      }, merge: true);
+                    },
+                  ),
+                ),
               );
             })
         : Container();
@@ -109,20 +121,18 @@ class _managerState extends State<manager> {
   Widget recordTile({String email, int loan, dynamic id}) {
     return Column(
       children: [
-        Card(
-          child: Center(
-            child: Text(
-              '$email',
-              // style: mediumTextStyle(),
-            ),
-          ),
-        ),
-        Card(
-          child: Center(
-            child: Text(
-              'Loan requested: Ksh $loan',
+        Container(
+          height: 70.0,
+          child: Card(
+            child: Center(
+              child: Text(
+                '$email\nLoan requested: Ksh $loan',
 
-              // style: mediumTextStyle(),
+                // style: mediumTextStyle(),
+                style: TextStyle(
+                  fontSize: 12.0,
+                ),
+              ),
             ),
           ),
         ),

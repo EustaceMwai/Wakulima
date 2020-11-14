@@ -79,52 +79,73 @@ class _RecordsState extends State<Records> {
   }
 
   Widget recordTile({String email, String date, dynamic kilograms}) {
-    return Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Center(
-            child: Text(
-              'Date and time sold :$date',
-              // style: mediumTextStyle(),
+    return Container(
+      height: 100.0,
+      child: Card(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Center(
+              child: Text(
+                'Date and time sold :$date',
+                // style: mediumTextStyle()
+                style: TextStyle(
+                  fontSize: 17.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
-          ),
-          Center(
-            child: Text(
-              '$email',
-              // style: mediumTextStyle(),
+            SizedBox(
+              height: 12.0,
             ),
-          ),
-          Center(
-            child: Text(
-              'Amount of Milk sold: $kilograms litres',
-              // style: mediumTextStyle(),
+            Center(
+              child: Text(
+                '$email',
+                // style: mediumTextStyle(),
+                style: TextStyle(
+                  fontSize: 17.0,
+                  fontFamily: 'Nunito-Regular',
+                ),
+              ),
             ),
-          ),
-          // Padding(
-          //   padding: EdgeInsets.only(top: 8.0),
-          //   child: Card(
-          //     margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
-          //     child: ListTile(
-          //       leading: CircleAvatar(
-          //         radius: 25.0,
-          //       ),
-          //       title: Text(
-          //         '$date',
-          //         style: mediumTextStyle(),
-          //       ),
-          //       subtitle: Text(
-          //         '$name',
-          //         style: mediumTextStyle(),
-          //       ),
-          //       trailing: Text(
-          //         '$kilograms',
-          //         style: mediumTextStyle(),
-          //       ),
-          //     ),
-          //   ),
-          // )
-        ],
+            SizedBox(
+              height: 12.0,
+            ),
+            Center(
+              child: Text(
+                'Amount of Milk sold: $kilograms litres',
+                // style: mediumTextStyle(),
+                style: TextStyle(
+                  fontSize: 17.0,
+                  fontFamily: 'Nunito',
+                ),
+              ),
+            ),
+            // Padding(
+            //   padding: EdgeInsets.only(top: 8.0),
+            //   child: Card(
+            //     margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
+            //     child: ListTile(
+            //       leading: CircleAvatar(
+            //         radius: 25.0,
+            //       ),
+            //       title: Text(
+            //         '$date',
+            //         style: mediumTextStyle(),
+            //       ),
+            //       subtitle: Text(
+            //         '$name',
+            //         style: mediumTextStyle(),
+            //       ),
+            //       trailing: Text(
+            //         '$kilograms',
+            //         style: mediumTextStyle(),
+            //       ),
+            //     ),
+            //   ),
+            // )
+          ],
+        ),
       ),
     );
   }
@@ -164,6 +185,9 @@ class _RecordsState extends State<Records> {
                       height: 50,
                     ),
                     recordList(),
+                    SizedBox(
+                      height: 12.0,
+                    ),
                     GestureDetector(
                       onTap: () {
                         initiateSearch();

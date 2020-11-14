@@ -1,27 +1,28 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:date_format/date_format.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:wakulima/model/user.dart';
 import 'package:wakulima/services/auth.dart';
 import 'package:wakulima/services/database.dart';
 import 'package:wakulima/views/qrcode.dart';
 import 'package:wakulima/widgets/widget.dart';
 
-class Milk2Records extends StatefulWidget {
+class MissedRecords extends StatefulWidget {
   String email;
 
-  Milk2Records({this.email});
+  MissedRecords({this.email});
 
   @override
-  _Milk2RecordsState createState() => _Milk2RecordsState();
+  _MissedRecordsState createState() => _MissedRecordsState();
 }
 
-class _Milk2RecordsState extends State<Milk2Records> {
+class _MissedRecordsState extends State<MissedRecords> {
   final formKey = GlobalKey<FormState>();
   TextEditingController todayMilkController = new TextEditingController();
   TextEditingController previousMilkController = new TextEditingController();
   TextEditingController cumulativeMilkController = new TextEditingController();
+  TextEditingController reasonsController = new TextEditingController();
   DatabaseMethods databaseMethods = new DatabaseMethods();
   AuthMethods authMethods = new AuthMethods();
 
@@ -117,10 +118,42 @@ class _Milk2RecordsState extends State<Milk2Records> {
     todayMilkController.clear();
   }
 
+  DateTime _currentDate = new DateTime.now();
+
+  Future<Null> _selectDate(BuildContext context) async {
+    final DateTime _seldate = await showDatePicker(
+        context: context,
+        initialDate: _currentDate,
+        firstDate: DateTime(2019),
+        lastDate: DateTime(2025),
+        builder: (context, child) {
+          return SingleChildScrollView(
+            child: child,
+          );
+        });
+
+    if (_seldate != null) {
+      setState(() {
+        _currentDate = _seldate;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    String _formatDate = new DateFormat.yMMMd().format(_currentDate).toString();
     return Scaffold(
-      appBar: appBarMain(context),
+      appBar: AppBar(
+        title: Text("Select Date"),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              await _selectDate(context);
+            },
+            icon: Icon(Icons.calendar_today),
+          )
+        ],
+      ),
       body: isLoading
           ? Container(
               child: Center(child: CircularProgressIndicator()),
@@ -155,17 +188,7 @@ class _Milk2RecordsState extends State<Milk2Records> {
                                             BorderRadius.circular(30)),
                                     child: Center(
                                       child: Text(
-                                        formatDate(DateTime.now(), [
-                                          dd,
-                                          '/',
-                                          mm,
-                                          '/',
-                                          yyyy,
-                                          ' ',
-                                          HH,
-                                          ':',
-                                          nn
-                                        ]),
+                                        "$_formatDate",
                                         style: mediumTextStyle(),
                                       ),
                                     ),
@@ -206,7 +229,7 @@ class _Milk2RecordsState extends State<Milk2Records> {
                                     controller: todayMilkController,
                                     style: simpleTextStyle(),
                                     decoration: InputDecoration(
-                                        hintText: 'Today Milk Litres Sold',
+                                        hintText: ' Milk Litres Sold',
                                         fillColor: Colors.white54,
                                         filled: true,
                                         enabledBorder: OutlineInputBorder(
@@ -220,6 +243,29 @@ class _Milk2RecordsState extends State<Milk2Records> {
                                   ),
                                   SizedBox(
                                     height: 50,
+                                  ),
+                                  TextFormField(
+                                    maxLines: null,
+                                    validator: (val) {
+                                      return val.isEmpty
+                                          ? "Cannot be empty"
+                                          : null;
+                                    },
+                                    controller: reasonsController,
+                                    style: simpleTextStyle(),
+                                    decoration: InputDecoration(
+                                        hintText:
+                                            'Reasons for not recording at the required time',
+                                        fillColor: Colors.white54,
+                                        filled: true,
+                                        enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: Colors.white,
+                                                width: 2.0)),
+                                        focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: Colors.pink,
+                                                width: 2.0))),
                                   ),
                                   recordList(),
                                 ],
@@ -238,23 +284,15 @@ class _Milk2RecordsState extends State<Milk2Records> {
                                     .collection("farmers")
                                     .add({
                                   "email": widget.email,
-                                  'date': formatDate(DateTime.now(), [
-                                    dd,
-                                    '/',
-                                    mm,
-                                    '/',
-                                    yyyy,
-                                    ' ',
-                                    HH,
-                                    ':',
-                                    nn
-                                  ]),
+                                  'date': _currentDate,
                                   'kilograms':
                                       int.parse(todayMilkController.text),
+                                  'reasons': reasonsController.text,
                                 });
                                 setState(() {
                                   isLoading = false;
                                   todayMilkController.clear();
+                                  reasonsController.clear();
                                 });
                               },
                               child: Container(

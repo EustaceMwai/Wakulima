@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:wakulima/model/user.dart';
 import 'package:wakulima/services/auth.dart';
 import 'package:wakulima/services/database.dart';
-import 'package:wakulima/views/qrcode.dart';
 import 'package:wakulima/widgets/widget.dart';
+
+import '../views/milk2.dart';
 
 class MilkRecords extends StatefulWidget {
   String email;
@@ -29,6 +30,8 @@ class _MilkRecordsState extends State<MilkRecords> {
   bool isLoading = false;
 
   String name = 'eustace';
+
+
 
   String username;
 
@@ -115,6 +118,32 @@ class _MilkRecordsState extends State<MilkRecords> {
     databaseMethods.uploadMilkInfo(User.userId, user.email,
         DateTime.now().toIso8601String(), int.parse(todayMilkController.text));
     todayMilkController.clear();
+  }
+
+  Widget inputMilkMissedRecords({String email}) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => MissedRecords(email: widget.email)));
+      },
+      child: Container(
+        alignment: Alignment.centerRight,
+        width: MediaQuery.of(context).size.width,
+        padding: EdgeInsets.symmetric(vertical: 20),
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+                colors: [const Color(0xff007EF4), const Color(0xff2A75BC)]),
+            borderRadius: BorderRadius.circular(30)),
+        child: Center(
+          child: Text(
+            "Input missed milk Records",
+            style: mediumTextStyle(),
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -221,6 +250,7 @@ class _MilkRecordsState extends State<MilkRecords> {
                                   SizedBox(
                                     height: 50,
                                   ),
+                                  inputMilkMissedRecords(),
                                   recordList(),
                                 ],
                               ),
@@ -305,31 +335,6 @@ class _MilkRecordsState extends State<MilkRecords> {
                             // ),
                             SizedBox(
                               height: 50,
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => HomeScreen()));
-                              },
-                              child: Container(
-                                alignment: Alignment.centerRight,
-                                width: MediaQuery.of(context).size.width,
-                                padding: EdgeInsets.symmetric(vertical: 20),
-                                decoration: BoxDecoration(
-                                    gradient: LinearGradient(colors: [
-                                      const Color(0xff007EF4),
-                                      const Color(0xff2A75BC)
-                                    ]),
-                                    borderRadius: BorderRadius.circular(30)),
-                                child: Center(
-                                  child: Text(
-                                    "Input missed milk Records",
-                                    style: mediumTextStyle(),
-                                  ),
-                                ),
-                              ),
                             ),
                           ],
                         ),
