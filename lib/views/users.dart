@@ -30,6 +30,8 @@ class _UsersState extends State<Users> {
   String email;
   double total = 0.0;
 
+  List<String> litems = [];
+
   User _userFromFirebaseUser(FirebaseUser user) {
     return user != null ? User(userId: user.uid) : null;
   }
@@ -41,8 +43,9 @@ class _UsersState extends State<Users> {
             shrinkWrap: true,
             itemBuilder: (context, index) {
               return recordTile(
-                email: recordsSnapshot.documents[index].data["email"],
-              );
+                  email: recordsSnapshot.documents[index].data["email"],
+                  name: recordsSnapshot.documents[index].data["name"],
+                  farmerId: recordsSnapshot.documents[index].data["farmerId"]);
             })
         : Container();
   }
@@ -55,7 +58,7 @@ class _UsersState extends State<Users> {
     });
   }
 
-  Widget recordTile({String email}) {
+  Widget recordTile({String email, String name, int farmerId}) {
     return GestureDetector(
       onTap: () {
         Navigator.push(context,
@@ -63,11 +66,11 @@ class _UsersState extends State<Users> {
       },
       child: Container(
         width: 50,
-        height: 50,
+        height: 70,
         child: Card(
           child: Center(
             child: Text(
-              '$email',
+              '$email\n$name\n$farmerId',
               // style: mediumTextStyle(),
             ),
           ),
@@ -102,7 +105,7 @@ class _UsersState extends State<Users> {
           height: MediaQuery.of(context).size.height - 50,
           alignment: Alignment.topCenter,
           child: StreamBuilder(
-              stream: Firestore.instance.collection("users").snapshots(),
+              stream: Firestore.instance.collection("wakulima").snapshots(),
               builder: (context, snapshot) {
                 return Container(
                   padding: EdgeInsets.symmetric(horizontal: 24),

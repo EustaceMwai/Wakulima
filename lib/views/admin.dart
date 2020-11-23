@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:wakulima/views/users.dart';
+import 'package:wakulima/views/users2.dart';
 
 class Admin extends StatefulWidget {
   const Admin({Key key, this.user}) : super(key: key);
@@ -36,8 +36,10 @@ class _AdminState extends State<Admin> {
         title: Text('Admin page'),
       ),
       body: StreamBuilder<DocumentSnapshot>(
-        stream:
-            Firestore.instance.collection('users').document(userId).snapshots(),
+        stream: Firestore.instance
+            .collection('wakulima')
+            .document(userId)
+            .snapshots(),
         builder:
             (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
           if (snapshot.hasError) {
@@ -75,7 +77,7 @@ class _AdminState extends State<Admin> {
       color: Colors.blue,
       onPressed: () {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => Users()));
+            context, MaterialPageRoute(builder: (context) => Example()));
       },
     ));
   }

@@ -187,8 +187,9 @@ class _LoanState extends State<Loan> {
     List<DropdownMenuItem> menuItemList = loan
         .map((val) => DropdownMenuItem(value: val, child: Text(val.toString())))
         .toList();
-    return DropdownButton(
+    return DropdownButtonFormField(
       value: selected,
+      validator: (value) => value == null ? 'Please select loan amount' : null,
       onChanged: (val) => setState(() => selected = val),
       items: menuItemList,
       hint: Text("choose amount"),
@@ -206,6 +207,21 @@ class _LoanState extends State<Loan> {
     "Salary"
   ];
 
+  submitLoan() async {
+    if (formKey.currentState.validate()) {
+      final FirebaseAuth _auth = FirebaseAuth.instance;
+      final Firestore _firestore = Firestore.instance;
+      FirebaseUser user = await _auth.currentUser();
+      Firestore.instance.collection("loans").document(user.uid).setData({
+        'id': user.uid,
+        'email': user.email,
+        'loan': selected,
+        'loan status': "inactive",
+        'repayment period': 3
+      });
+    }
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white54,
@@ -216,94 +232,80 @@ class _LoanState extends State<Loan> {
           ? Container(
               child: Center(child: CircularProgressIndicator()),
             )
-          : SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  recordList(),
-                  Center(
-                      child:
-                          Text("Buy more shares to increase your loan limit")),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
+          : Form(
+              key: formKey,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    recordList(),
+                    Center(
+                        child: Text(
+                            "Buy more shares to increase your loan limit")),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            padding: EdgeInsets.all(8.0),
+                            child: Card(
+                              child: Center(
+                                  child: Text(
+                                      " Eligible  amount of loan from: ${loanEligible["from"].toString()} ")),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                            child: Container(
                           padding: EdgeInsets.all(8.0),
                           child: Card(
                             child: Center(
                                 child: Text(
-                                    " Eligible  amount of loan from: ${loanEligible["from"].toString()} ")),
+                                    "To: ${loanEligible["to"].toString()} ")),
                           ),
-                        ),
-                      ),
-                      Expanded(
-                          child: Container(
-                        padding: EdgeInsets.all(8.0),
-                        child: Card(
-                          child: Center(
-                              child: Text(
-                                  "To: ${loanEligible["to"].toString()} ")),
-                        ),
-                      )),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: 50,
-                      ),
-                      displayBoard(),
-                    ],
-                  ),
-                  SizedBox(height: 50),
-                  Container(
-                    margin: EdgeInsets.all(20),
-                    child: FlatButton(
-                      child: Text('submit'),
-                      color: Colors.blueAccent,
-                      textColor: Colors.white,
-                      onPressed: () async {
-                        setState(() {
-                          isLoading = true;
-                        });
-                        print(selected);
-                        final FirebaseAuth _auth = FirebaseAuth.instance;
-                        final Firestore _firestore = Firestore.instance;
-                        FirebaseUser user = await _auth.currentUser();
-                        Firestore.instance
-                            .collection("loans")
-                            .document(user.uid)
-                            .setData({
-                          'id': user.uid,
-                          'email': user.email,
-                          'loan': selected,
-                          'loan status': "inactive",
-                          'repayment period': 3
-                        });
-                        setState(() {
-                          isLoading = false;
-                        });
-                      },
+                        )),
+                      ],
                     ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Container(
-                    margin: EdgeInsets.all(20),
-                    child: FlatButton(
-                      child: Text('check loan status'),
-                      color: Colors.blueAccent,
-                      textColor: Colors.white,
-                      onPressed: () async {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => loanStatus()));
-                      },
+                    SizedBox(
+                      width: 50,
                     ),
-                  ),
-                ],
+                    displayBoard(),
+                    SizedBox(height: 50),
+                    Container(
+                      margin: EdgeInsets.all(20),
+                      child: FlatButton(
+                        child: Text('submit'),
+                        color: Colors.blueAccent,
+                        textColor: Colors.white,
+                        onPressed: () async {
+                          setState(() {
+                            isLoading = true;
+                          });
+                          print(selected);
+                          submitLoan();
+                          setState(() {
+                            isLoading = false;
+                          });
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Container(
+                      margin: EdgeInsets.all(20),
+                      child: FlatButton(
+                        child: Text('check loan status'),
+                        color: Colors.blueAccent,
+                        textColor: Colors.white,
+                        onPressed: () async {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => loanStatus()));
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
     );

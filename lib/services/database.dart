@@ -57,7 +57,7 @@ class DatabaseMethods {
     final FirebaseAuth _auth = FirebaseAuth.instance;
     final Firestore _firestore = Firestore.instance;
     FirebaseUser user = await _auth.currentUser();
-    return await Firestore.instance.collection("users").getDocuments();
+    return await Firestore.instance.collection("wakulima").getDocuments();
   }
 
   getAllUserLoans() async {
@@ -79,8 +79,15 @@ class DatabaseMethods {
     });
   }
 
-  uploadUsersInfo(userMap) {
-    Firestore.instance.collection("wakulima").add(userMap).catchError((e) {
+  uploadUsersInfo(userMap) async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final Firestore _firestore = Firestore.instance;
+    FirebaseUser user = await _auth.currentUser();
+    Firestore.instance
+        .collection("wakulima")
+        .document(user.uid)
+        .setData(userMap)
+        .catchError((e) {
       print(e.toString());
     });
   }

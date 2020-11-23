@@ -37,8 +37,10 @@ class _AdminState extends State<AdminManager> {
         title: Text('Admin page'),
       ),
       body: StreamBuilder<DocumentSnapshot>(
-        stream:
-            Firestore.instance.collection('users').document(userId).snapshots(),
+        stream: Firestore.instance
+            .collection('wakulima')
+            .document(userId)
+            .snapshots(),
         builder:
             (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
           if (snapshot.hasError) {

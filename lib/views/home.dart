@@ -9,6 +9,7 @@ import 'package:wakulima/views/adminManager.dart';
 import 'package:wakulima/views/records.dart';
 
 import 'bottom.dart';
+import 'dartSearch.dart';
 import 'maps.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -102,6 +103,14 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               SizedBox(
                 height: 10,
+              ),
+              ListTile(
+                title: Text('search'),
+                onTap: () {
+                  authMethods.signOut();
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Example()));
+                },
               ),
             ],
           ),
