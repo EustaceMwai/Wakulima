@@ -138,7 +138,17 @@ class _MissedRecordsState extends State<MissedRecords> {
       });
     }
   }
-
+      submitMilk() async{
+        await Firestore.instance
+            .collection("farmers")
+            .add({
+          "email": widget.email,
+          'date': _currentDate,
+          'kilograms':
+          int.parse(todayMilkController.text),
+          'reasons': reasonsController.text,
+        });
+      }
   @override
   Widget build(BuildContext context) {
     String _formatDate = new DateFormat.yMMMd().format(_currentDate).toString();
@@ -280,15 +290,7 @@ class _MissedRecordsState extends State<MissedRecords> {
                                 setState(() {
                                   isLoading = true;
                                 });
-                                await Firestore.instance
-                                    .collection("farmers")
-                                    .add({
-                                  "email": widget.email,
-                                  'date': _currentDate,
-                                  'kilograms':
-                                      int.parse(todayMilkController.text),
-                                  'reasons': reasonsController.text,
-                                });
+                                submitMilk();
                                 setState(() {
                                   isLoading = false;
                                   todayMilkController.clear();

@@ -25,6 +25,7 @@ class _LoanState extends State<Loan> {
 
   TextEditingController loanAmountController = new TextEditingController();
   QuerySnapshot recordsSnapshot;
+  DocumentSnapshot loanSnapshot;
   DatabaseMethods databaseMethods = new DatabaseMethods();
   AuthMethods authMethods = new AuthMethods();
 
@@ -35,6 +36,7 @@ class _LoanState extends State<Loan> {
     getDetails();
     loanEligible = applyLoan(widget.total);
     print(loanEligible);
+    checkExistingLoan();
     // print(loanEligible["from"]);
     super.initState();
   }
@@ -47,8 +49,19 @@ class _LoanState extends State<Loan> {
     });
   }
 
+  checkExistingLoan() {
+    databaseMethods.getLoanDetails().then((val) {
+      setState(() {
+        loanSnapshot = val;
+      });
+      print("This is what is $loanSnapshot");
+    });
+  }
+
   Widget recordList() {
-    return recordsSnapshot != null
+    if (recordsSnapshot != null && recordsSnapshot.documents == null)
+      return CircularProgressIndicator();
+    return recordsSnapshot.documents != null
         ? ListView.builder(
             itemCount: recordsSnapshot.documents.length,
             shrinkWrap: true,
@@ -58,6 +71,32 @@ class _LoanState extends State<Loan> {
                   shares: recordsSnapshot.documents[index].data["shares"]);
             })
         : Container();
+  }
+
+  Widget checkExistLoan() {
+    // return loanSnapshot != null
+    //     ? ListView.builder(
+    //         itemCount: loanSnapshot.data.length,
+    //         shrinkWrap: true,
+    //         itemBuilder: (context, index) {
+    //           return Center(
+    //             child: Text("You already have a existing Loan"),
+    //           );
+    //         })
+    //     : Container(
+    //         child: RaisedButton(
+    //           child: Text("Submit"),
+    //         ),
+    //       );
+    return !loanSnapshot.exists
+        ? Container(
+            child: RaisedButton(
+              child: Text("Submit"),
+            ),
+          )
+        : Center(
+            child: Text("You already have a existing Loan"),
+          );
   }
 
   Widget recordTile({String crb, int shares}) {
@@ -269,24 +308,25 @@ class _LoanState extends State<Loan> {
                     ),
                     displayBoard(),
                     SizedBox(height: 50),
-                    Container(
-                      margin: EdgeInsets.all(20),
-                      child: FlatButton(
-                        child: Text('submit'),
-                        color: Colors.blueAccent,
-                        textColor: Colors.white,
-                        onPressed: () async {
-                          setState(() {
-                            isLoading = true;
-                          });
-                          print(selected);
-                          submitLoan();
-                          setState(() {
-                            isLoading = false;
-                          });
-                        },
-                      ),
-                    ),
+                    checkExistLoan(),
+                    // Container(
+                    //   margin: EdgeInsets.all(20),
+                    //   child: FlatButton(
+                    //     child: Text('submit'),
+                    //     color: Colors.blueAccent,
+                    //     textColor: Colors.white,
+                    //     onPressed: () async {
+                    //       setState(() {
+                    //         isLoading = true;
+                    //       });
+                    //       print(selected);
+                    //       submitLoan();
+                    //       setState(() {
+                    //         isLoading = false;
+                    //       });
+                    //     },
+                    //   ),
+                    // ),
                     SizedBox(
                       height: 20,
                     ),

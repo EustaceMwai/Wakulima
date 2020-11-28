@@ -12,7 +12,8 @@ import '../views/milk2.dart';
 class MilkRecords extends StatefulWidget {
   String email;
 
-  MilkRecords({this.email});
+  int farmerId;
+  MilkRecords({this.email, this.farmerId});
 
   @override
   _MilkRecordsState createState() => _MilkRecordsState();
@@ -30,8 +31,6 @@ class _MilkRecordsState extends State<MilkRecords> {
   bool isLoading = false;
 
   String name = 'eustace';
-
-
 
   String username;
 
@@ -146,6 +145,29 @@ class _MilkRecordsState extends State<MilkRecords> {
     );
   }
 
+  submitMilk() async {
+    if (formKey.currentState.validate()) {
+      await Firestore.instance
+          .collection("farmers")
+          .add({
+        "email": widget.email,
+        'date': formatDate(DateTime.now(), [
+          dd,
+          '/',
+          mm,
+          '/',
+          yyyy,
+          ' ',
+          HH,
+          ':',
+          nn
+        ]),
+        'kilograms':
+        int.parse(todayMilkController.text),
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -200,6 +222,30 @@ class _MilkRecordsState extends State<MilkRecords> {
                                     ),
                                   ),
                                   SizedBox(
+                                    height: 20,
+                                  ),
+                                  TextFormField(
+                                    validator: (val) {
+                                      return val.isEmpty
+                                          ? "Cannot be empty"
+                                          : null;
+                                    },
+                                    initialValue:
+                                        "Farmer ID: ${widget.farmerId}",
+                                    style: simpleTextStyle(),
+                                    decoration: InputDecoration(
+                                        fillColor: Colors.white54,
+                                        filled: true,
+                                        enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: Colors.white,
+                                                width: 2.0)),
+                                        focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: Colors.pink,
+                                                width: 2.0))),
+                                  ),
+                                  SizedBox(
                                     height: 50,
                                   ),
                                   TextFormField(
@@ -228,8 +274,8 @@ class _MilkRecordsState extends State<MilkRecords> {
                                   TextFormField(
                                     keyboardType: TextInputType.number,
                                     validator: (val) {
-                                      return val.isEmpty
-                                          ? "Cannot be empty"
+                                      return val.length > 3
+                                          ? "Value cannot be more than 100"
                                           : null;
                                     },
                                     controller: todayMilkController,
@@ -264,24 +310,7 @@ class _MilkRecordsState extends State<MilkRecords> {
                                 setState(() {
                                   isLoading = true;
                                 });
-                                await Firestore.instance
-                                    .collection("farmers")
-                                    .add({
-                                  "email": widget.email,
-                                  'date': formatDate(DateTime.now(), [
-                                    dd,
-                                    '/',
-                                    mm,
-                                    '/',
-                                    yyyy,
-                                    ' ',
-                                    HH,
-                                    ':',
-                                    nn
-                                  ]),
-                                  'kilograms':
-                                      int.parse(todayMilkController.text),
-                                });
+                                submitMilk();
                                 setState(() {
                                   isLoading = false;
                                   todayMilkController.clear();

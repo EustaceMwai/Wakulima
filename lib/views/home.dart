@@ -11,6 +11,7 @@ import 'package:wakulima/views/records.dart';
 import 'bottom.dart';
 import 'dartSearch.dart';
 import 'maps.dart';
+import 'mpesa.dart';
 
 class MyHomePage extends StatefulWidget {
   final String userId;
@@ -110,6 +111,17 @@ class _MyHomePageState extends State<MyHomePage> {
                   authMethods.signOut();
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => Example()));
+                },
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              ListTile(
+                title: Text('mpesa'),
+                onTap: () {
+                  authMethods.signOut();
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Mpesa()));
                 },
               ),
             ],

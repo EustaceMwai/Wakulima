@@ -60,6 +60,16 @@ class DatabaseMethods {
     return await Firestore.instance.collection("wakulima").getDocuments();
   }
 
+  getLoanDetails() async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final Firestore _firestore = Firestore.instance;
+    FirebaseUser user = await _auth.currentUser();
+    return await Firestore.instance
+        .collection("loans")
+        .document(user.uid)
+        .get();
+  }
+
   getAllUserLoans() async {
     final FirebaseAuth _auth = FirebaseAuth.instance;
     final Firestore _firestore = Firestore.instance;

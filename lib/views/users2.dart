@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:wakulima/services/auth.dart';
 import 'package:wakulima/services/database.dart';
 
+import 'milk.dart';
+
 class Example extends StatefulWidget {
   @override
   _ExampleState createState() => _ExampleState();
@@ -41,6 +43,7 @@ class DataSearch extends SearchDelegate<dynamic> {
   List<dynamic> litems = ["1", "2", "Third", "4"];
 
   List<dynamic> cities = ["Tokyo", "nairobi", "Third", "4"];
+  List email = [];
   DatabaseMethods databaseMethods = new DatabaseMethods();
   AuthMethods authMethods = new AuthMethods();
   QuerySnapshot recordsSnapshot;
@@ -80,35 +83,70 @@ class DataSearch extends SearchDelegate<dynamic> {
   @override
   Widget buildResults(BuildContext context) {
     // TODO: implement buildResults
-    throw UnimplementedError();
+    return null;
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    final suggestionList = query.isEmpty
-        ? recordsSnapshot.documents
-        : recordsSnapshot.documents.where((p) => p.startsWith(query)).toList();
     initiateSearch();
+
+    if (recordsSnapshot != null) {
+      email.clear();
+      recordsSnapshot.documents.forEach((element) {
+        email.add(element["farmerId"].toString());
+      });
+      print(email);
+    }
+    final suggestionList = query.isEmpty
+        ? email
+        : email.where((p) => p.startsWith(query)).toList();
+
     return recordsSnapshot != null
         ? ListView.builder(
-            itemBuilder: (context, index) => ListTile(
-              onTap: () {},
-              leading: Icon(Icons.location_city),
-              title: RichText(
-                text: TextSpan(
-                    text: recordsSnapshot.documents[index].data["email"]
-                        .substring(0, query.length),
-                    style: TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.bold),
-                    children: [
-                      TextSpan(
-                          text: recordsSnapshot.documents[index].data["email"]
-                              .substring(query.length),
-                          style: TextStyle(color: Colors.grey))
+            padding:
+                const EdgeInsets.only(top: 8, left: 8, right: 8, bottom: 8),
+            itemBuilder: (context, index) => Card(
+              child: ListTile(
+                // contentPadding:
+                //     EdgeInsets.only(top: 8, left: 8, right: 8, bottom: 8),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => MilkRecords(
+                                email: recordsSnapshot
+                                    .documents[index].data["email"],
+                                farmerId: recordsSnapshot
+                                    .documents[index].data["farmerId"],
+                              )));
+                },
+                leading: Icon(Icons.person),
+                title: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      RichText(
+                        text: TextSpan(
+                            text:
+                                "Farmer ID: ${suggestionList[index].substring(0, query.length)}",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
+                            children: [
+                              TextSpan(
+                                  text: suggestionList[index]
+                                      .substring(query.length),
+                                  style: TextStyle(color: Colors.grey))
+                            ]),
+                      ),
+                      Text(
+                          "Name: ${recordsSnapshot.documents[index].data["name"]}"),
+                      SizedBox(),
+                      Text(
+                          "Email: ${recordsSnapshot.documents[index].data["email"]}"),
                     ]),
               ),
             ),
-            itemCount: recordsSnapshot.documents.length,
+            itemCount: suggestionList.length,
           )
         : Container();
   }

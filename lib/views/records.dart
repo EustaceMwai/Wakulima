@@ -177,6 +177,11 @@ class _RecordsState extends State<Records> {
           child: StreamBuilder(
               stream: Firestore.instance.collection("farmers").snapshots(),
               builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
                 return Container(
                   padding: EdgeInsets.symmetric(horizontal: 24),
                   child:

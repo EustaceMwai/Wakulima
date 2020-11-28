@@ -1,11 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mpesa_flutter_plugin/initializer.dart';
 import 'package:wakulima/views/home.dart';
+import 'package:wakulima/views/keys.dart';
 
 import 'helper/autheticate.dart';
 import 'helper/helperfunctions.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  MpesaFlutterPlugin.setConsumerKey(kConsumerKey);
+  MpesaFlutterPlugin.setConsumerSecret(kConsumerSecret);
+  runApp(MyApp());
+}
 
 class MyApp extends StatefulWidget {
   @override

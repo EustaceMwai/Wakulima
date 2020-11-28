@@ -54,7 +54,7 @@ class DataSearch extends SearchDelegate<dynamic> {
   @override
   Widget buildResults(BuildContext context) {
     // TODO: implement buildResults
-    throw UnimplementedError();
+    return null;
   }
 
   @override

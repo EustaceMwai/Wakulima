@@ -46,6 +46,7 @@ dependencies:
   flutter_polyline_points: ^0.2.1
   intl: ^0.16.1
   date_format: ^1.0.9
+  mpesa_flutter_plugin: ^1.0.0
 #  geolocator: ^5.3.1
 #  google_maps_flutter: ^0.5.28+1
 
