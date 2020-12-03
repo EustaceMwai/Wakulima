@@ -20,9 +20,7 @@ class _MpesaState extends State<Mpesa> {
           partyA: phone,
           partyB: "174379",
           callBackURL: Uri(
-              scheme: "https",
-              host:
-                  "us-central1-wakulima-b976c.cloudfunctions.net/receiveCallback"),
+              scheme: "https", host: "my-app.herokuapp.com", path: "/callback"),
           accountReference: "payment",
           phoneNumber: phone,
           baseUri: Uri(scheme: "https", host: "sandbox.safaricom.co.ke"),

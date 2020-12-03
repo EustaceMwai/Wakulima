@@ -7,6 +7,7 @@ import 'package:wakulima/services/auth.dart';
 import 'package:wakulima/views/admin.dart';
 import 'package:wakulima/views/adminManager.dart';
 import 'package:wakulima/views/records.dart';
+import 'package:wakulima/views/slider.dart';
 
 import 'bottom.dart';
 import 'dartSearch.dart';
@@ -122,6 +123,17 @@ class _MyHomePageState extends State<MyHomePage> {
                   authMethods.signOut();
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => Mpesa()));
+                },
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              ListTile(
+                title: Text('slider'),
+                onTap: () {
+                  authMethods.signOut();
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => SliderExample()));
                 },
               ),
             ],

@@ -19,9 +19,14 @@ class Loan extends StatefulWidget {
 }
 
 class _LoanState extends State<Loan> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final formKey = GlobalKey<FormState>();
   int selected;
   bool isLoading = false;
+  double _loanPeriod = 36.0;
+  double payableLoan;
+  int rate;
+  double interest;
 
   TextEditingController loanAmountController = new TextEditingController();
   QuerySnapshot recordsSnapshot;
@@ -91,6 +96,7 @@ class _LoanState extends State<Loan> {
     return !loanSnapshot.exists
         ? Container(
             child: RaisedButton(
+              onPressed: () {},
               child: Text("Submit"),
             ),
           )
@@ -256,13 +262,76 @@ class _LoanState extends State<Loan> {
         'email': user.email,
         'loan': selected,
         'loan status': "inactive",
-        'repayment period': 3
+        'repayment period': _loanPeriod
       });
     }
   }
 
+  calculateInterest() {
+    payableLoan = selected + (selected * 0.4 * _loanPeriod / 36);
+    print(payableLoan);
+  }
+
+  Widget slider() {
+    return SliderTheme(
+      data: SliderTheme.of(context).copyWith(
+        activeTrackColor: Colors.blue[700],
+        inactiveTrackColor: Colors.blue[100],
+        trackShape: RoundedRectSliderTrackShape(),
+        trackHeight: 4.0,
+        thumbShape: RoundSliderThumbShape(enabledThumbRadius: 12.0),
+        thumbColor: Colors.blueAccent,
+        overlayColor: Colors.blue.withAlpha(32),
+        overlayShape: RoundSliderOverlayShape(overlayRadius: 28.0),
+        tickMarkShape: RoundSliderTickMarkShape(),
+        activeTickMarkColor: Colors.blue[700],
+        inactiveTickMarkColor: Colors.blue[100],
+        valueIndicatorShape: PaddleSliderValueIndicatorShape(),
+        valueIndicatorColor: Colors.blueAccent,
+        valueIndicatorTextStyle: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+      child: Slider(
+        value: _loanPeriod,
+        min: 0,
+        max: 36,
+        divisions: 12,
+        label: '$_loanPeriod months',
+        onChanged: (value) {
+          setState(
+            () {
+              _loanPeriod = value;
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  Widget confirmButton() {
+    return Container(
+        color: Colors.blue,
+        child: FlatButton(
+          child: Text(
+            "Confirm",
+            style: TextStyle(color: Colors.white),
+          ),
+          onPressed: () {
+            calculateInterest();
+            final snackBar = SnackBar(
+                duration: Duration(seconds: 15),
+                content: Text(
+                    'You have chosen a loan amount of $selected\n You wiil pay back ${payableLoan.toStringAsFixed(2)} within a payment period of $_loanPeriod months  \n Click submit to proceed with loan application'));
+
+            _scaffoldKey.currentState.showSnackBar(snackBar);
+          },
+        ));
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: Colors.white54,
       appBar: AppBar(
         title: Text("Loan application"),
@@ -308,6 +377,16 @@ class _LoanState extends State<Loan> {
                     ),
                     displayBoard(),
                     SizedBox(height: 50),
+                    Center(
+                        child: Text(
+                      "Choose the repayment period below",
+                      style: TextStyle(color: Colors.white, fontSize: 20.0),
+                    )),
+
+                    slider(),
+                    SizedBox(height: 50),
+                    confirmButton(),
+
                     checkExistLoan(),
                     // Container(
                     //   margin: EdgeInsets.all(20),
