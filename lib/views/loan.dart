@@ -10,6 +10,7 @@ class Loan extends StatefulWidget {
   final int total;
 
   Loan(this.total);
+
   int get t {
     return total;
   }
@@ -41,7 +42,7 @@ class _LoanState extends State<Loan> {
     getDetails();
     loanEligible = applyLoan(widget.total);
     print(loanEligible);
-    checkExistingLoan();
+    // checkExistingLoan();
     // print(loanEligible["from"]);
     super.initState();
   }
@@ -54,19 +55,19 @@ class _LoanState extends State<Loan> {
     });
   }
 
-  checkExistingLoan() {
-    databaseMethods.getLoanDetails().then((val) {
-      setState(() {
-        loanSnapshot = val;
-      });
-      print("This is what is $loanSnapshot");
-    });
-  }
+  // checkExistingLoan() {
+  //   databaseMethods.getLoanDetails().then((val) {
+  //     setState(() {
+  //       loanSnapshot = val;
+  //     });
+  //     print("This is what is $loanSnapshot");
+  //   });
+  // }
 
   Widget recordList() {
     if (recordsSnapshot != null && recordsSnapshot.documents == null)
       return CircularProgressIndicator();
-    return recordsSnapshot.documents != null
+    return recordsSnapshot != null
         ? ListView.builder(
             itemCount: recordsSnapshot.documents.length,
             shrinkWrap: true,
@@ -96,7 +97,9 @@ class _LoanState extends State<Loan> {
     return !loanSnapshot.exists
         ? Container(
             child: RaisedButton(
-              onPressed: () {},
+              onPressed: () {
+                submitLoan();
+              },
               child: Text("Submit"),
             ),
           )
@@ -252,6 +255,13 @@ class _LoanState extends State<Loan> {
     "Salary"
   ];
 
+  calculateInterest() {
+    if (formKey.currentState.validate()) {
+      payableLoan = selected + (selected * 0.4 * _loanPeriod / 36);
+      print(payableLoan);
+    }
+  }
+
   submitLoan() async {
     if (formKey.currentState.validate()) {
       final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -262,14 +272,10 @@ class _LoanState extends State<Loan> {
         'email': user.email,
         'loan': selected,
         'loan status': "inactive",
-        'repayment period': _loanPeriod
+        'repayment period': _loanPeriod.toInt(),
+        'payableLoan': payableLoan.toInt(),
       });
     }
-  }
-
-  calculateInterest() {
-    payableLoan = selected + (selected * 0.4 * _loanPeriod / 36);
-    print(payableLoan);
   }
 
   Widget slider() {
@@ -297,11 +303,12 @@ class _LoanState extends State<Loan> {
         min: 0,
         max: 36,
         divisions: 12,
-        label: '$_loanPeriod months',
+        label: '${_loanPeriod.toStringAsFixed(0)} months',
         onChanged: (value) {
           setState(
             () {
               _loanPeriod = value;
+              print(_loanPeriod);
             },
           );
         },
@@ -322,7 +329,7 @@ class _LoanState extends State<Loan> {
             final snackBar = SnackBar(
                 duration: Duration(seconds: 15),
                 content: Text(
-                    'You have chosen a loan amount of $selected\n You wiil pay back ${payableLoan.toStringAsFixed(2)} within a payment period of $_loanPeriod months  \n Click submit to proceed with loan application'));
+                    'You have chosen a loan amount of $selected\n You wiil pay back ${payableLoan.toStringAsFixed(2)} within a payment period of ${_loanPeriod.toStringAsFixed(0)} months  \n Click submit to proceed with loan application'));
 
             _scaffoldKey.currentState.showSnackBar(snackBar);
           },
@@ -336,97 +343,124 @@ class _LoanState extends State<Loan> {
       appBar: AppBar(
         title: Text("Loan application"),
       ),
-      body: isLoading
-          ? Container(
-              child: Center(child: CircularProgressIndicator()),
-            )
-          : Form(
-              key: formKey,
-              child: SingleChildScrollView(
-                child: Column(
-                  children: <Widget>[
-                    recordList(),
-                    Center(
-                        child: Text(
-                            "Buy more shares to increase your loan limit")),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Container(
+      body: SingleChildScrollView(
+        child: Container(
+          height: MediaQuery.of(context).size.height - 50,
+          alignment: Alignment.topCenter,
+          child: Form(
+            key: formKey,
+            child: StreamBuilder(
+                stream: Firestore.instance.collection("users").snapshots(),
+                builder: (context, snapshot) {
+                  //   if (!snapshot.hasData) {
+                  //     print('test phrase');
+                  //   return Text("Loading.....");f
+                  // }
+
+                  // if (snapshot.hasError) {
+                  //   return Center(
+                  //     child: Text('Error: ${snapshot.error}'),
+                  //   );
+                  // }
+                  // if (snapshot.data.documents.length < 0)
+                  //   return CircularProgressIndicator();
+
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  // if (!snapshot.data.documents.length > 0) {
+                  //   return Center(
+                  //     child: CircularProgressIndicator(),
+                  //   );
+                  // }
+                  return Column(
+                    children: <Widget>[
+                      recordList(),
+                      Center(
+                          child: Text(
+                              "Buy more shares to increase your loan limit")),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              padding: EdgeInsets.all(8.0),
+                              child: Card(
+                                child: Center(
+                                    child: Text(
+                                        " Eligible  amount of loan from: ${loanEligible["from"].toString()} ")),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                              child: Container(
                             padding: EdgeInsets.all(8.0),
                             child: Card(
                               child: Center(
                                   child: Text(
-                                      " Eligible  amount of loan from: ${loanEligible["from"].toString()} ")),
+                                      "To: ${loanEligible["to"].toString()} ")),
                             ),
-                          ),
-                        ),
-                        Expanded(
-                            child: Container(
-                          padding: EdgeInsets.all(8.0),
-                          child: Card(
-                            child: Center(
-                                child: Text(
-                                    "To: ${loanEligible["to"].toString()} ")),
-                          ),
-                        )),
-                      ],
-                    ),
-                    SizedBox(
-                      width: 50,
-                    ),
-                    displayBoard(),
-                    SizedBox(height: 50),
-                    Center(
-                        child: Text(
-                      "Choose the repayment period below",
-                      style: TextStyle(color: Colors.white, fontSize: 20.0),
-                    )),
-
-                    slider(),
-                    SizedBox(height: 50),
-                    confirmButton(),
-
-                    checkExistLoan(),
-                    // Container(
-                    //   margin: EdgeInsets.all(20),
-                    //   child: FlatButton(
-                    //     child: Text('submit'),
-                    //     color: Colors.blueAccent,
-                    //     textColor: Colors.white,
-                    //     onPressed: () async {
-                    //       setState(() {
-                    //         isLoading = true;
-                    //       });
-                    //       print(selected);
-                    //       submitLoan();
-                    //       setState(() {
-                    //         isLoading = false;
-                    //       });
-                    //     },
-                    //   ),
-                    // ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Container(
-                      margin: EdgeInsets.all(20),
-                      child: FlatButton(
-                        child: Text('check loan status'),
-                        color: Colors.blueAccent,
-                        textColor: Colors.white,
-                        onPressed: () async {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => loanStatus()));
-                        },
+                          )),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+                      SizedBox(
+                        width: 50,
+                      ),
+                      displayBoard(),
+                      SizedBox(height: 50),
+                      Center(
+                          child: Text(
+                        "Choose the repayment period below",
+                        style: TextStyle(color: Colors.white, fontSize: 20.0),
+                      )),
+
+                      slider(),
+                      SizedBox(height: 50),
+                      confirmButton(),
+
+                      // checkExistLoan(),
+                      // Container(
+                      //   margin: EdgeInsets.all(20),
+                      //   child: FlatButton(
+                      //     child: Text('submit'),
+                      //     color: Colors.blueAccent,
+                      //     textColor: Colors.white,
+                      //     onPressed: () async {
+                      //       setState(() {
+                      //         isLoading = true;
+                      //       });
+                      //       print(selected);
+                      //       submitLoan();
+                      //       setState(() {
+                      //         isLoading = false;
+                      //       });
+                      //     },
+                      //   ),
+                      // ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Container(
+                        margin: EdgeInsets.all(20),
+                        child: FlatButton(
+                          child: Text('check loan status'),
+                          color: Colors.blueAccent,
+                          textColor: Colors.white,
+                          onPressed: () async {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => loanStatus()));
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+                }),
+          ),
+        ),
+      ),
     );
   }
 }

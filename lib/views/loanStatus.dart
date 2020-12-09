@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mpesa_flutter_plugin/initializer.dart';
+import 'package:mpesa_flutter_plugin/payment_enums.dart';
 import 'package:wakulima/model/user.dart';
 import 'package:wakulima/services/auth.dart';
 import 'package:wakulima/services/database.dart';
@@ -41,8 +43,10 @@ class _loanStatusState extends State<loanStatus> {
                   loan: recordsSnapshot.documents[index].data["loan"],
                   loanStatus:
                       recordsSnapshot.documents[index].data["loan status"],
-                  repayment: recordsSnapshot
-                      .documents[index].data["repayment period"]);
+                  repayment:
+                      recordsSnapshot.documents[index].data["repayment period"],
+                  repayableLoan:
+                      recordsSnapshot.documents[index].data["payableLoan"]);
             })
         : Container(
             child: Text('no loans'),
@@ -57,7 +61,8 @@ class _loanStatusState extends State<loanStatus> {
     });
   }
 
-  Widget recordTile({int loan, String loanStatus, int repayment}) {
+  Widget recordTile(
+      {int loan, String loanStatus, int repayment, int repayableLoan}) {
     return Card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -76,7 +81,13 @@ class _loanStatusState extends State<loanStatus> {
           ),
           Center(
             child: Text(
-              'The repayment period of your loan is: $repayment years',
+              'The repayment period of your loan is: $repayment months',
+              // style: mediumTextStyle(),
+            ),
+          ),
+          Center(
+            child: Text(
+              'The amount you are going to repay is Ksh: $repayableLoan ',
               // style: mediumTextStyle(),
             ),
           ),
@@ -123,6 +134,34 @@ class _loanStatusState extends State<loanStatus> {
     super.initState();
   }
 
+  Future<dynamic> startTransaction({double amount, String phone}) async {
+    dynamic transactionInitialisation;
+    //Wrap it with a try-catch
+    try {
+      //Run it
+      transactionInitialisation = await MpesaFlutterPlugin.initializeMpesaSTKPush(
+          businessShortCode: "174379",
+          transactionType: TransactionType.CustomerPayBillOnline,
+          amount: amount,
+          partyA: phone,
+          partyB: "174379",
+          callBackURL: Uri(
+              scheme: "https", host: "my-app.herokuapp.com", path: "/callback"),
+          accountReference: "payment",
+          phoneNumber: phone,
+          baseUri: Uri(scheme: "https", host: "sandbox.safaricom.co.ke"),
+          transactionDesc: "demo",
+          passKey:
+              "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919");
+
+      print("RESULT: " + transactionInitialisation.toString());
+    } catch (e) {
+      //you can implement your exception handling here.
+      //Network unreachability is a sure exception.
+      print(e.getMessage());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -142,6 +181,15 @@ class _loanStatusState extends State<loanStatus> {
                       height: 50,
                     ),
                     recordList(),
+                    Container(
+                      child: Center(
+                          child: RaisedButton(
+                        onPressed: () {
+                          startTransaction(amount: 10.0, phone: "254718273753");
+                        },
+                        child: Text("Pay"),
+                      )),
+                    ),
                   ]),
                 );
               }),
