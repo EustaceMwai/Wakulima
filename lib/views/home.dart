@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wakulima/helper/autheticate.dart';
 import 'package:wakulima/services/auth.dart';
+import 'package:wakulima/services/database.dart';
 import 'package:wakulima/views/admin.dart';
 import 'package:wakulima/views/adminManager.dart';
 import 'package:wakulima/views/records.dart';
@@ -28,6 +29,9 @@ class _MyHomePageState extends State<MyHomePage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final Firestore _firestore = Firestore.instance;
   FirebaseUser user;
+  DatabaseMethods databaseMethods = new DatabaseMethods();
+
+  DocumentSnapshot userSnapshot;
 
   String userid;
   void _getUser() async {
@@ -55,11 +59,60 @@ class _MyHomePageState extends State<MyHomePage> {
         .snapshots();
   }
 
+  initiateSearch() async {
+    FirebaseUser user = await _auth.currentUser();
+
+    databaseMethods.getUserName().then((val) {
+      setState(() {
+        userSnapshot = val;
+      });
+    });
+  }
+
+  // Widget userHome() {
+  //   return userSnapshot != null
+  //       ? ListView.builder(
+  //           itemCount: userSnapshot.documentID.,
+  //           shrinkWrap: true,
+  //           itemBuilder: (context, index) {
+  //             return userName(
+  //               name: userSnapshot["name"],
+  //             );
+  //           })
+  //       : Container();
+  // }
+
+  Widget userHome() {
+    return userSnapshot != null
+        ? Container(
+            child: userName(name: userSnapshot["name"]),
+          )
+        : Container(
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+  }
+
+  Widget userName({String name}) {
+    return Container(
+      height: 200.0,
+      child: Card(
+        elevation: 10,
+        child: Center(
+            child: Text(
+          'Welcome $name',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        )),
+      ),
+    );
+  }
+
   @override
   void initState() {
-    // TODO: implement initState
-
+    initiateSearch();
     super.initState();
+
     // _getUser();
   }
 
@@ -144,98 +197,108 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text("Wakulima"),
       ),
       body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Container(
-              height: 200.0,
-              child: Card(
-                elevation: 10,
-                child: Center(
-                    child: Text(
-                  'Welcome to Wakulima Dairy',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                )),
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.all(10),
-              child: GridView.count(
-                shrinkWrap: true,
-                crossAxisCount: 2,
+        child: StreamBuilder(
+            stream: Firestore.instance.collection("wakulima").snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              if (userSnapshot == null) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => Admin()));
-                    },
-                    child: Card(
-                      elevation: 10,
-                      child: Center(
-                          child: Text(
-                        'Dairy',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      )),
+                  userHome(),
+                  Container(
+                    padding: EdgeInsets.all(10),
+                    child: GridView.count(
+                      shrinkWrap: true,
+                      crossAxisCount: 2,
+                      children: <Widget>[
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Admin()));
+                          },
+                          child: Card(
+                            elevation: 10,
+                            child: Center(
+                                child: Text(
+                              'Dairy',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            )),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => AdminManager()));
+                          },
+                          child: Card(
+                            elevation: 10,
+                            child: Center(
+                                child: Text(
+                              'Manager',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            )),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Records()));
+                          },
+                          child: Card(
+                            elevation: 10,
+                            child: Center(
+                                child: Text(
+                              'Dairy Records',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            )),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Maps()));
+                          },
+                          child: Card(
+                            elevation: 10,
+                            child: Center(
+                                child: Text(
+                              'Veterinary',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            )),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => AdminManager()));
-                    },
-                    child: Card(
-                      elevation: 10,
-                      child: Center(
-                          child: Text(
-                        'Manager',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      )),
-                    ),
+                  SizedBox(
+                    height: 50.0,
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => Records()));
-                    },
-                    child: Card(
-                      elevation: 10,
-                      child: Center(
-                          child: Text(
-                        'Dairy Records',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      )),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => Maps()));
-                    },
-                    child: Card(
-                      elevation: 10,
-                      child: Center(
-                          child: Text(
-                        'Veterinary',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      )),
-                    ),
-                  ),
+                  BottomNavigationWidget(),
                 ],
-              ),
-            ),
-            SizedBox(
-              height: 50.0,
-            ),
-            BottomNavigationWidget(),
-          ],
-        ),
+              );
+            }),
       ),
     );
   }

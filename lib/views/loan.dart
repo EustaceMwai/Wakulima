@@ -138,52 +138,62 @@ class _LoanState extends State<Loan> {
   }
 
   Widget recordTile({String crb, int shares}) {
-    return Container(
-      width: 10.0,
-      height: 100.0,
-      alignment: Alignment.center,
-      child: Card(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Center(
-              child: Text(
-                'CRB status: $crb',
-                // style: mediumTextStyle(),
-              ),
-            ),
-            Center(
-              child: Text(
-                'Number of Shares bought in the sacco: $shares',
-                // style: mediumTextStyle(),
-              ),
-            ),
-
-            // Padding(
-            //   padding: EdgeInsets.only(top: 8.0),
-            //   child: Card(
-            //     margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
-            //     child: ListTile(
-            //       leading: CircleAvatar(
-            //         radius: 25.0,
-            //       ),
-            //       title: Text(
-            //         '$date',
-            //         style: mediumTextStyle(),
-            //       ),
-            //       subtitle: Text(
-            //         '$name',
-            //         style: mediumTextStyle(),
-            //       ),
-            //       trailing: Text(
-            //         '$kilograms',
-            //         style: mediumTextStyle(),
-            //       ),
-            //     ),
-            //   ),
-            // )
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(color: Colors.green, spreadRadius: 3),
           ],
+        ),
+        width: 20.0,
+        height: 150.0,
+        alignment: Alignment.center,
+        child: Card(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Center(
+                child: Text(
+                  'CRB status: $crb',
+                  // style: mediumTextStyle(),
+                ),
+              ),
+              Center(
+                child: Text(
+                  'Number of Shares bought in the sacco: $shares',
+                  // style: mediumTextStyle(),
+                ),
+              ),
+
+              // Padding(
+              //   padding: EdgeInsets.only(top: 8.0),
+              //   child: Card(
+              //     margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
+              //     child: ListTile(
+              //       leading: CircleAvatar(
+              //         radius: 25.0,
+              //       ),
+              //       title: Text(
+              //         '$date',
+              //         style: mediumTextStyle(),
+              //       ),
+              //       subtitle: Text(
+              //         '$name',
+              //         style: mediumTextStyle(),
+              //       ),
+              //       trailing: Text(
+              //         '$kilograms',
+              //         style: mediumTextStyle(),
+              //       ),
+              //     ),
+              //   ),
+              // )
+            ],
+          ),
         ),
       ),
     );
@@ -365,6 +375,40 @@ class _LoanState extends State<Loan> {
         ));
   }
 
+  Widget farmerEligibleLoan() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(color: Colors.green, spreadRadius: 3),
+          ],
+        ),
+        height: 100.0,
+        alignment: Alignment.center,
+        child: Card(
+          child: Column(
+            children: [
+              Center(
+                  child: Text("Buy more shares to increase your loan limit")),
+              SizedBox(
+                height: 10.0,
+              ),
+              Text(
+                  " Eligible  amount of loan from: ${loanEligible["from"].toString()} "),
+              SizedBox(
+                height: 10.0,
+              ),
+              Text("To: ${loanEligible["to"].toString()} "),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
@@ -407,32 +451,8 @@ class _LoanState extends State<Loan> {
                   return Column(
                     children: <Widget>[
                       recordList(),
-                      Center(
-                          child: Text(
-                              "Buy more shares to increase your loan limit")),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Container(
-                              padding: EdgeInsets.all(8.0),
-                              child: Card(
-                                child: Center(
-                                    child: Text(
-                                        " Eligible  amount of loan from: ${loanEligible["from"].toString()} ")),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                              child: Container(
-                            padding: EdgeInsets.all(8.0),
-                            child: Card(
-                              child: Center(
-                                  child: Text(
-                                      "To: ${loanEligible["to"].toString()} ")),
-                            ),
-                          )),
-                        ],
-                      ),
+
+                      farmerEligibleLoan(),
                       SizedBox(
                         width: 50,
                       ),

@@ -44,7 +44,9 @@ class _RecordsState extends State<Records> {
               return recordTile(
                   email: recordsSnapshot.documents[index].data["email"],
                   kilograms: recordsSnapshot.documents[index].data["kilograms"],
-                  date: recordsSnapshot.documents[index].data["date"]);
+                  date: recordsSnapshot.documents[index].data["date"],
+                  farmerId: recordsSnapshot.documents[index].data["farmerId"],
+                  name: recordsSnapshot.documents[index].data["name"]);
             })
         : Container();
   }
@@ -78,73 +80,135 @@ class _RecordsState extends State<Records> {
     });
   }
 
-  Widget recordTile({String email, String date, dynamic kilograms}) {
-    return Container(
-      height: 100.0,
-      child: Card(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Center(
-              child: Text(
-                'Date and time sold :$date',
-                // style: mediumTextStyle()
-                style: TextStyle(
-                  fontSize: 17.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 12.0,
-            ),
-            Center(
-              child: Text(
-                '$email',
-                // style: mediumTextStyle(),
-                style: TextStyle(
-                  fontSize: 17.0,
-                  fontFamily: 'Nunito-Regular',
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 12.0,
-            ),
-            Center(
-              child: Text(
-                'Amount of Milk sold: $kilograms litres',
-                // style: mediumTextStyle(),
-                style: TextStyle(
-                  fontSize: 17.0,
-                  fontFamily: 'Nunito',
-                ),
-              ),
-            ),
-            // Padding(
-            //   padding: EdgeInsets.only(top: 8.0),
-            //   child: Card(
-            //     margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
-            //     child: ListTile(
-            //       leading: CircleAvatar(
-            //         radius: 25.0,
-            //       ),
-            //       title: Text(
-            //         '$date',
-            //         style: mediumTextStyle(),
-            //       ),
-            //       subtitle: Text(
-            //         '$name',
-            //         style: mediumTextStyle(),
-            //       ),
-            //       trailing: Text(
-            //         '$kilograms',
-            //         style: mediumTextStyle(),
-            //       ),
-            //     ),
-            //   ),
-            // )
+  Widget recordTile(
+      {String email,
+      String date,
+      dynamic kilograms,
+      int farmerId,
+      String name}) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        // padding: EdgeInsets.only(bottom: 10.0),
+        height: 200.0,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(color: Colors.green, spreadRadius: 3),
           ],
+        ),
+        child: SingleChildScrollView(
+          child: Card(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  height: 70,
+                  width: 70,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Center(
+                          child: Image.asset(
+                            'assets/images/wakulima.png',
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Divider(),
+                Center(
+                  child: Text(
+                    '$name',
+                    // style: mediumTextStyle()
+                    style: TextStyle(
+                      fontSize: 17.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 12.0,
+                ),
+                Center(
+                  child: Text(
+                    'Farmer Id: $farmerId',
+                    // style: mediumTextStyle()
+                    style: TextStyle(
+                      fontSize: 17.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 12.0,
+                ),
+                Center(
+                  child: Text(
+                    'Date and time sold :$date',
+                    // style: mediumTextStyle()
+                    style: TextStyle(
+                      fontSize: 17.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 12.0,
+                ),
+                Center(
+                  child: Text(
+                    'Email: $email',
+                    // style: mediumTextStyle(),
+                    style: TextStyle(
+                      fontSize: 17.0,
+                      fontFamily: 'Nunito-Regular',
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 12.0,
+                ),
+                Center(
+                  child: Text(
+                    'Amount of Milk sold: $kilograms litres',
+                    // style: mediumTextStyle(),
+                    style: TextStyle(
+                      fontSize: 17.0,
+                      fontFamily: 'Nunito',
+                    ),
+                  ),
+                ),
+
+                // Padding(
+                //   padding: EdgeInsets.only(top: 8.0),
+                //   child: Card(
+                //     margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
+                //     child: ListTile(
+                //       leading: CircleAvatar(
+                //         radius: 25.0,
+                //       ),
+                //       title: Text(
+                //         '$date',
+                //         style: mediumTextStyle(),
+                //       ),
+                //       subtitle: Text(
+                //         '$name',
+                //         style: mediumTextStyle(),
+                //       ),
+                //       trailing: Text(
+                //         '$kilograms',
+                //         style: mediumTextStyle(),
+                //       ),
+                //     ),
+                //   ),
+                // )
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -170,9 +234,10 @@ class _RecordsState extends State<Records> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBarMain(context),
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Container(
-          height: MediaQuery.of(context).size.height - 50,
+          // height: MediaQuery.of(context).size.height - 50,
           alignment: Alignment.topCenter,
           child: StreamBuilder(
               stream: Firestore.instance.collection("farmers").snapshots(),
@@ -183,67 +248,71 @@ class _RecordsState extends State<Records> {
                   );
                 }
                 return Container(
-                  padding: EdgeInsets.symmetric(horizontal: 24),
-                  child:
-                      Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                    SizedBox(
-                      height: 50,
-                    ),
-                    recordList(),
-                    SizedBox(
-                      height: 12.0,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        initiateSearch();
-                      },
-                      child: Container(
-                        alignment: Alignment.bottomCenter,
-                        width: MediaQuery.of(context).size.width,
-                        padding: EdgeInsets.symmetric(vertical: 20),
-                        decoration: BoxDecoration(
-                            gradient: LinearGradient(colors: [
-                              const Color(0xff007EF4),
-                              const Color(0xff2A75BC)
-                            ]),
-                            borderRadius: BorderRadius.circular(30)),
-                        child: Center(
-                          child: Text(
-                            "Cumulative amount of  Milk sold: $total litres",
-                            style: mediumTextStyle(),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 24,
+                  ),
+                  child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        SizedBox(
+                          height: 10,
+                        ),
+                        recordList(),
+                        SizedBox(
+                          height: 12.0,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            initiateSearch();
+                          },
+                          child: Container(
+                            alignment: Alignment.bottomCenter,
+                            width: MediaQuery.of(context).size.width,
+                            padding: EdgeInsets.symmetric(vertical: 20),
+                            decoration: BoxDecoration(
+                                gradient: LinearGradient(colors: [
+                                  const Color(0xff007EF4),
+                                  const Color(0xff2A75BC)
+                                ]),
+                                borderRadius: BorderRadius.circular(30)),
+                            child: Center(
+                              child: Text(
+                                "Cumulative amount of  Milk sold: $total litres",
+                                style: mediumTextStyle(),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 50,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => Loan(total.round())));
-                      },
-                      child: Container(
-                        alignment: Alignment.bottomCenter,
-                        width: MediaQuery.of(context).size.width,
-                        padding: EdgeInsets.symmetric(vertical: 20),
-                        decoration: BoxDecoration(
-                            gradient: LinearGradient(colors: [
-                              const Color(0xff007EF4),
-                              const Color(0xff2A75BC)
-                            ]),
-                            borderRadius: BorderRadius.circular(30)),
-                        child: Center(
-                          child: Text(
-                            "Go to Loans",
-                            style: mediumTextStyle(),
-                          ),
+                        SizedBox(
+                          height: 50,
                         ),
-                      ),
-                    )
-                  ]),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Loan(total.round())));
+                          },
+                          child: Container(
+                            alignment: Alignment.bottomCenter,
+                            width: MediaQuery.of(context).size.width,
+                            padding: EdgeInsets.symmetric(vertical: 20),
+                            decoration: BoxDecoration(
+                                gradient: LinearGradient(colors: [
+                                  const Color(0xff007EF4),
+                                  const Color(0xff2A75BC)
+                                ]),
+                                borderRadius: BorderRadius.circular(30)),
+                            child: Center(
+                              child: Text(
+                                "Go to Loans",
+                                style: mediumTextStyle(),
+                              ),
+                            ),
+                          ),
+                        )
+                      ]),
                 );
               }),
         ),

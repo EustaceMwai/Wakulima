@@ -10,8 +10,10 @@ import 'package:wakulima/widgets/widget.dart';
 
 class MissedRecords extends StatefulWidget {
   String email;
+  String name;
+  int farmerId;
 
-  MissedRecords({this.email});
+  MissedRecords({this.email, this.name, this.farmerId});
 
   @override
   _MissedRecordsState createState() => _MissedRecordsState();
@@ -28,8 +30,6 @@ class _MissedRecordsState extends State<MissedRecords> {
 
   QuerySnapshot recordsSnapshot;
   bool isLoading = false;
-
-  String name = 'eustace';
 
   String username;
 
@@ -138,17 +138,18 @@ class _MissedRecordsState extends State<MissedRecords> {
       });
     }
   }
-      submitMilk() async{
-        await Firestore.instance
-            .collection("farmers")
-            .add({
-          "email": widget.email,
-          'date': _currentDate,
-          'kilograms':
-          int.parse(todayMilkController.text),
-          'reasons': reasonsController.text,
-        });
-      }
+
+  submitMilk() async {
+    await Firestore.instance.collection("farmers").add({
+      "email": widget.email,
+      'date': _currentDate,
+      'kilograms': int.parse(todayMilkController.text),
+      'reasons': reasonsController.text,
+      'farmerId': widget.farmerId,
+      'name': widget.name
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     String _formatDate = new DateFormat.yMMMd().format(_currentDate).toString();
@@ -212,7 +213,7 @@ class _MissedRecordsState extends State<MissedRecords> {
                                           ? "Cannot be empty"
                                           : null;
                                     },
-                                    initialValue: widget.email,
+                                    initialValue: widget.name,
                                     style: simpleTextStyle(),
                                     decoration: InputDecoration(
                                         fillColor: Colors.white54,

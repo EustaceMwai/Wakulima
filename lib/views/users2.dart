@@ -114,11 +114,12 @@ class DataSearch extends SearchDelegate<dynamic> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => MilkRecords(
-                                email: recordsSnapshot
-                                    .documents[index].data["email"],
-                                farmerId: recordsSnapshot
-                                    .documents[index].data["farmerId"],
-                              )));
+                              email: recordsSnapshot
+                                  .documents[index].data["email"],
+                              farmerId: recordsSnapshot
+                                  .documents[index].data["farmerId"],
+                              name: recordsSnapshot
+                                  .documents[index].data["name"])));
                 },
                 leading: Icon(Icons.person),
                 title: Column(

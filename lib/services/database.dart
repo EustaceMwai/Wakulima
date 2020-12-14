@@ -23,6 +23,16 @@ class DatabaseMethods {
         .getDocuments();
   }
 
+  getUserName() async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+
+    FirebaseUser user = await _auth.currentUser();
+    return await Firestore.instance
+        .collection("wakulima")
+        .document(user.uid)
+        .get();
+  }
+
   getFarmerRecordsByEmail() async {
     final FirebaseAuth _auth = FirebaseAuth.instance;
     final Firestore _firestore = Firestore.instance;

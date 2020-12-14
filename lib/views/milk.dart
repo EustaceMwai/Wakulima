@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:wakulima/model/user.dart';
 import 'package:wakulima/services/auth.dart';
 import 'package:wakulima/services/database.dart';
@@ -13,7 +14,8 @@ class MilkRecords extends StatefulWidget {
   String email;
 
   int farmerId;
-  MilkRecords({this.email, this.farmerId});
+  String name;
+  MilkRecords({this.email, this.farmerId, this.name});
 
   @override
   _MilkRecordsState createState() => _MilkRecordsState();
@@ -125,7 +127,11 @@ class _MilkRecordsState extends State<MilkRecords> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => MissedRecords(email: widget.email)));
+                builder: (context) => MissedRecords(
+                      email: widget.email,
+                      name: widget.name,
+                     farmerId: widget.farmerId,
+                    )));
       },
       child: Container(
         alignment: Alignment.centerRight,
@@ -147,23 +153,12 @@ class _MilkRecordsState extends State<MilkRecords> {
 
   submitMilk() async {
     if (formKey.currentState.validate()) {
-      await Firestore.instance
-          .collection("farmers")
-          .add({
+      await Firestore.instance.collection("farmers").add({
         "email": widget.email,
-        'date': formatDate(DateTime.now(), [
-          dd,
-          '/',
-          mm,
-          '/',
-          yyyy,
-          ' ',
-          HH,
-          ':',
-          nn
-        ]),
-        'kilograms':
-        int.parse(todayMilkController.text),
+        'date': new DateFormat.yMd().add_jm().format(DateTime.now()),
+        'kilograms': int.parse(todayMilkController.text),
+        'farmerId': widget.farmerId,
+        'name': widget.name,
       });
     }
   }
@@ -254,7 +249,7 @@ class _MilkRecordsState extends State<MilkRecords> {
                                           ? "Cannot be empty"
                                           : null;
                                     },
-                                    initialValue: widget.email,
+                                    initialValue: widget.name,
                                     style: simpleTextStyle(),
                                     decoration: InputDecoration(
                                         fillColor: Colors.white54,
