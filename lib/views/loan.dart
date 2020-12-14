@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:wakulima/services/auth.dart';
 import 'package:wakulima/services/database.dart';
+import 'package:wakulima/views/slider.dart';
 
 import 'loanStatus.dart';
 
@@ -28,12 +29,14 @@ class _LoanState extends State<Loan> {
   double payableLoan;
   int rate;
   double interest;
+  double _value = 50.0;
 
   TextEditingController loanAmountController = new TextEditingController();
-  QuerySnapshot recordsSnapshot;
-  DocumentSnapshot loanSnapshot;
   DatabaseMethods databaseMethods = new DatabaseMethods();
   AuthMethods authMethods = new AuthMethods();
+
+  QuerySnapshot recordsSnapshot;
+  DocumentSnapshot loanSnapshot;
 
   var loanEligible;
 
@@ -42,7 +45,7 @@ class _LoanState extends State<Loan> {
     getDetails();
     loanEligible = applyLoan(widget.total);
     print(loanEligible);
-    // checkExistingLoan();
+    checkExistingLoan();
     // print(loanEligible["from"]);
     super.initState();
   }
@@ -55,14 +58,15 @@ class _LoanState extends State<Loan> {
     });
   }
 
-  // checkExistingLoan() {
-  //   databaseMethods.getLoanDetails().then((val) {
-  //     setState(() {
-  //       loanSnapshot = val;
-  //     });
-  //     print("This is what is $loanSnapshot");
-  //   });
-  // }
+  checkExistingLoan() async {
+    databaseMethods.getLoanDetails().then((val) {
+      setState(() {
+        loanSnapshot = val;
+      });
+
+      print("This is what is $loanSnapshot");
+    });
+  }
 
   Widget recordList() {
     if (recordsSnapshot != null && recordsSnapshot.documents == null)
@@ -94,18 +98,43 @@ class _LoanState extends State<Loan> {
     //           child: Text("Submit"),
     //         ),
     //       );
+    if (loanSnapshot == null) return CircularProgressIndicator();
     return !loanSnapshot.exists
         ? Container(
-            child: RaisedButton(
-              onPressed: () {
+            child: FlatButton(
+              child: Text('submit'),
+              color: Colors.blueAccent,
+              textColor: Colors.white,
+              onPressed: () async {
+                setState(() {
+                  isLoading = true;
+                });
+                print(selected);
                 submitLoan();
+                setState(() {
+                  isLoading = false;
+                });
               },
-              child: Text("Submit"),
             ),
           )
         : Center(
             child: Text("You already have a existing Loan"),
           );
+
+    // if (!loanSnapshot.exists || loanSnapshot == null) {
+    //   return Container(
+    //     child: RaisedButton(
+    //       onPressed: () {
+    //         submitLoan();
+    //       },
+    //       child: Text("Submit"),
+    //     ),
+    //   );
+    // } else {
+    //   return Center(
+    //     child: Text("You already have a existing Loan"),
+    //   );
+    // }
   }
 
   Widget recordTile({String crb, int shares}) {
@@ -329,7 +358,7 @@ class _LoanState extends State<Loan> {
             final snackBar = SnackBar(
                 duration: Duration(seconds: 15),
                 content: Text(
-                    'You have chosen a loan amount of $selected\n You wiil pay back ${payableLoan.toStringAsFixed(2)} within a payment period of ${_loanPeriod.toStringAsFixed(0)} months  \n Click submit to proceed with loan application'));
+                    'You have chosen a loan amount of $selected\n You will pay back Ksh ${payableLoan.toStringAsFixed(0)} within a payment period of ${_loanPeriod.toStringAsFixed(0)} months  \n Click submit to proceed with loan application'));
 
             _scaffoldKey.currentState.showSnackBar(snackBar);
           },
@@ -350,7 +379,7 @@ class _LoanState extends State<Loan> {
           child: Form(
             key: formKey,
             child: StreamBuilder(
-                stream: Firestore.instance.collection("users").snapshots(),
+                stream: Firestore.instance.collection("loans").snapshots(),
                 builder: (context, snapshot) {
                   //   if (!snapshot.hasData) {
                   //     print('test phrase');
@@ -414,12 +443,12 @@ class _LoanState extends State<Loan> {
                         "Choose the repayment period below",
                         style: TextStyle(color: Colors.white, fontSize: 20.0),
                       )),
-
-                      slider(),
+                      // slider(),
+                      Container(
+                          height: 30.0, child: Card(child: SliderExample())),
                       SizedBox(height: 50),
                       confirmButton(),
-
-                      // checkExistLoan(),
+                      checkExistLoan(),
                       // Container(
                       //   margin: EdgeInsets.all(20),
                       //   child: FlatButton(

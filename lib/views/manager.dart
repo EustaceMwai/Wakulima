@@ -56,22 +56,26 @@ class _managerState extends State<manager> {
                 padding: const EdgeInsets.all(5.0),
                 child: Container(
                   height: 60.0,
-                  child: FlatButton(
-                    child: Text('approve'),
-                    color: Colors.blueAccent,
-                    textColor: Colors.white,
-                    onPressed: () async {
-                      final FirebaseAuth _auth = FirebaseAuth.instance;
-                      final Firestore _firestore = Firestore.instance;
-                      FirebaseUser user = await _auth.currentUser();
-                      Firestore.instance
-                          .collection("loans")
-                          .document(recordsSnapshot.documents[index].data["id"])
-                          .setData({
-                        "loan status": "approved",
-                      }, merge: true);
-                    },
-                  ),
+                  child: recordsSnapshot.documents[index].data["loan status"] ==
+                          "approved"
+                      ? Icon(Icons.check)
+                      : FlatButton(
+                          child: Text('approve'),
+                          color: Colors.blueAccent,
+                          textColor: Colors.white,
+                          onPressed: () async {
+                            final FirebaseAuth _auth = FirebaseAuth.instance;
+                            final Firestore _firestore = Firestore.instance;
+                            FirebaseUser user = await _auth.currentUser();
+                            Firestore.instance
+                                .collection("loans")
+                                .document(
+                                    recordsSnapshot.documents[index].data["id"])
+                                .setData({
+                              "loan status": "approved",
+                            }, merge: true);
+                          },
+                        ),
                 ),
               );
             })
@@ -88,22 +92,29 @@ class _managerState extends State<manager> {
                 padding: const EdgeInsets.all(5.0),
                 child: Container(
                   height: 60.0,
-                  child: FlatButton(
-                    child: Text('Deny'),
-                    color: Colors.redAccent,
-                    textColor: Colors.white,
-                    onPressed: () async {
-                      final FirebaseAuth _auth = FirebaseAuth.instance;
-                      final Firestore _firestore = Firestore.instance;
-                      FirebaseUser user = await _auth.currentUser();
-                      Firestore.instance
-                          .collection("loans")
-                          .document(recordsSnapshot.documents[index].data["id"])
-                          .setData({
-                        "loan status": "denied",
-                      }, merge: true);
-                    },
-                  ),
+                  child: recordsSnapshot.documents[index].data["loan status"] ==
+                          "denied"
+                      ? Icon(
+                          Icons.close,
+                          color: Colors.red,
+                        )
+                      : FlatButton(
+                          child: Text('Deny'),
+                          color: Colors.redAccent,
+                          textColor: Colors.white,
+                          onPressed: () async {
+                            final FirebaseAuth _auth = FirebaseAuth.instance;
+                            final Firestore _firestore = Firestore.instance;
+                            FirebaseUser user = await _auth.currentUser();
+                            Firestore.instance
+                                .collection("loans")
+                                .document(
+                                    recordsSnapshot.documents[index].data["id"])
+                                .setData({
+                              "loan status": "denied",
+                            }, merge: true);
+                          },
+                        ),
                 ),
               );
             })
