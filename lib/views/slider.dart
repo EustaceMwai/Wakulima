@@ -70,9 +70,9 @@ class _SliderExampleState extends State {
                 ),
                 child: Slider(
                   value: _loanPeriod,
-                  min: 0,
+                  min: 1,
                   max: 36,
-                  divisions: 12,
+                  divisions: 36,
                   label: '${_loanPeriod.toStringAsFixed(0)} months',
                   onChanged: (value) {
                     setState(

@@ -16,9 +16,16 @@ class DatabaseMethods {
         .getDocuments();
   }
 
+  getChatUserUsername(String username) async {
+    return await Firestore.instance
+        .collection("wakulima")
+        .where("name", isEqualTo: username)
+        .getDocuments();
+  }
+
   getUserByUserEmail(String userEmail) async {
     return await Firestore.instance
-        .collection(userId)
+        .collection("wakulima")
         .where("email", isEqualTo: userEmail)
         .getDocuments();
   }
@@ -40,6 +47,16 @@ class DatabaseMethods {
     return await Firestore.instance
         .collection("farmers")
         .where("email", isEqualTo: user.email)
+        .getDocuments();
+  }
+
+  getVeterinaries() async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final Firestore _firestore = Firestore.instance;
+    FirebaseUser user = await _auth.currentUser();
+    return await Firestore.instance
+        .collection("wakulima")
+        .where("veterinary", isEqualTo: true)
         .getDocuments();
   }
 

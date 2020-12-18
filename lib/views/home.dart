@@ -8,12 +8,9 @@ import 'package:wakulima/services/database.dart';
 import 'package:wakulima/views/admin.dart';
 import 'package:wakulima/views/adminManager.dart';
 import 'package:wakulima/views/records.dart';
-import 'package:wakulima/views/slider.dart';
+import 'package:wakulima/views/showVet.dart';
 
 import 'bottom.dart';
-import 'dartSearch.dart';
-import 'maps.dart';
-import 'mpesa.dart';
 
 class MyHomePage extends StatefulWidget {
   final String userId;
@@ -95,15 +92,41 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget userName({String name}) {
-    return Container(
-      height: 200.0,
-      child: Card(
-        elevation: 10,
-        child: Center(
-            child: Text(
-          'Welcome $name',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        )),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(color: Colors.green, spreadRadius: 3),
+          ],
+        ),
+        height: 200.0,
+        child: Card(
+          elevation: 10,
+          child: Stack(
+            children: <Widget>[
+              Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    colorFilter: new ColorFilter.mode(
+                        Colors.black.withOpacity(0.4), BlendMode.dstATop),
+                    image: new AssetImage(
+                      "assets/images/c1.jpg",
+                    ),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              Center(
+                  child: Text(
+                'Welcome $name',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ))
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -156,39 +179,39 @@ class _MyHomePageState extends State<MyHomePage> {
                       MaterialPageRoute(builder: (context) => Authenticate()));
                 },
               ),
-              SizedBox(
-                height: 10,
-              ),
-              ListTile(
-                title: Text('search'),
-                onTap: () {
-                  authMethods.signOut();
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Example()));
-                },
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              ListTile(
-                title: Text('mpesa'),
-                onTap: () {
-                  authMethods.signOut();
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Mpesa()));
-                },
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              ListTile(
-                title: Text('slider'),
-                onTap: () {
-                  authMethods.signOut();
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => SliderExample()));
-                },
-              ),
+              // SizedBox(
+              //   height: 10,
+              // ),
+              // ListTile(
+              //   title: Text('search'),
+              //   onTap: () {
+              //     authMethods.signOut();
+              //     Navigator.push(context,
+              //         MaterialPageRoute(builder: (context) => Example()));
+              //   },
+              // ),
+              // SizedBox(
+              //   height: 10,
+              // ),
+              // ListTile(
+              //   title: Text('mpesa'),
+              //   onTap: () {
+              //     authMethods.signOut();
+              //     Navigator.push(context,
+              //         MaterialPageRoute(builder: (context) => Mpesa()));
+              //   },
+              // ),
+              // SizedBox(
+              //   height: 10,
+              // ),
+              // ListTile(
+              //   title: Text('slider'),
+              //   onTap: () {
+              //     authMethods.signOut();
+              //     Navigator.push(context,
+              //         MaterialPageRoute(builder: (context) => SliderExample()));
+              //   },
+              // ),
             ],
           ),
         ),
@@ -196,109 +219,119 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text("Wakulima"),
       ),
-      body: SingleChildScrollView(
-        child: StreamBuilder(
-            stream: Firestore.instance.collection("wakulima").snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-              if (userSnapshot == null) {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  userHome(),
-                  Container(
-                    padding: EdgeInsets.all(10),
-                    child: GridView.count(
-                      shrinkWrap: true,
-                      crossAxisCount: 2,
-                      children: <Widget>[
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Admin()));
-                          },
-                          child: Card(
-                            elevation: 10,
-                            child: Center(
-                                child: Text(
-                              'Dairy',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            )),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            colorFilter: new ColorFilter.mode(
+                Colors.black.withOpacity(1), BlendMode.dstATop),
+            image: AssetImage("assets/images/c2.jpg"),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: SingleChildScrollView(
+          child: StreamBuilder(
+              stream: Firestore.instance.collection("wakulima").snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                if (userSnapshot == null) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    userHome(),
+                    Container(
+                      padding: EdgeInsets.all(10),
+                      child: GridView.count(
+                        shrinkWrap: true,
+                        crossAxisCount: 2,
+                        children: <Widget>[
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Admin()));
+                            },
+                            child: Card(
+                                elevation: 10,
+                                child: Center(
+                                    child: Text(
+                                  'Dairy',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ))),
                           ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => AdminManager()));
-                          },
-                          child: Card(
-                            elevation: 10,
-                            child: Center(
-                                child: Text(
-                              'Manager',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            )),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => AdminManager()));
+                            },
+                            child: Card(
+                              elevation: 10,
+                              child: Center(
+                                  child: Text(
+                                'Manager',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              )),
+                            ),
                           ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Records()));
-                          },
-                          child: Card(
-                            elevation: 10,
-                            child: Center(
-                                child: Text(
-                              'Dairy Records',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            )),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Records()));
+                            },
+                            child: Card(
+                              elevation: 10,
+                              child: Center(
+                                  child: Text(
+                                'Dairy Records',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              )),
+                            ),
                           ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Maps()));
-                          },
-                          child: Card(
-                            elevation: 10,
-                            child: Center(
-                                child: Text(
-                              'Veterinary',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            )),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Vets()));
+                            },
+                            child: Card(
+                              elevation: 10,
+                              child: Center(
+                                  child: Text(
+                                'Veterinary',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              )),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 50.0,
-                  ),
-                  BottomNavigationWidget(),
-                ],
-              );
-            }),
+                    SizedBox(
+                      height: 50.0,
+                    ),
+                    BottomNavigationWidget(),
+                  ],
+                );
+              }),
+        ),
       ),
     );
   }

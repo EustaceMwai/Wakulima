@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:wakulima/model/user.dart';
 import 'package:wakulima/services/auth.dart';
 import 'package:wakulima/services/database.dart';
-import 'package:wakulima/views/qrcode.dart';
 import 'package:wakulima/widgets/widget.dart';
 
 class MissedRecords extends StatefulWidget {
@@ -27,7 +26,9 @@ class _MissedRecordsState extends State<MissedRecords> {
   TextEditingController reasonsController = new TextEditingController();
   DatabaseMethods databaseMethods = new DatabaseMethods();
   AuthMethods authMethods = new AuthMethods();
-
+  String selected;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  DocumentSnapshot userSnapshot;
   QuerySnapshot recordsSnapshot;
   bool isLoading = false;
 
@@ -36,6 +37,7 @@ class _MissedRecordsState extends State<MissedRecords> {
   @override
   void initState() {
     getUserEmail();
+    checkAgentName();
 
     super.initState();
   }
@@ -139,6 +141,16 @@ class _MissedRecordsState extends State<MissedRecords> {
     }
   }
 
+  checkAgentName() async {
+    FirebaseUser user = await _auth.currentUser();
+
+    databaseMethods.getUserName().then((val) {
+      setState(() {
+        userSnapshot = val;
+      });
+    });
+  }
+
   submitMilk() async {
     await Firestore.instance.collection("farmers").add({
       "email": widget.email,
@@ -146,8 +158,39 @@ class _MissedRecordsState extends State<MissedRecords> {
       'kilograms': int.parse(todayMilkController.text),
       'reasons': reasonsController.text,
       'farmerId': widget.farmerId,
-      'name': widget.name
+      'name': widget.name,
+      "location": selected,
+      "servedBy": userSnapshot["name"],
     });
+  }
+
+  Widget displayBoard() {
+    List loan = ["Kaheti", "Thunguri", "Karima", "Mukurweini-west"];
+    List<DropdownMenuItem> menuItemList = loan
+        .map((val) => DropdownMenuItem(value: val, child: Text(val)))
+        .toList();
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(color: Colors.green, spreadRadius: 3),
+          ],
+        ),
+        child: Card(
+          child: DropdownButtonFormField(
+            value: selected,
+            validator: (value) =>
+                value == null ? 'Please select location' : null,
+            onChanged: (val) => setState(() => selected = val),
+            items: menuItemList,
+            hint: Text("choose location"),
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -171,12 +214,17 @@ class _MissedRecordsState extends State<MissedRecords> {
             )
           : SingleChildScrollView(
               child: Container(
-                height: MediaQuery.of(context).size.height - 50,
+                // height: MediaQuery.of(context).size.height - 50,
                 alignment: Alignment.center,
                 child: StreamBuilder(
                     stream:
                         Firestore.instance.collection("farmers").snapshots(),
                     builder: (context, snapshot) {
+                      if (userSnapshot == null) {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
                       return Container(
                         padding: EdgeInsets.symmetric(horizontal: 24),
                         child: Column(
@@ -285,6 +333,30 @@ class _MissedRecordsState extends State<MissedRecords> {
                             SizedBox(
                               height: 8,
                             ),
+                            displayBoard(),
+                            SizedBox(
+                              height: 30,
+                            ),
+                            TextFormField(
+                              validator: (val) {
+                                return val.isEmpty ? "Cannot be empty" : null;
+                              },
+                              initialValue: "Served By:${userSnapshot["name"]}",
+                              style: simpleTextStyle(),
+                              decoration: InputDecoration(
+                                  fillColor: Colors.white54,
+                                  filled: true,
+                                  enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.white, width: 2.0)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.pink, width: 2.0))),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+
                             GestureDetector(
                               onTap: () async {
                                 // saveFarmerMilk();
@@ -316,9 +388,7 @@ class _MissedRecordsState extends State<MissedRecords> {
                                 ),
                               ),
                             ),
-                            SizedBox(
-                              height: 50,
-                            ),
+
                             // GestureDetector(
                             //   onTap: () {
                             //     Navigator.push(
@@ -344,34 +414,34 @@ class _MissedRecordsState extends State<MissedRecords> {
                             //     ),
                             //   ),
                             // ),
-                            SizedBox(
-                              height: 50,
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => HomeScreen()));
-                              },
-                              child: Container(
-                                alignment: Alignment.centerRight,
-                                width: MediaQuery.of(context).size.width,
-                                padding: EdgeInsets.symmetric(vertical: 20),
-                                decoration: BoxDecoration(
-                                    gradient: LinearGradient(colors: [
-                                      const Color(0xff007EF4),
-                                      const Color(0xff2A75BC)
-                                    ]),
-                                    borderRadius: BorderRadius.circular(30)),
-                                child: Center(
-                                  child: Text(
-                                    "Input missed milk Records",
-                                    style: mediumTextStyle(),
-                                  ),
-                                ),
-                              ),
-                            ),
+                            // SizedBox(
+                            //   height: 50,
+                            // ),
+                            // GestureDetector(
+                            //   onTap: () {
+                            //     Navigator.push(
+                            //         context,
+                            //         MaterialPageRoute(
+                            //             builder: (context) => HomeScreen()));
+                            //   },
+                            //   child: Container(
+                            //     alignment: Alignment.centerRight,
+                            //     width: MediaQuery.of(context).size.width,
+                            //     padding: EdgeInsets.symmetric(vertical: 20),
+                            //     decoration: BoxDecoration(
+                            //         gradient: LinearGradient(colors: [
+                            //           const Color(0xff007EF4),
+                            //           const Color(0xff2A75BC)
+                            //         ]),
+                            //         borderRadius: BorderRadius.circular(30)),
+                            //     child: Center(
+                            //       child: Text(
+                            //         "Input missed milk Records",
+                            //         style: mediumTextStyle(),
+                            //       ),
+                            //     ),
+                            //   ),
+                            // ),
                           ],
                         ),
                       );

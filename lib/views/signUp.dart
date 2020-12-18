@@ -40,6 +40,7 @@ class _SignUpState extends State<SignUp> {
         "email": emailTextEditingController.text,
         "admin": false,
         "agent": false,
+        "veterinary": false,
         "cumulative Records": 0,
         "shares": 0,
         "Crb": "cleared",

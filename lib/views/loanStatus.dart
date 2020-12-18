@@ -17,7 +17,7 @@ class loanStatus extends StatefulWidget {
 
 class _loanStatusState extends State<loanStatus> {
   final formKey = GlobalKey<FormState>();
-  TextEditingController todayMilkController = new TextEditingController();
+  TextEditingController payLoanController = new TextEditingController();
   TextEditingController previousMilkController = new TextEditingController();
   TextEditingController cumulativeMilkController = new TextEditingController();
   DatabaseMethods databaseMethods = new DatabaseMethods();
@@ -63,58 +63,82 @@ class _loanStatusState extends State<loanStatus> {
 
   Widget recordTile(
       {int loan, String loanStatus, int repayment, int repayableLoan}) {
-    return Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Center(
-            child: Text(
-              'Loan applied: Ksh $loan',
-              // style: mediumTextStyle(),
-            ),
-          ),
-          Center(
-            child: Text(
-              'The status of the loan is: $loanStatus',
-              // style: mediumTextStyle(),
-            ),
-          ),
-          Center(
-            child: Text(
-              'The repayment period of your loan is: $repayment months',
-              // style: mediumTextStyle(),
-            ),
-          ),
-          Center(
-            child: Text(
-              'The amount you are going to repay is Ksh: $repayableLoan ',
-              // style: mediumTextStyle(),
-            ),
-          ),
-          // Padding(
-          //   padding: EdgeInsets.only(top: 8.0),
-          //   child: Card(
-          //     margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
-          //     child: ListTile(
-          //       leading: CircleAvatar(
-          //         radius: 25.0,
-          //       ),
-          //       title: Text(
-          //         '$date',
-          //         style: mediumTextStyle(),
-          //       ),
-          //       subtitle: Text(
-          //         '$name',
-          //         style: mediumTextStyle(),
-          //       ),
-          //       trailing: Text(
-          //         '$kilograms',
-          //         style: mediumTextStyle(),
-          //       ),
-          //     ),
-          //   ),
-          // )
+    return Container(
+      height: 250,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(color: Colors.green, spreadRadius: 3),
         ],
+      ),
+      child: Card(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Expanded(
+              flex: 2,
+              child: Center(
+                child: Image.asset(
+                  'assets/images/logo-sacco.jpg',
+                ),
+              ),
+            ),
+            Divider(),
+            Expanded(
+              child: Center(
+                child: Text(
+                  'Loan applied: Ksh $loan',
+                  // style: mediumTextStyle(),
+                ),
+              ),
+            ),
+            Expanded(
+                child: Center(
+              child: Text(
+                'The status of the loan is: $loanStatus',
+                // style: mediumTextStyle(),
+              ),
+            )),
+            Expanded(
+                child: Center(
+              child: Text(
+                'The repayment period of your loan is: $repayment months',
+                // style: mediumTextStyle(),
+              ),
+            )),
+            Expanded(
+                child: Center(
+              child: Text(
+                'The amount you are going to repay is Ksh: $repayableLoan ',
+                // style: mediumTextStyle(),
+              ),
+            )),
+            // Padding(
+            //   padding: EdgeInsets.only(top: 8.0),
+            //   child: Card(
+            //     margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
+            //     child: ListTile(
+            //       leading: CircleAvatar(
+            //         radius: 25.0,
+            //       ),
+            //       title: Text(
+            //         '$date',
+            //         style: mediumTextStyle(),
+            //       ),
+            //       subtitle: Text(
+            //         '$name',
+            //         style: mediumTextStyle(),
+            //       ),
+            //       trailing: Text(
+            //         '$kilograms',
+            //         style: mediumTextStyle(),
+            //       ),
+            //     ),
+            //   ),
+            // )
+          ],
+        ),
       ),
     );
   }
@@ -165,34 +189,77 @@ class _loanStatusState extends State<loanStatus> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white70,
       appBar: appBarMain(context),
       body: SingleChildScrollView(
-        child: Container(
-          height: MediaQuery.of(context).size.height - 50,
-          alignment: Alignment.topCenter,
-          child: StreamBuilder(
-              stream: Firestore.instance.collection("loans").snapshots(),
-              builder: (context, snapshot) {
-                return Container(
-                  padding: EdgeInsets.symmetric(horizontal: 24),
-                  child:
-                      Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                    SizedBox(
-                      height: 50,
-                    ),
-                    recordList(),
-                    Container(
-                      child: Center(
-                          child: RaisedButton(
-                        onPressed: () {
-                          startTransaction(amount: 10.0, phone: "254718273753");
-                        },
-                        child: Text("Pay"),
-                      )),
-                    ),
-                  ]),
-                );
-              }),
+        child: Form(
+          key: formKey,
+          child: Container(
+            // height: MediaQuery.of(context).size.height - 50,
+            alignment: Alignment.topCenter,
+            child: StreamBuilder(
+                stream: Firestore.instance.collection("loans").snapshots(),
+                builder: (context, snapshot) {
+                  return Container(
+                    // padding: EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          SizedBox(
+                            height: 20,
+                          ),
+                          recordList(),
+                          SizedBox(
+                            height: 50,
+                          ),
+                          TextFormField(
+                            keyboardType: TextInputType.number,
+                            validator: (val) {
+                              return val.isEmpty
+                                  ? "Value cannot be empty"
+                                  : null;
+                            },
+                            controller: payLoanController,
+                            style: simpleTextStyle(),
+                            decoration: InputDecoration(
+                                hintText: 'Enter amount to pay',
+                                fillColor: Colors.white54,
+                                filled: true,
+                                enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Colors.white, width: 2.0)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Colors.green, width: 2.0))),
+                          ),
+                          SizedBox(
+                            height: 50,
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(color: Colors.green, spreadRadius: 3),
+                              ],
+                            ),
+                            child: RaisedButton(
+                              elevation: 1,
+                              onPressed: () {
+                                if (formKey.currentState.validate()) {
+                                  startTransaction(
+                                      amount:
+                                          double.parse(payLoanController.text),
+                                      phone: "254718273753");
+                                }
+                              },
+                              child: Text("Pay Loan"),
+                            ),
+                          ),
+                        ]),
+                  );
+                }),
+          ),
         ),
       ),
     );

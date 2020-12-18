@@ -42,7 +42,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primaryColor: Color(0xff145C9E),
         // scaffoldBackgroundColor: Color(0xff1F1F1F),
-        scaffoldBackgroundColor: Colors.white54,
+        scaffoldBackgroundColor: Colors.white70,
         primarySwatch: Colors.blue,
       ),
       home: userIsLoggedIn ? MyHomePage() : Authenticate(),

@@ -28,6 +28,9 @@ class _MilkRecordsState extends State<MilkRecords> {
   TextEditingController cumulativeMilkController = new TextEditingController();
   DatabaseMethods databaseMethods = new DatabaseMethods();
   AuthMethods authMethods = new AuthMethods();
+  String selected;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  DocumentSnapshot userSnapshot;
 
   QuerySnapshot recordsSnapshot;
   bool isLoading = false;
@@ -39,6 +42,7 @@ class _MilkRecordsState extends State<MilkRecords> {
   @override
   void initState() {
     getUserEmail();
+    checkAgentName();
 
     super.initState();
   }
@@ -82,6 +86,16 @@ class _MilkRecordsState extends State<MilkRecords> {
     databaseMethods.getFarmerRecordsByEmail().then((val) {
       setState(() {
         recordsSnapshot = val;
+      });
+    });
+  }
+
+  checkAgentName() async {
+    FirebaseUser user = await _auth.currentUser();
+
+    databaseMethods.getUserName().then((val) {
+      setState(() {
+        userSnapshot = val;
       });
     });
   }
@@ -130,7 +144,7 @@ class _MilkRecordsState extends State<MilkRecords> {
                 builder: (context) => MissedRecords(
                       email: widget.email,
                       name: widget.name,
-                     farmerId: widget.farmerId,
+                      farmerId: widget.farmerId,
                     )));
       },
       child: Container(
@@ -153,14 +167,49 @@ class _MilkRecordsState extends State<MilkRecords> {
 
   submitMilk() async {
     if (formKey.currentState.validate()) {
+      setState(() {
+        isLoading = true;
+      });
+
       await Firestore.instance.collection("farmers").add({
         "email": widget.email,
         'date': new DateFormat.yMd().add_jm().format(DateTime.now()),
         'kilograms': int.parse(todayMilkController.text),
         'farmerId': widget.farmerId,
         'name': widget.name,
+        "location": selected,
+        "servedBy": userSnapshot["name"],
       });
     }
+  }
+
+  Widget displayBoard() {
+    List loan = ["Kaheti", "Thunguri", "Karima", "Mukurweini-west"];
+    List<DropdownMenuItem> menuItemList = loan
+        .map((val) => DropdownMenuItem(value: val, child: Text(val)))
+        .toList();
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(color: Colors.green, spreadRadius: 3),
+          ],
+        ),
+        child: Card(
+          child: DropdownButtonFormField(
+            value: selected,
+            validator: (value) =>
+                value == null ? 'Please select location' : null,
+            onChanged: (val) => setState(() => selected = val),
+            items: menuItemList,
+            hint: Text("choose location"),
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -173,12 +222,17 @@ class _MilkRecordsState extends State<MilkRecords> {
             )
           : SingleChildScrollView(
               child: Container(
-                height: MediaQuery.of(context).size.height - 50,
+                // height: MediaQuery.of(context).size.height - 50,
                 alignment: Alignment.center,
                 child: StreamBuilder(
                     stream:
                         Firestore.instance.collection("farmers").snapshots(),
                     builder: (context, snapshot) {
+                      if (userSnapshot == null) {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
                       return Container(
                         padding: EdgeInsets.symmetric(horizontal: 24),
                         child: Column(
@@ -291,13 +345,35 @@ class _MilkRecordsState extends State<MilkRecords> {
                                   SizedBox(
                                     height: 50,
                                   ),
-                                  inputMilkMissedRecords(),
+                                  displayBoard(),
+                                  SizedBox(
+                                    height: 50,
+                                  ),
                                   recordList(),
                                 ],
                               ),
                             ),
                             SizedBox(
                               height: 8,
+                            ),
+                            TextFormField(
+                              validator: (val) {
+                                return val.isEmpty ? "Cannot be empty" : null;
+                              },
+                              initialValue: "Served By:${userSnapshot["name"]}",
+                              style: simpleTextStyle(),
+                              decoration: InputDecoration(
+                                  fillColor: Colors.white54,
+                                  filled: true,
+                                  enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.white, width: 2.0)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.pink, width: 2.0))),
+                            ),
+                            SizedBox(
+                              height: 10,
                             ),
                             GestureDetector(
                               onTap: () async {
@@ -358,8 +434,9 @@ class _MilkRecordsState extends State<MilkRecords> {
                             //   ),
                             // ),
                             SizedBox(
-                              height: 50,
+                              height: 20,
                             ),
+                            inputMilkMissedRecords(),
                           ],
                         ),
                       );

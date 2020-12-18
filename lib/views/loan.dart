@@ -3,9 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:wakulima/services/auth.dart';
 import 'package:wakulima/services/database.dart';
+import 'package:wakulima/views/loanStatus.dart';
 import 'package:wakulima/views/slider.dart';
-
-import 'loanStatus.dart';
 
 class Loan extends StatefulWidget {
   final int total;
@@ -101,6 +100,13 @@ class _LoanState extends State<Loan> {
     if (loanSnapshot == null) return CircularProgressIndicator();
     return !loanSnapshot.exists
         ? Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Colors.blue,
+              boxShadow: [
+                BoxShadow(color: Colors.blue, spreadRadius: 3),
+              ],
+            ),
             child: FlatButton(
               child: Text('submit'),
               color: Colors.blueAccent,
@@ -118,7 +124,8 @@ class _LoanState extends State<Loan> {
             ),
           )
         : Center(
-            child: Text("You already have a existing Loan"),
+            child: Text("You already have a existing Loan!",
+                style: TextStyle(color: Colors.white, fontSize: 20.0)),
           );
 
     // if (!loanSnapshot.exists || loanSnapshot == null) {
@@ -137,6 +144,31 @@ class _LoanState extends State<Loan> {
     // }
   }
 
+  Widget loan1Status() {
+    if (loanSnapshot == null) return CircularProgressIndicator();
+    return loanSnapshot.exists
+        ? Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Colors.blue,
+              boxShadow: [
+                BoxShadow(color: Colors.blue, spreadRadius: 3),
+              ],
+            ),
+            margin: EdgeInsets.all(20),
+            child: FlatButton(
+              child: Text('check loan status'),
+              color: Colors.blueAccent,
+              textColor: Colors.white,
+              onPressed: () async {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => loanStatus()));
+              },
+            ),
+          )
+        : Container();
+  }
+
   Widget recordTile({String crb, int shares}) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -149,23 +181,36 @@ class _LoanState extends State<Loan> {
           ],
         ),
         width: 20.0,
-        height: 150.0,
+        height: 170.0,
         alignment: Alignment.center,
         child: Card(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Center(
-                child: Text(
-                  'CRB status: $crb',
-                  // style: mediumTextStyle(),
+              Expanded(
+                flex: 2,
+                child: Center(
+                  child: Image.asset(
+                    'assets/images/logo-sacco.jpg',
+                  ),
                 ),
               ),
-              Center(
-                child: Text(
-                  'Number of Shares bought in the sacco: $shares',
-                  // style: mediumTextStyle(),
+              Divider(),
+              Expanded(
+                child: Center(
+                  child: Text(
+                    'CRB status: $crb',
+                    // style: mediumTextStyle(),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Center(
+                  child: Text(
+                    'Number of Shares bought in the sacco: $shares',
+                    // style: mediumTextStyle(),
+                  ),
                 ),
               ),
 
@@ -274,12 +319,27 @@ class _LoanState extends State<Loan> {
     List<DropdownMenuItem> menuItemList = loan
         .map((val) => DropdownMenuItem(value: val, child: Text(val.toString())))
         .toList();
-    return DropdownButtonFormField(
-      value: selected,
-      validator: (value) => value == null ? 'Please select loan amount' : null,
-      onChanged: (val) => setState(() => selected = val),
-      items: menuItemList,
-      hint: Text("choose amount"),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(color: Colors.green, spreadRadius: 3),
+          ],
+        ),
+        child: Card(
+          child: DropdownButtonFormField(
+            value: selected,
+            validator: (value) =>
+                value == null ? 'Please select loan amount' : null,
+            onChanged: (val) => setState(() => selected = val),
+            items: menuItemList,
+            hint: Text("choose loan amount"),
+          ),
+        ),
+      ),
     );
   }
 
@@ -357,7 +417,13 @@ class _LoanState extends State<Loan> {
 
   Widget confirmButton() {
     return Container(
-        color: Colors.blue,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.blue,
+          boxShadow: [
+            BoxShadow(color: Colors.blue, spreadRadius: 3),
+          ],
+        ),
         child: FlatButton(
           child: Text(
             "Confirm",
@@ -386,22 +452,40 @@ class _LoanState extends State<Loan> {
             BoxShadow(color: Colors.green, spreadRadius: 3),
           ],
         ),
-        height: 100.0,
+        height: 170.0,
         alignment: Alignment.center,
         child: Card(
+          color: Colors.white,
           child: Column(
             children: [
-              Center(
-                  child: Text("Buy more shares to increase your loan limit")),
+              Expanded(
+                flex: 3,
+                child: Center(
+                  child: Image.asset(
+                    'assets/images/logo-sacco.jpg',
+                  ),
+                ),
+              ),
+              Divider(),
+              Expanded(
+                child: Center(
+                    child: Text("Buy more shares to increase your loan limit")),
+              ),
               SizedBox(
                 height: 10.0,
               ),
-              Text(
-                  " Eligible  amount of loan from: ${loanEligible["from"].toString()} "),
+              Expanded(
+                child: Center(
+                  child: Text(
+                      " Eligible  amount of loan from: ${loanEligible["from"].toString()} "),
+                ),
+              ),
               SizedBox(
                 height: 10.0,
               ),
-              Text("To: ${loanEligible["to"].toString()} "),
+              Expanded(
+                  child: Center(
+                      child: Text("To: ${loanEligible["to"].toString()} "))),
             ],
           ),
         ),
@@ -412,13 +496,13 @@ class _LoanState extends State<Loan> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: Colors.white54,
+      backgroundColor: Colors.white70,
       appBar: AppBar(
         title: Text("Loan application"),
       ),
       body: SingleChildScrollView(
         child: Container(
-          height: MediaQuery.of(context).size.height - 50,
+          // height: MediaQuery.of(context).size.height - 50,
           alignment: Alignment.topCenter,
           child: Form(
             key: formKey,
@@ -464,10 +548,22 @@ class _LoanState extends State<Loan> {
                         style: TextStyle(color: Colors.white, fontSize: 20.0),
                       )),
                       // slider(),
-                      Container(
-                          height: 30.0, child: Card(child: SliderExample())),
-                      SizedBox(height: 50),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(color: Colors.green, spreadRadius: 3),
+                              ],
+                            ),
+                            height: 30.0,
+                            child: Card(child: SliderExample())),
+                      ),
+                      SizedBox(height: 30),
                       confirmButton(),
+                      SizedBox(height: 30),
                       checkExistLoan(),
                       // Container(
                       //   margin: EdgeInsets.all(20),
@@ -490,20 +586,7 @@ class _LoanState extends State<Loan> {
                       SizedBox(
                         height: 20,
                       ),
-                      Container(
-                        margin: EdgeInsets.all(20),
-                        child: FlatButton(
-                          child: Text('check loan status'),
-                          color: Colors.blueAccent,
-                          textColor: Colors.white,
-                          onPressed: () async {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => loanStatus()));
-                          },
-                        ),
-                      ),
+                      loan1Status(),
                     ],
                   );
                 }),

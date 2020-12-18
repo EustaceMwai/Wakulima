@@ -234,7 +234,7 @@ class _RecordsState extends State<Records> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBarMain(context),
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.white70,
       body: SingleChildScrollView(
         child: Container(
           // height: MediaQuery.of(context).size.height - 50,
