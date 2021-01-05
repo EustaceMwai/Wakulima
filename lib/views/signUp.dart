@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:wakulima/helper/helperfunctions.dart';
 import 'package:wakulima/services/auth.dart';
 import 'package:wakulima/services/database.dart';
@@ -45,6 +46,8 @@ class _SignUpState extends State<SignUp> {
         "shares": 0,
         "Crb": "cleared",
         "farmerId": randomNumber,
+        "status": "online",
+        "last_seen": new DateFormat.yMd().add_jm().format(DateTime.now()),
       };
       HelperFunctions.saveUserEmailSharedPreference(
           emailTextEditingController.text);

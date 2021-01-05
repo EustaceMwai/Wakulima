@@ -99,7 +99,8 @@ class ChatRoomTile extends StatelessWidget {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => ConversationScreen(chatRoomId)));
+                builder: (context) =>
+                    ConversationScreen(chatRoomId, userName)));
       },
       child: Container(
         color: Colors.black26,

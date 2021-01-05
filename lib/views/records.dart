@@ -148,7 +148,7 @@ class _RecordsState extends State<Records> {
                 ),
                 Center(
                   child: Text(
-                    'Date and time sold :$date',
+                    '  Date and time sold:\n$date',
                     // style: mediumTextStyle()
                     style: TextStyle(
                       fontSize: 17.0,

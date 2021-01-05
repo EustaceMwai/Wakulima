@@ -224,7 +224,7 @@ class _MissedRecordsState extends State<MissedRecords> {
                         return Center(
                           child: CircularProgressIndicator(),
                         );
-                      }
+                      } 
                       return Container(
                         padding: EdgeInsets.symmetric(horizontal: 24),
                         child: Column(

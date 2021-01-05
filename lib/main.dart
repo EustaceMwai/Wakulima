@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:mpesa_flutter_plugin/initializer.dart';
 import 'package:wakulima/views/home.dart';
 import 'package:wakulima/views/keys.dart';
@@ -18,12 +21,32 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   bool userIsLoggedIn = false;
   @override
   void initState() {
     getLoggedInState();
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final Firestore _firestore = Firestore.instance;
+    FirebaseUser user = await _auth.currentUser();
+    if (state == AppLifecycleState.resumed) {
+      Firestore.instance.collection("wakulima").document(user.uid).updateData({
+        'status': "online",
+      });
+      print("online");
+    } else {
+      Firestore.instance.collection("wakulima").document(user.uid).updateData({
+        'status': "offline",
+        'last_seen': new DateFormat.yMd().add_jm().format(DateTime.now()),
+      });
+      print("offline");
+    }
   }
 
   getLoggedInState() async {

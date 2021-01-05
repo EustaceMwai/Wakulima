@@ -23,6 +23,13 @@ class DatabaseMethods {
         .getDocuments();
   }
 
+  getOnlineStatus(String username) async {
+    return await Firestore.instance
+        .collection("wakulima")
+        .where("name", isEqualTo: username)
+        .getDocuments();
+  }
+
   getUserByUserEmail(String userEmail) async {
     return await Firestore.instance
         .collection("wakulima")

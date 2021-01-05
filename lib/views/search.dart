@@ -56,7 +56,7 @@ class _SearchScreenState extends State<SearchScreen> {
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => ConversationScreen(chatRoomId)));
+              builder: (context) => ConversationScreen(chatRoomId, userName)));
     } else {
       print("You cannot send a message to yourself");
     }

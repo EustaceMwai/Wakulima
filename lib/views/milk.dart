@@ -376,9 +376,10 @@ class _MilkRecordsState extends State<MilkRecords> {
                               height: 10,
                             ),
                             GestureDetector(
-                              onTap: () async {
+                              onTap: () {
                                 // saveFarmerMilk();
                                 setState(() {
+                                  print("isloading");
                                   isLoading = true;
                                 });
                                 submitMilk();

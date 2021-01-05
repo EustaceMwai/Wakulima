@@ -1,12 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:wakulima/helper/constants.dart';
 import 'package:wakulima/services/database.dart';
-import 'package:wakulima/widgets/widget.dart';
 
 class ConversationScreen extends StatefulWidget {
   final String chatRoomId;
+  String userName;
 
-  ConversationScreen(this.chatRoomId);
+  ConversationScreen(this.chatRoomId, this.userName);
 
   @override
   _ConversationScreenState createState() => _ConversationScreenState();
@@ -17,6 +18,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
   TextEditingController messageController = new TextEditingController();
 
   Stream chatMessagesStream;
+  QuerySnapshot statusSnapshot;
 
   Widget ChatMessageList() {
     return StreamBuilder(
@@ -55,13 +57,45 @@ class _ConversationScreenState extends State<ConversationScreen> {
         chatMessagesStream = value;
       });
     });
+    checkOnlineStatus();
     super.initState();
+  }
+
+  checkOnlineStatus() {
+    databaseMethods.getOnlineStatus(widget.userName).then((val) {
+      setState(() {
+        statusSnapshot = val;
+      });
+    });
+  }
+
+  Widget searchStatus() {
+    return statusSnapshot != null
+        ? ListView.builder(
+            itemCount: statusSnapshot.documents.length,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              return AppBarStatus(
+                status: statusSnapshot.documents[index].data["status"],
+                username: widget.userName,
+              );
+            })
+        : Container();
+  }
+
+  Widget AppBarStatus({String username, String status}) {
+    return AppBar(
+      title: Text("$username \n $status"),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBarMain(context),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(100.0),
+        child: searchStatus(),
+      ),
       body: Container(
         child: Stack(
           children: <Widget>[
