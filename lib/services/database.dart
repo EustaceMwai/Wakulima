@@ -136,6 +136,19 @@ class DatabaseMethods {
     });
   }
 
+  uploadVetInfo(userMap) async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final Firestore _firestore = Firestore.instance;
+    FirebaseUser user = await _auth.currentUser();
+    Firestore.instance
+        .collection("wakulima")
+        .document(user.uid)
+        .updateData(userMap)
+        .catchError((e) {
+      print(e.toString());
+    });
+  }
+
   //product list frm snapshot
   List<Product> _productListSnapshot(QuerySnapshot snapshot) {
     return snapshot.documents.map((doc) {

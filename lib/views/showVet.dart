@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:wakulima/services/auth.dart';
 import 'package:wakulima/services/database.dart';
 import 'package:wakulima/views/chatRoomScreen.dart';
@@ -15,6 +16,7 @@ class Vets extends StatefulWidget {
 class _VetsState extends State<Vets> {
   DatabaseMethods databaseMethods = new DatabaseMethods();
   AuthMethods authMethods = new AuthMethods();
+  String url = 'tel:+254718273753';
 
   QuerySnapshot recordsSnapshot;
   FirebaseUser username;
@@ -42,6 +44,15 @@ class _VetsState extends State<Vets> {
         recordsSnapshot = val;
       });
     });
+  }
+
+  Future<void> callnow() async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      // throw 'call not possible';
+      print('call cannot go through');
+    }
   }
 
   Widget recordTile({
@@ -170,7 +181,13 @@ class _VetsState extends State<Vets> {
                                     child: FlatButton(
                                       child: Row(
                                         children: [
-                                          Expanded(child: Icon(Icons.call)),
+                                          Expanded(
+                                              child: IconButton(
+                                            icon: Icon(Icons.call),
+                                            onPressed: () {
+                                              // callnow();
+                                            },
+                                          )),
                                           Expanded(
                                               flex: 2,
                                               child: Text(
@@ -180,7 +197,9 @@ class _VetsState extends State<Vets> {
                                               )),
                                         ],
                                       ),
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        callnow();
+                                      },
                                     )),
                               ),
                               SizedBox(

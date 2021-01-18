@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:wakulima/helper/constants.dart';
 import 'package:wakulima/services/database.dart';
 
@@ -29,9 +30,11 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 itemCount: snapshot.data.documents.length,
                 itemBuilder: (context, index) {
                   return MessageTile(
-                      snapshot.data.documents[index].data["message"],
-                      snapshot.data.documents[index].data["sendBy"] ==
-                          Constants.myName);
+                    snapshot.data.documents[index].data["message"],
+                    snapshot.data.documents[index].data["sendBy"] ==
+                        Constants.myName,
+                    snapshot.data.documents[index].data["time"],
+                  );
                 })
             : Container();
       },
@@ -43,7 +46,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
       Map<String, dynamic> messageMap = {
         "message": messageController.text,
         "sendBy": Constants.myName,
-        "time": DateTime.now().millisecondsSinceEpoch
+        "time": new DateFormat.yMd().add_jm().format(DateTime.now())
       };
       databaseMethods.addConversationMessages(widget.chatRoomId, messageMap);
       messageController.text = "";
@@ -145,9 +148,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
 class MessageTile extends StatelessWidget {
   final String message;
+  final String time;
   final bool isSendByMe;
 
-  MessageTile(this.message, this.isSendByMe);
+  MessageTile(this.message, this.isSendByMe, this.time);
 
   @override
   Widget build(BuildContext context) {
@@ -174,7 +178,7 @@ class MessageTile extends StatelessWidget {
                     topRight: Radius.circular(23),
                     bottomRight: Radius.circular(23))),
         child: Text(
-          message,
+          "$message \n $time",
           style: TextStyle(color: Colors.white, fontSize: 17),
         ),
       ),

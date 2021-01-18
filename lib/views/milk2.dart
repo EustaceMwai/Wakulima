@@ -154,7 +154,7 @@ class _MissedRecordsState extends State<MissedRecords> {
   submitMilk() async {
     await Firestore.instance.collection("farmers").add({
       "email": widget.email,
-      'date': _currentDate,
+      'date': _currentDate.toString(),
       'kilograms': int.parse(todayMilkController.text),
       'reasons': reasonsController.text,
       'farmerId': widget.farmerId,
@@ -224,7 +224,7 @@ class _MissedRecordsState extends State<MissedRecords> {
                         return Center(
                           child: CircularProgressIndicator(),
                         );
-                      } 
+                      }
                       return Container(
                         padding: EdgeInsets.symmetric(horizontal: 24),
                         child: Column(

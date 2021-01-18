@@ -42,8 +42,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       print("online");
     } else {
       Firestore.instance.collection("wakulima").document(user.uid).updateData({
-        'status': "offline",
-        'last_seen': new DateFormat.yMd().add_jm().format(DateTime.now()),
+        'status':
+            "last seen ${new DateFormat.yMd().add_jm().format(DateTime.now())}",
       });
       print("offline");
     }
@@ -52,7 +52,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   getLoggedInState() async {
     await HelperFunctions.getUserLoggedInSharedPreference().then((value) {
       setState(() {
-        userIsLoggedIn = value;
+        userIsLoggedIn = value ?? false;
       });
     });
   }
