@@ -31,6 +31,7 @@ class _SignUpState extends State<SignUp> {
       new TextEditingController();
   TextEditingController passwordTextEditingController =
       new TextEditingController();
+  TextEditingController phoneController = new TextEditingController();
   // TextEditingController organisationIdEditingController =
   //     new TextEditingController();
 
@@ -39,6 +40,7 @@ class _SignUpState extends State<SignUp> {
       Map<String, dynamic> userInfoMap = {
         "name": userNameTextEditingController.text,
         "email": emailTextEditingController.text,
+        "phone_number": phoneController.text,
         "admin": false,
         "agent": false,
         "veterinary": false,
@@ -105,6 +107,21 @@ class _SignUpState extends State<SignUp> {
                         key: formKey,
                         child: Column(
                           children: <Widget>[
+                            TextFormField(
+                              keyboardType: TextInputType.number,
+                              validator: (val) {
+                                return val.length > 10
+                                    ? "Invalid phone number"
+                                    : null;
+                              },
+                              controller: phoneController,
+                              style: simpleTextStyle(),
+                              decoration:
+                                  textFieldInputDecoration("phone number"),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
                             TextFormField(
                                 validator: (val) {
                                   return val.isEmpty || val.length < 2

@@ -24,19 +24,19 @@ class _VetsState extends State<Vets> {
   String email;
   double total = 0.0;
 
-  Widget recordList() {
-    return recordsSnapshot != null
-        ? ListView.builder(
-            itemCount: recordsSnapshot.documents.length,
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              return recordTile(
-                email: recordsSnapshot.documents[index].data["email"],
-                name: recordsSnapshot.documents[index].data["name"],
-              );
-            })
-        : Container();
-  }
+  // Widget recordList() {
+  //   return recordsSnapshot != null
+  //       ? ListView.builder(
+  //           itemCount: recordsSnapshot.documents.length,
+  //           shrinkWrap: true,
+  //           itemBuilder: (context, index) {
+  //             return recordTile(
+  //               email: recordsSnapshot.documents[index].data["email"],
+  //               name: recordsSnapshot.documents[index].data["name"],
+  //             );
+  //           })
+  //       : Container();
+  // }
 
   initiateSearch() {
     databaseMethods.getVeterinaries().then((val) {
@@ -55,76 +55,128 @@ class _VetsState extends State<Vets> {
     }
   }
 
-  Widget recordTile({
-    String email,
-    String name,
-  }) {
-    return GestureDetector(
-      onTap: () {
-        // Navigator.push(
-        //     context, MaterialPageRoute(builder: (context) => ChatRoom()));
-      },
-      child: Container(
-        // padding: EdgeInsets.only(bottom: 10.0),
-        height: 200.0,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(color: Colors.green, spreadRadius: 3),
-          ],
-        ),
-        child: SingleChildScrollView(
-          child: Card(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Container(
-                  height: 70,
-                  width: 70,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Center(
-                          child: Image.asset(
-                            'assets/images/wakulima.png',
-                          ),
+  Widget recordTile() {
+    return Container(
+      // padding: EdgeInsets.only(bottom: 10.0),
+      height: 300.0,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(color: Colors.green, spreadRadius: 3),
+        ],
+      ),
+      child: SingleChildScrollView(
+        child: Card(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                height: 70,
+                width: 70,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: Image.asset(
+                          'assets/images/wakulima.png',
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                Divider(),
-                Icon(Icons.person_pin),
-                Center(
-                  child: Text(
-                    '$name',
-                    // style: mediumTextStyle()
-                    style: TextStyle(
-                      fontSize: 17.0,
-                      fontWeight: FontWeight.bold,
                     ),
-                  ),
+                  ],
                 ),
-                SizedBox(
-                  height: 12.0,
-                ),
-                SizedBox(
-                  height: 12.0,
-                ),
-                Center(
-                  child: Text(
-                    'Email: $email',
-                    // style: mediumTextStyle(),
-                    style: TextStyle(
-                      fontSize: 17.0,
-                      fontFamily: 'Nunito-Regular',
+              ),
+              Divider(),
+
+              Icon(Icons.person_pin),
+              // Center(
+              //   child: Text(
+              //     '$name',
+              //     // style: mediumTextStyle()
+              //     style: TextStyle(
+              //       fontSize: 17.0,
+              //       fontWeight: FontWeight.bold,
+              //     ),
+              //   ),
+              // ),
+              recordsSnapshot != null
+                  ? ListView.builder(
+                      itemCount: recordsSnapshot.documents.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        return Column(
+                          children: [
+                            Center(
+                              child: Text(
+                                  recordsSnapshot
+                                      .documents[index].data["email"],
+                                  style: TextStyle(
+                                    fontSize: 17.0,
+                                    fontWeight: FontWeight.bold,
+                                  )),
+                            ),
+                            SizedBox(
+                              height: 24.0,
+                            ),
+                            Center(
+                              child: Text(
+                                  recordsSnapshot.documents[index].data["name"],
+                                  style: TextStyle(
+                                    fontSize: 17.0,
+                                    fontFamily: 'Nunito-Regular',
+                                  )),
+                            ),
+                          ],
+                        );
+                      })
+                  : Container(),
+              // SizedBox(
+              //   height: 12.0,
+              // ),
+              // SizedBox(
+              //   height: 12.0,
+              // ),
+              // Center(
+              //   child: Text(
+              //     'Email: $email',
+              //     // style: mediumTextStyle(),
+              //     style: TextStyle(
+              //       fontSize: 17.0,
+              //       fontFamily: 'Nunito-Regular',
+              //     ),
+              //   ),
+              // ),
+              IconButton(
+                icon: Icon(Icons.location_searching),
+                color: Colors.green,
+                onPressed: () {},
+              ),
+              FlatButton(
+                color: Colors.black,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Icon(
+                        Icons.location_searching,
+                        color: Colors.green,
+                      ),
                     ),
-                  ),
+                    Expanded(
+                      flex: 2,
+                      child: Text(
+                        "locate \n vet ",
+                        style: TextStyle(color: Colors.green),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+                onPressed: () {
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (context) => Maps()));
+                },
+              )
+            ],
           ),
         ),
       ),
@@ -159,7 +211,7 @@ class _VetsState extends State<Vets> {
                         SizedBox(
                           height: 20,
                         ),
-                        recordList(),
+                        recordTile(),
                         SizedBox(
                           height: 420,
                         ),
@@ -289,6 +341,5 @@ class _VetsState extends State<Vets> {
         ),
       ),
     );
-    ;
   }
 }
