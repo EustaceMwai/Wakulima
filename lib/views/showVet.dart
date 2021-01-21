@@ -56,56 +56,57 @@ class _VetsState extends State<Vets> {
   }
 
   Widget recordTile() {
-    return Container(
-      // padding: EdgeInsets.only(bottom: 10.0),
-      height: 300.0,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(color: Colors.green, spreadRadius: 3),
-        ],
-      ),
-      child: SingleChildScrollView(
-        child: Card(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                height: 70,
-                width: 70,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Center(
-                        child: Image.asset(
-                          'assets/images/wakulima.png',
-                        ),
-                      ),
-                    ),
+    return recordsSnapshot != null
+        ? ListView.builder(
+            itemCount: recordsSnapshot.documents.length,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              return Container(
+                // padding: EdgeInsets.only(bottom: 10.0),
+                height: 350.0,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(color: Colors.green, spreadRadius: 3),
                   ],
                 ),
-              ),
-              Divider(),
+                child: SingleChildScrollView(
+                  child: Card(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Container(
+                          height: 70,
+                          width: 70,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: Center(
+                                  child: Image.asset(
+                                    'assets/images/wakulima.png',
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Divider(),
 
-              Icon(Icons.person_pin),
-              // Center(
-              //   child: Text(
-              //     '$name',
-              //     // style: mediumTextStyle()
-              //     style: TextStyle(
-              //       fontSize: 17.0,
-              //       fontWeight: FontWeight.bold,
-              //     ),
-              //   ),
-              // ),
-              recordsSnapshot != null
-                  ? ListView.builder(
-                      itemCount: recordsSnapshot.documents.length,
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        return Column(
+                        Icon(Icons.person_pin),
+                        // Center(
+                        //   child: Text(
+                        //     '$name',
+                        //     // style: mediumTextStyle()
+                        //     style: TextStyle(
+                        //       fontSize: 17.0,
+                        //       fontWeight: FontWeight.bold,
+                        //     ),
+                        //   ),
+                        // ),
+
+                        Column(
                           children: [
                             Center(
                               child: Text(
@@ -117,70 +118,134 @@ class _VetsState extends State<Vets> {
                                   )),
                             ),
                             SizedBox(
-                              height: 24.0,
+                              height: 12.0,
+                            ),
+                            Center(
+                              child: Center(
+                                child: Text(
+                                    ' ${recordsSnapshot.documents[index].data["name"]} : ${recordsSnapshot.documents[index].data["phone_number"]}',
+                                    style: TextStyle(
+                                      fontSize: 17.0,
+                                      fontFamily: 'Nunito-Regular',
+                                      fontWeight: FontWeight.bold,
+                                    )),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 12.0,
                             ),
                             Center(
                               child: Text(
-                                  recordsSnapshot.documents[index].data["name"],
+                                  'Specialization: ${recordsSnapshot.documents[index].data["specialization"]}',
+                                  style: TextStyle(
+                                    fontSize: 17.0,
+                                    fontFamily: 'Nunito-Regular',
+                                  )),
+                            ),
+                            SizedBox(
+                              height: 12.0,
+                            ),
+                            Center(
+                              child: Text(
+                                  'Charges per service: ${recordsSnapshot.documents[index].data["Charges"]} Kshs',
+                                  style: TextStyle(
+                                    fontSize: 17.0,
+                                    fontFamily: 'Nunito-Regular',
+                                  )),
+                            ),
+                            SizedBox(
+                              height: 12.0,
+                            ),
+                            Center(
+                              child: Text(
+                                  'Working Hours: ${recordsSnapshot.documents[index].data["working hours"]}',
                                   style: TextStyle(
                                     fontSize: 17.0,
                                     fontFamily: 'Nunito-Regular',
                                   )),
                             ),
                           ],
-                        );
-                      })
-                  : Container(),
-              // SizedBox(
-              //   height: 12.0,
-              // ),
-              // SizedBox(
-              //   height: 12.0,
-              // ),
-              // Center(
-              //   child: Text(
-              //     'Email: $email',
-              //     // style: mediumTextStyle(),
-              //     style: TextStyle(
-              //       fontSize: 17.0,
-              //       fontFamily: 'Nunito-Regular',
-              //     ),
-              //   ),
-              // ),
-              IconButton(
-                icon: Icon(Icons.location_searching),
-                color: Colors.green,
-                onPressed: () {},
-              ),
-              FlatButton(
-                color: Colors.black,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Icon(
-                        Icons.location_searching,
-                        color: Colors.green,
-                      ),
+                        ),
+
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  Ink(
+                                    decoration: const ShapeDecoration(
+                                      color: Colors.green,
+                                      shape: CircleBorder(),
+                                    ),
+                                    child: IconButton(
+                                      icon: Icon(Icons.call),
+                                      color: Colors.white,
+                                      tooltip: "Call",
+                                      onPressed: () {
+                                        callnow();
+                                      },
+                                    ),
+                                  ),
+                                  Text("Call"),
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                                child: Column(
+                              children: [
+                                Ink(
+                                  decoration: const ShapeDecoration(
+                                    color: Colors.blue,
+                                    shape: CircleBorder(),
+                                  ),
+                                  child: IconButton(
+                                    icon: Icon(Icons.message),
+                                    color: Colors.white,
+                                    tooltip: "Message",
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ChatRoom()));
+                                    },
+                                  ),
+                                ),
+                                Text("Message")
+                              ],
+                            )),
+                            Expanded(
+                                child: Column(
+                              children: [
+                                Ink(
+                                  decoration: const ShapeDecoration(
+                                    color: Colors.black,
+                                    shape: CircleBorder(),
+                                  ),
+                                  child: IconButton(
+                                    icon: Icon(Icons.location_searching),
+                                    color: Colors.white,
+                                    tooltip: "Location",
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => Maps()));
+                                    },
+                                  ),
+                                ),
+                                Text("Locate Vet"),
+                              ],
+                            )),
+                          ],
+                        ),
+                      ],
                     ),
-                    Expanded(
-                      flex: 2,
-                      child: Text(
-                        "locate \n vet ",
-                        style: TextStyle(color: Colors.green),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-                onPressed: () {
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => Maps()));
-                },
-              )
-            ],
-          ),
-        ),
-      ),
-    );
+              );
+            })
+        : Container();
   }
 
   @override
@@ -212,129 +277,6 @@ class _VetsState extends State<Vets> {
                           height: 20,
                         ),
                         recordTile(),
-                        SizedBox(
-                          height: 420,
-                        ),
-                        Container(
-                          alignment: Alignment.bottomCenter,
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      color: Colors.green,
-                                      boxShadow: [
-                                        BoxShadow(
-                                            color: Colors.green,
-                                            spreadRadius: 3),
-                                      ],
-                                    ),
-                                    child: FlatButton(
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                              child: IconButton(
-                                            icon: Icon(Icons.call),
-                                            onPressed: () {
-                                              // callnow();
-                                            },
-                                          )),
-                                          Expanded(
-                                              flex: 2,
-                                              child: Text(
-                                                "Call \n vet ",
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              )),
-                                        ],
-                                      ),
-                                      onPressed: () {
-                                        callnow();
-                                      },
-                                    )),
-                              ),
-                              SizedBox(
-                                width: 10.0,
-                              ),
-                              Expanded(
-                                  child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        color: Colors.blue,
-                                        boxShadow: [
-                                          BoxShadow(
-                                              color: Colors.blue,
-                                              spreadRadius: 3),
-                                        ],
-                                      ),
-                                      child: FlatButton(
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                                child: Icon(Icons.message)),
-                                            Expanded(
-                                              flex: 2,
-                                              child: Text(
-                                                "Chat \n vet",
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        onPressed: () {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      ChatRoom()));
-                                        },
-                                      ))),
-                              SizedBox(
-                                width: 10.0,
-                              ),
-                              Expanded(
-                                  child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        color: Colors.black,
-                                        boxShadow: [
-                                          BoxShadow(
-                                              color: Colors.black,
-                                              spreadRadius: 3),
-                                        ],
-                                      ),
-                                      child: FlatButton(
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              child: Icon(
-                                                Icons.location_searching,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                            Expanded(
-                                              flex: 2,
-                                              child: Text(
-                                                "locate \n vet ",
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        onPressed: () {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      Maps()));
-                                        },
-                                      ))),
-                            ],
-                          ),
-                        )
                       ]),
                 );
               }),
