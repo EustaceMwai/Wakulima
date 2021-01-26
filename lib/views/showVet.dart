@@ -5,10 +5,14 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:wakulima/services/auth.dart';
 import 'package:wakulima/services/database.dart';
 import 'package:wakulima/views/chatRoomScreen.dart';
+import 'package:wakulima/views/veterinary.dart';
 
 import 'maps.dart';
 
 class Vets extends StatefulWidget {
+  final String name;
+
+  Vets({this.name});
   @override
   _VetsState createState() => _VetsState();
 }
@@ -19,6 +23,7 @@ class _VetsState extends State<Vets> {
   String url = 'tel:+254718273753';
 
   QuerySnapshot recordsSnapshot;
+  DocumentSnapshot userSnapshot;
   FirebaseUser username;
 
   String email;
@@ -257,6 +262,31 @@ class _VetsState extends State<Vets> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Drawer(
+        child: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              AppBar(
+                automaticallyImplyLeading: false,
+                title: Text('Veterinary'),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              ListTile(
+                title: Text('Register Vet'),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              RegisterVet(name: widget.name)));
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
       appBar: AppBar(
         title: Text('Available Veterinaries'),
       ),

@@ -9,7 +9,6 @@ import 'package:wakulima/views/admin.dart';
 import 'package:wakulima/views/adminManager.dart';
 import 'package:wakulima/views/records.dart';
 import 'package:wakulima/views/showVet.dart';
-import 'package:wakulima/views/veterinary.dart';
 
 import 'bottom.dart';
 
@@ -180,19 +179,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       MaterialPageRoute(builder: (context) => Authenticate()));
                 },
               ),
-              SizedBox(
-                height: 10,
-              ),
-              ListTile(
-                title: Text('Register Vet'),
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              RegisterVet(name: userSnapshot["name"])));
-                },
-              ),
+
               // SizedBox(
               //   height: 10,
               // ),
@@ -312,7 +299,9 @@ class _MyHomePageState extends State<MyHomePage> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => Vets()));
+                                      builder: (context) => Vets(
+                                            name: userSnapshot["name"],
+                                          )));
                             },
                             child: Card(
                               elevation: 10,
