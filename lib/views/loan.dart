@@ -97,36 +97,37 @@ class _LoanState extends State<Loan> {
     //           child: Text("Submit"),
     //         ),
     //       );
-    if (loanSnapshot == null) return CircularProgressIndicator();
-    return !loanSnapshot.exists
-        ? Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: Colors.blue,
-              boxShadow: [
-                BoxShadow(color: Colors.blue, spreadRadius: 3),
-              ],
-            ),
-            child: FlatButton(
-              child: Text('submit'),
-              color: Colors.blueAccent,
-              textColor: Colors.white,
-              onPressed: () async {
-                setState(() {
-                  isLoading = true;
-                });
-                print(selected);
-                submitLoan();
-                setState(() {
-                  isLoading = false;
-                });
-              },
-            ),
-          )
-        : Center(
-            child: Text("You already have a existing Loan!",
-                style: TextStyle(color: Colors.white, fontSize: 20.0)),
-          );
+    // if (loanSnapshot == null) return CircularProgressIndicator();
+    // return !loanSnapshot.exists
+    //     ?
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.blue,
+        boxShadow: [
+          BoxShadow(color: Colors.blue, spreadRadius: 3),
+        ],
+      ),
+      child: FlatButton(
+        child: Text('submit'),
+        color: Colors.blueAccent,
+        textColor: Colors.white,
+        onPressed: () async {
+          setState(() {
+            isLoading = true;
+          });
+          print(selected);
+          submitLoan();
+          setState(() {
+            isLoading = false;
+          });
+        },
+      ),
+    );
+    // : Center(
+    //     child: Text("You already have a existing Loan!",
+    //         style: TextStyle(color: Colors.white, fontSize: 20.0)),
+    //   );
 
     // if (!loanSnapshot.exists || loanSnapshot == null) {
     //   return Container(
@@ -145,28 +146,29 @@ class _LoanState extends State<Loan> {
   }
 
   Widget loan1Status() {
-    if (loanSnapshot == null) return CircularProgressIndicator();
-    return loanSnapshot.exists
-        ? Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: Colors.blue,
-              boxShadow: [
-                BoxShadow(color: Colors.blue, spreadRadius: 3),
-              ],
-            ),
-            margin: EdgeInsets.all(20),
-            child: FlatButton(
-              child: Text('check loan status'),
-              color: Colors.blueAccent,
-              textColor: Colors.white,
-              onPressed: () async {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => loanStatus()));
-              },
-            ),
-          )
-        : Container();
+    // if (loanSnapshot == null) return CircularProgressIndicator();
+    // return loanSnapshot.data.containsKey("id")
+    //     ?
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.blue,
+        boxShadow: [
+          BoxShadow(color: Colors.blue, spreadRadius: 3),
+        ],
+      ),
+      margin: EdgeInsets.all(20),
+      child: FlatButton(
+        child: Text('check loan status'),
+        color: Colors.blueAccent,
+        textColor: Colors.white,
+        onPressed: () async {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => loanStatus()));
+        },
+      ),
+    );
+    // : Container();
   }
 
   Widget recordTile({String crb, int shares}) {
@@ -366,7 +368,7 @@ class _LoanState extends State<Loan> {
       final FirebaseAuth _auth = FirebaseAuth.instance;
       final Firestore _firestore = Firestore.instance;
       FirebaseUser user = await _auth.currentUser();
-      Firestore.instance.collection("loans").document(user.uid).setData({
+      Firestore.instance.collection("loans").add({
         'id': user.uid,
         'email': user.email,
         'loan': selected,
@@ -432,7 +434,7 @@ class _LoanState extends State<Loan> {
           onPressed: () {
             calculateInterest();
             final snackBar = SnackBar(
-                duration: Duration(seconds: 15),
+                duration: Duration(seconds: 5),
                 content: Text(
                     'You have chosen a loan amount of $selected\n You will pay back Ksh ${payableLoan.toStringAsFixed(0)} within a payment period of ${_loanPeriod.toStringAsFixed(0)} months  \n Click submit to proceed with loan application'));
 

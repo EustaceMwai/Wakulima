@@ -35,19 +35,22 @@ class _loanStatusState extends State<loanStatus> {
 
   Widget recordList() {
     return recordsSnapshot != null
-        ? ListView.builder(
-            itemCount: recordsSnapshot.documents.length,
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              return recordTile(
-                  loan: recordsSnapshot.documents[index].data["loan"],
-                  loanStatus:
-                      recordsSnapshot.documents[index].data["loan status"],
-                  repayment:
-                      recordsSnapshot.documents[index].data["repayment period"],
-                  repayableLoan:
-                      recordsSnapshot.documents[index].data["payableLoan"]);
-            })
+        ? Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ListView.builder(
+                itemCount: recordsSnapshot.documents.length,
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  return recordTile(
+                      loan: recordsSnapshot.documents[index].data["loan"],
+                      loanStatus:
+                          recordsSnapshot.documents[index].data["loan status"],
+                      repayment: recordsSnapshot
+                          .documents[index].data["repayment period"],
+                      repayableLoan:
+                          recordsSnapshot.documents[index].data["payableLoan"]);
+                }),
+          )
         : Container(
             child: Text('no loans'),
           );

@@ -28,6 +28,13 @@ class _VetsState extends State<Vets> {
 
   String email;
   double total = 0.0;
+  String userId;
+  void _getUser() async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    setState(() {
+      userId = user.uid;
+    });
+  }
 
   // Widget recordList() {
   //   return recordsSnapshot != null
@@ -253,9 +260,47 @@ class _VetsState extends State<Vets> {
         : Container();
   }
 
+  checkRole(DocumentSnapshot snapshot) {
+    if (snapshot.data == null) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+    if (snapshot.data['veterinary'] == true) {
+      return adminPage(snapshot);
+    } else {
+      return userPage(snapshot);
+    }
+  }
+
+  adminPage(DocumentSnapshot snapshot) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          ListTile(
+            title: Text('Register Vet'),
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => RegisterVet(name: widget.name)));
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Center userPage(DocumentSnapshot snapshot) {
+    return Center(child: Text(""));
+  }
+
   @override
   void initState() {
     initiateSearch();
+    _getUser();
     super.initState();
   }
 
@@ -263,28 +308,27 @@ class _VetsState extends State<Vets> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: Drawer(
-        child: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              AppBar(
-                automaticallyImplyLeading: false,
-                title: Text('Veterinary'),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              ListTile(
-                title: Text('Register Vet'),
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              RegisterVet(name: widget.name)));
-                },
-              ),
-            ],
-          ),
+        child: Column(
+          children: [
+            AppBar(
+              automaticallyImplyLeading: false,
+              title: Text('Veterinary'),
+            ),
+            StreamBuilder<Object>(
+                stream: Firestore.instance
+                    .collection('wakulima')
+                    .document(userId)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                    // return Container();
+                  } else if (snapshot.hasData) {
+                    return checkRole(snapshot.data);
+                  }
+                  return CircularProgressIndicator();
+                }),
+          ],
         ),
       ),
       appBar: AppBar(

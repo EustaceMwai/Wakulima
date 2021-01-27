@@ -48,6 +48,7 @@ dependencies:
   date_format: ^1.0.9
   mpesa_flutter_plugin: ^1.0.0
   url_launcher:
+  international_phone_input: ^1.0.4
 
 #  geolocator: ^5.3.1
 #  google_maps_flutter: ^0.5.28+1
