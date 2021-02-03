@@ -23,6 +23,13 @@ class DatabaseMethods {
         .getDocuments();
   }
 
+  getFarmerId(int id) async {
+    return await Firestore.instance
+        .collection("wakulima")
+        .where("farmerId", isEqualTo: id)
+        .getDocuments();
+  }
+
   getOnlineStatus(String username) async {
     return await Firestore.instance
         .collection("wakulima")

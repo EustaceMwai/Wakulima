@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:wakulima/helper/helperfunctions.dart';
 import 'package:wakulima/services/auth.dart';
 import 'package:wakulima/services/database.dart';
@@ -22,6 +23,7 @@ class _SignUpState extends State<SignUp> {
   AuthMethods authMethods = new AuthMethods();
   DatabaseMethods databaseMethods = new DatabaseMethods();
   int randomNumber;
+  String mobileNumber;
 
   final formKey = GlobalKey<FormState>();
   TextEditingController userNameTextEditingController =
@@ -40,7 +42,7 @@ class _SignUpState extends State<SignUp> {
       Map<String, dynamic> userInfoMap = {
         "name": userNameTextEditingController.text,
         "email": emailTextEditingController.text,
-        "phone_number": phoneController.text,
+        "phone_number": mobileNumber,
         "admin": false,
         "agent": false,
         "veterinary": false,
@@ -107,20 +109,40 @@ class _SignUpState extends State<SignUp> {
                         key: formKey,
                         child: Column(
                           children: <Widget>[
-                            TextFormField(
-                              keyboardType: TextInputType.number,
-                              validator: (val) {
-                                return val.length > 10
-                                    ? "Invalid phone number"
-                                    : null;
-                              },
-                              controller: phoneController,
-                              style: simpleTextStyle(),
-                              decoration:
-                                  textFieldInputDecoration("phone number"),
-                            ),
+                            // TextFormField(
+                            //   keyboardType: TextInputType.number,
+                            //   validator: (val) {
+                            //     return val.length > 10
+                            //         ? "Invalid phone number"
+                            //         : null;
+                            //   },
+                            //   controller: phoneController,
+                            //   style: simpleTextStyle(),
+                            //   decoration:
+                            //       textFieldInputDecoration("phone number"),
+                            // ),
                             SizedBox(
                               height: 10,
+                            ),
+                            IntlPhoneField(
+                              decoration: InputDecoration(
+                                labelText: 'Phone Number',
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide(),
+                                ),
+                              ),
+                              // controller: phoneController,
+                              initialCountryCode: 'KE',
+                              validator: (val) {
+                                return val.isEmpty || val.length < 5
+                                    ? "Provide a valid phone"
+                                    : null;
+                              },
+                              onChanged: (phone) {
+                                print(phone.completeNumber);
+                                mobileNumber = phone.completeNumber;
+                                print(mobileNumber);
+                              },
                             ),
                             TextFormField(
                                 validator: (val) {

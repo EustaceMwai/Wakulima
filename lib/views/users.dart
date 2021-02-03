@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:wakulima/model/user.dart';
 import 'package:wakulima/services/auth.dart';
 import 'package:wakulima/services/database.dart';
+import 'package:wakulima/widgets/widget.dart';
 
 import 'milk.dart';
 
@@ -17,6 +18,40 @@ class Users extends StatefulWidget {
 }
 
 class _UsersState extends State<Users> {
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Farmers'),
+          bottom: TabBar(
+            tabs: [
+              Tab(
+                icon: Icon(Icons.people_outline),
+                text: 'farmers',
+              ),
+              Tab(
+                icon: Icon(Icons.search),
+                text: 'search',
+              ),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: [Farmer(), SearchFarmer()],
+        ),
+      ),
+    );
+  }
+}
+
+class Farmer extends StatefulWidget {
+  @override
+  _FarmerState createState() => _FarmerState();
+}
+
+class _FarmerState extends State<Farmer> {
   final formKey = GlobalKey<FormState>();
   TextEditingController todayMilkController = new TextEditingController();
   TextEditingController previousMilkController = new TextEditingController();
@@ -34,6 +69,12 @@ class _UsersState extends State<Users> {
 
   User _userFromFirebaseUser(FirebaseUser user) {
     return user != null ? User(userId: user.uid) : null;
+  }
+
+  @override
+  void initState() {
+    initiateSearch();
+    super.initState();
   }
 
   Widget recordList() {
@@ -61,17 +102,30 @@ class _UsersState extends State<Users> {
   Widget recordTile({String email, String name, int farmerId}) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => MilkRecords(email: email)));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    MilkRecords(email: email, farmerId: farmerId, name: name)));
       },
-      child: Container(
-        width: 50,
-        height: 70,
-        child: Card(
-          child: Center(
-            child: Text(
-              '$email\n$name\n$farmerId',
-              // style: mediumTextStyle(),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(color: Colors.green, spreadRadius: 3),
+            ],
+          ),
+          width: 50,
+          height: 70,
+          child: Card(
+            child: Center(
+              child: Text(
+                'Name: $name\nID: $farmerId\nEmail: $email',
+                // style: mediumTextStyle(),
+              ),
             ),
           ),
         ),
@@ -79,46 +133,145 @@ class _UsersState extends State<Users> {
     );
   }
 
-//  saveFarmerMilk() {
-//    Map<String, dynamic> farmerSale = {
-//      "id": user.userId,
-//      "name": name,
-//      "date": DateTime.now().toIso8601String(),
-//      "Kgs": todayMilkController.text
-//    };
-//}
-  //  databaseMethods.uploadMilkInfo();
   @override
-  void initState() {
-    initiateSearch();
-    super.initState();
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: StreamBuilder(
+          stream: Firestore.instance.collection("wakulima").snapshots(),
+          builder: (context, snapshot) {
+            return Container(
+              padding: EdgeInsets.symmetric(horizontal: 24),
+              child:
+                  Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                SizedBox(
+                  height: 30,
+                ),
+                recordList(),
+              ]),
+            );
+          }),
+    );
+  }
+}
+
+class SearchFarmer extends StatefulWidget {
+  @override
+  _SearchFarmerState createState() => _SearchFarmerState();
+}
+
+class _SearchFarmerState extends State<SearchFarmer> {
+  DatabaseMethods databaseMethods = new DatabaseMethods();
+  TextEditingController searchTextEditingController =
+      new TextEditingController();
+  QuerySnapshot searchSnapshot;
+  QuerySnapshot recordsSnapshot;
+
+  Widget searchList() {
+    return searchSnapshot != null
+        ? ListView.builder(
+            itemCount: searchSnapshot.documents.length,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              return SearchTile(
+                  userName: searchSnapshot.documents[index].data["name"],
+                  farmerId: searchSnapshot.documents[index].data["farmerId"],
+                  email: searchSnapshot.documents[index].data["email"]);
+            })
+        : Container();
+  }
+
+  initiateSearch() {
+    databaseMethods
+        .getFarmerId(int.parse(searchTextEditingController.text))
+        .then((val) {
+      setState(() {
+        searchSnapshot = val;
+      });
+    });
+  }
+
+  Widget SearchTile({String userName, int farmerId, String email}) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      child: Row(
+        children: <Widget>[
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                userName,
+                style: mediumTextStyle(),
+              ),
+              Text(
+                "farmerId: $farmerId",
+                style: mediumTextStyle(),
+              )
+            ],
+          ),
+          Spacer(),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => MilkRecords(
+                          email: email, farmerId: farmerId, name: userName)));
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                  color: Colors.blue, borderRadius: BorderRadius.circular(30)),
+              padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+              child: Text(
+                "Dairy",
+                style: mediumTextStyle(),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Farmers'),
-      ),
-      body: SingleChildScrollView(
-        child: Container(
-          height: MediaQuery.of(context).size.height - 50,
-          alignment: Alignment.topCenter,
-          child: StreamBuilder(
-              stream: Firestore.instance.collection("wakulima").snapshots(),
-              builder: (context, snapshot) {
-                return Container(
-                  padding: EdgeInsets.symmetric(horizontal: 24),
-                  child:
-                      Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                    SizedBox(
-                      height: 50,
-                    ),
-                    recordList(),
-                  ]),
-                );
-              }),
-        ),
+    return Container(
+      child: Column(
+        children: <Widget>[
+          Container(
+            color: Color(0x54FFFFFF),
+            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                    child: TextField(
+                  controller: searchTextEditingController,
+                  style: TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                      hintText: "search farmer Id...",
+                      hintStyle: TextStyle(color: Colors.white54),
+                      border: InputBorder.none),
+                )),
+                GestureDetector(
+                  onTap: () {
+                    initiateSearch();
+                  },
+                  child: Container(
+                      height: 40,
+                      width: 40,
+                      decoration: BoxDecoration(
+                          gradient: LinearGradient(colors: [
+                            const Color(0x36FFFFFF),
+                            const Color(0x0FFFFFFF)
+                          ]),
+                          borderRadius: BorderRadius.circular(40)),
+                      padding: EdgeInsets.all(12),
+                      child: Image.asset("assets/images/search_white.png")),
+                )
+              ],
+            ),
+          ),
+          searchList()
+        ],
       ),
     );
   }

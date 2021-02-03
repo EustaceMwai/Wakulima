@@ -73,185 +73,188 @@ class _VetsState extends State<Vets> {
             itemCount: recordsSnapshot.documents.length,
             shrinkWrap: true,
             itemBuilder: (context, index) {
-              return Container(
-                // padding: EdgeInsets.only(bottom: 10.0),
-                height: 350.0,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(color: Colors.green, spreadRadius: 3),
-                  ],
-                ),
-                child: SingleChildScrollView(
-                  child: Card(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Container(
-                          height: 70,
-                          width: 70,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                child: Center(
-                                  child: Image.asset(
-                                    'assets/images/wakulima.png',
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  // padding: EdgeInsets.only(bottom: 10.0),
+                  height: 350.0,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(color: Colors.green, spreadRadius: 3),
+                    ],
+                  ),
+                  child: SingleChildScrollView(
+                    child: Card(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Container(
+                            height: 70,
+                            width: 70,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: Center(
+                                    child: Image.asset(
+                                      'assets/images/wakulima.png',
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                        Divider(),
+                          Divider(),
 
-                        Icon(Icons.person_pin),
-                        // Center(
-                        //   child: Text(
-                        //     '$name',
-                        //     // style: mediumTextStyle()
-                        //     style: TextStyle(
-                        //       fontSize: 17.0,
-                        //       fontWeight: FontWeight.bold,
-                        //     ),
-                        //   ),
-                        // ),
+                          Icon(Icons.person_pin),
+                          // Center(
+                          //   child: Text(
+                          //     '$name',
+                          //     // style: mediumTextStyle()
+                          //     style: TextStyle(
+                          //       fontSize: 17.0,
+                          //       fontWeight: FontWeight.bold,
+                          //     ),
+                          //   ),
+                          // ),
 
-                        Column(
-                          children: [
-                            Center(
-                              child: Text(
-                                  recordsSnapshot
-                                      .documents[index].data["email"],
-                                  style: TextStyle(
-                                    fontSize: 17.0,
-                                    fontWeight: FontWeight.bold,
-                                  )),
-                            ),
-                            SizedBox(
-                              height: 12.0,
-                            ),
-                            Center(
-                              child: Center(
+                          Column(
+                            children: [
+                              Center(
                                 child: Text(
-                                    ' ${recordsSnapshot.documents[index].data["name"]} : ${recordsSnapshot.documents[index].data["phone_number"]}',
+                                    recordsSnapshot
+                                        .documents[index].data["email"],
                                     style: TextStyle(
                                       fontSize: 17.0,
-                                      fontFamily: 'Nunito-Regular',
                                       fontWeight: FontWeight.bold,
                                     )),
                               ),
-                            ),
-                            SizedBox(
-                              height: 12.0,
-                            ),
-                            Center(
-                              child: Text(
-                                  'Specialization: ${recordsSnapshot.documents[index].data["specialization"]}',
-                                  style: TextStyle(
-                                    fontSize: 17.0,
-                                    fontFamily: 'Nunito-Regular',
-                                  )),
-                            ),
-                            SizedBox(
-                              height: 12.0,
-                            ),
-                            Center(
-                              child: Text(
-                                  'Charges per service: ${recordsSnapshot.documents[index].data["Charges"]} Kshs',
-                                  style: TextStyle(
-                                    fontSize: 17.0,
-                                    fontFamily: 'Nunito-Regular',
-                                  )),
-                            ),
-                            SizedBox(
-                              height: 12.0,
-                            ),
-                            Center(
-                              child: Text(
-                                  'Working Hours: ${recordsSnapshot.documents[index].data["working hours"]}',
-                                  style: TextStyle(
-                                    fontSize: 17.0,
-                                    fontFamily: 'Nunito-Regular',
-                                  )),
-                            ),
-                          ],
-                        ),
+                              SizedBox(
+                                height: 12.0,
+                              ),
+                              Center(
+                                child: Center(
+                                  child: Text(
+                                      ' ${recordsSnapshot.documents[index].data["name"]} : ${recordsSnapshot.documents[index].data["phone_number"]}',
+                                      style: TextStyle(
+                                        fontSize: 17.0,
+                                        fontFamily: 'Nunito-Regular',
+                                        fontWeight: FontWeight.bold,
+                                      )),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 12.0,
+                              ),
+                              Center(
+                                child: Text(
+                                    'Specialization: ${recordsSnapshot.documents[index].data["specialization"]}',
+                                    style: TextStyle(
+                                      fontSize: 17.0,
+                                      fontFamily: 'Nunito-Regular',
+                                    )),
+                              ),
+                              SizedBox(
+                                height: 12.0,
+                              ),
+                              Center(
+                                child: Text(
+                                    'Charges per service: ${recordsSnapshot.documents[index].data["Charges"]} Kshs',
+                                    style: TextStyle(
+                                      fontSize: 17.0,
+                                      fontFamily: 'Nunito-Regular',
+                                    )),
+                              ),
+                              SizedBox(
+                                height: 12.0,
+                              ),
+                              Center(
+                                child: Text(
+                                    'Working Hours: ${recordsSnapshot.documents[index].data["working hours"]}',
+                                    style: TextStyle(
+                                      fontSize: 17.0,
+                                      fontFamily: 'Nunito-Regular',
+                                    )),
+                              ),
+                            ],
+                          ),
 
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Column(
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Ink(
+                                      decoration: const ShapeDecoration(
+                                        color: Colors.green,
+                                        shape: CircleBorder(),
+                                      ),
+                                      child: IconButton(
+                                        icon: Icon(Icons.call),
+                                        color: Colors.white,
+                                        tooltip: "Call",
+                                        onPressed: () {
+                                          callnow();
+                                        },
+                                      ),
+                                    ),
+                                    Text("Call"),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                  child: Column(
                                 children: [
                                   Ink(
                                     decoration: const ShapeDecoration(
-                                      color: Colors.green,
+                                      color: Colors.blue,
                                       shape: CircleBorder(),
                                     ),
                                     child: IconButton(
-                                      icon: Icon(Icons.call),
+                                      icon: Icon(Icons.message),
                                       color: Colors.white,
-                                      tooltip: "Call",
+                                      tooltip: "Message",
                                       onPressed: () {
-                                        callnow();
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ChatRoom()));
                                       },
                                     ),
                                   ),
-                                  Text("Call"),
+                                  Text("Message")
                                 ],
-                              ),
-                            ),
-                            Expanded(
-                                child: Column(
-                              children: [
-                                Ink(
-                                  decoration: const ShapeDecoration(
-                                    color: Colors.blue,
-                                    shape: CircleBorder(),
+                              )),
+                              Expanded(
+                                  child: Column(
+                                children: [
+                                  Ink(
+                                    decoration: const ShapeDecoration(
+                                      color: Colors.black,
+                                      shape: CircleBorder(),
+                                    ),
+                                    child: IconButton(
+                                      icon: Icon(Icons.location_searching),
+                                      color: Colors.white,
+                                      tooltip: "Location",
+                                      onPressed: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => Maps()));
+                                      },
+                                    ),
                                   ),
-                                  child: IconButton(
-                                    icon: Icon(Icons.message),
-                                    color: Colors.white,
-                                    tooltip: "Message",
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ChatRoom()));
-                                    },
-                                  ),
-                                ),
-                                Text("Message")
-                              ],
-                            )),
-                            Expanded(
-                                child: Column(
-                              children: [
-                                Ink(
-                                  decoration: const ShapeDecoration(
-                                    color: Colors.black,
-                                    shape: CircleBorder(),
-                                  ),
-                                  child: IconButton(
-                                    icon: Icon(Icons.location_searching),
-                                    color: Colors.white,
-                                    tooltip: "Location",
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => Maps()));
-                                    },
-                                  ),
-                                ),
-                                Text("Locate Vet"),
-                              ],
-                            )),
-                          ],
-                        ),
-                      ],
+                                  Text("Locate Vet"),
+                                ],
+                              )),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
