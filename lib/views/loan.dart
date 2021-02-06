@@ -120,6 +120,10 @@ class _LoanState extends State<Loan> {
           submitLoan();
           setState(() {
             isLoading = false;
+            final snackBar = SnackBar(
+                duration: Duration(seconds: 3),
+                content: Text('Loan submitted successfully'));
+            _scaffoldKey.currentState.showSnackBar(snackBar);
           });
         },
       ),

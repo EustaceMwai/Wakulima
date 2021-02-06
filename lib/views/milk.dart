@@ -23,6 +23,7 @@ class MilkRecords extends StatefulWidget {
 
 class _MilkRecordsState extends State<MilkRecords> {
   final formKey = GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   TextEditingController todayMilkController = new TextEditingController();
   TextEditingController previousMilkController = new TextEditingController();
   TextEditingController cumulativeMilkController = new TextEditingController();
@@ -215,6 +216,7 @@ class _MilkRecordsState extends State<MilkRecords> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: appBarMain(context),
       body: isLoading
           ? Container(
@@ -385,7 +387,14 @@ class _MilkRecordsState extends State<MilkRecords> {
                                 submitMilk();
                                 setState(() {
                                   isLoading = false;
+
                                   todayMilkController.clear();
+                                  final snackBar = SnackBar(
+                                      duration: Duration(seconds: 3),
+                                      content:
+                                          Text('Milk recorded successfully'));
+                                  _scaffoldKey.currentState
+                                      .showSnackBar(snackBar);
                                 });
                               },
                               child: Container(

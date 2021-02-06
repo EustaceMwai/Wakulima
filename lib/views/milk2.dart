@@ -20,6 +20,7 @@ class MissedRecords extends StatefulWidget {
 
 class _MissedRecordsState extends State<MissedRecords> {
   final formKey = GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   TextEditingController todayMilkController = new TextEditingController();
   TextEditingController previousMilkController = new TextEditingController();
   TextEditingController cumulativeMilkController = new TextEditingController();
@@ -197,6 +198,7 @@ class _MissedRecordsState extends State<MissedRecords> {
   Widget build(BuildContext context) {
     String _formatDate = new DateFormat.yMMMd().format(_currentDate).toString();
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text("Select Date"),
         actions: [
@@ -368,6 +370,10 @@ class _MissedRecordsState extends State<MissedRecords> {
                                   isLoading = false;
                                   todayMilkController.clear();
                                   reasonsController.clear();
+                                  final snackBar = SnackBar(
+                                      duration: Duration(seconds: 3),
+                                      content: Text('Milk recorded successfully'));
+                                  _scaffoldKey.currentState.showSnackBar(snackBar);
                                 });
                               },
                               child: Container(
