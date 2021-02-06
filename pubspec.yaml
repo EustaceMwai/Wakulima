@@ -52,6 +52,7 @@ dependencies:
   firebase_core:
   pinput: ^0.2.6
   intl_phone_field: ^1.3.0
+  intl_phone_number_input:
 
 #  geolocator: ^5.3.1
 #  google_maps_flutter: ^0.5.28+1

@@ -58,9 +58,9 @@ class _VetsState extends State<Vets> {
     });
   }
 
-  Future<void> callnow() async {
-    if (await canLaunch(url)) {
-      await launch(url);
+  Future<void> callnow(phone) async {
+    if (await canLaunch(phone)) {
+      await launch(phone);
     } else {
       // throw 'call not possible';
       print('call cannot go through');
@@ -161,6 +161,17 @@ class _VetsState extends State<Vets> {
                               ),
                               Center(
                                 child: Text(
+                                    'Experience: ${recordsSnapshot.documents[index].data["experience"]}',
+                                    style: TextStyle(
+                                      fontSize: 17.0,
+                                      fontFamily: 'Nunito-Regular',
+                                    )),
+                              ),
+                              SizedBox(
+                                height: 12.0,
+                              ),
+                              Center(
+                                child: Text(
                                     'Charges per service: ${recordsSnapshot.documents[index].data["Charges"]} Kshs',
                                     style: TextStyle(
                                       fontSize: 17.0,
@@ -196,7 +207,8 @@ class _VetsState extends State<Vets> {
                                         color: Colors.white,
                                         tooltip: "Call",
                                         onPressed: () {
-                                          callnow();
+                                          callnow(
+                                              'tel:${recordsSnapshot.documents[index].data["phone_number"]}');
                                         },
                                       ),
                                     ),

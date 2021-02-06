@@ -324,6 +324,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.4.2"
+  intl_phone_number_input:
+    dependency: "direct main"
+    description:
+      name: intl_phone_number_input
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.5.0"
   js:
     dependency: transitive
     description:

@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:wakulima/helper/helperfunctions.dart';
 import 'package:wakulima/services/auth.dart';
 import 'package:wakulima/services/database.dart';
@@ -12,7 +12,9 @@ import 'home.dart';
 
 class SignUp extends StatefulWidget {
   final Function toggle;
+
   SignUp(this.toggle);
+
   @override
   _SignUpState createState() => _SignUpState();
 }
@@ -34,8 +36,12 @@ class _SignUpState extends State<SignUp> {
   TextEditingController passwordTextEditingController =
       new TextEditingController();
   TextEditingController phoneController = new TextEditingController();
+
   // TextEditingController organisationIdEditingController =
   //     new TextEditingController();
+  final TextEditingController controller = TextEditingController();
+  String initialCountry = 'KE';
+  PhoneNumber number = PhoneNumber(isoCode: 'KE');
 
   signMeUp() {
     if (formKey.currentState.validate()) {
@@ -124,26 +130,62 @@ class _SignUpState extends State<SignUp> {
                             SizedBox(
                               height: 10,
                             ),
-                            IntlPhoneField(
-                              decoration: InputDecoration(
-                                labelText: 'Phone Number',
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide(),
-                                ),
+                            InternationalPhoneNumberInput(
+                              onInputChanged: (PhoneNumber number) {
+                                print(number.phoneNumber);
+
+                                setState(() {
+                                  mobileNumber = number.phoneNumber;
+                                  print("mobile is: $mobileNumber");
+                                });
+                              },
+                              onInputValidated: (bool value) {
+                                print(value);
+                              },
+
+                              selectorConfig: SelectorConfig(
+                                selectorType:
+                                    PhoneInputSelectorType.BOTTOM_SHEET,
                               ),
-                              // controller: phoneController,
-                              initialCountryCode: 'KE',
+                              ignoreBlank: false,
+                              // autoValidateMode: AutovalidateMode.disabled,
+                              selectorTextStyle: TextStyle(color: Colors.black),
+                              initialValue: number,
+                              textFieldController: phoneController,
+                              formatInput: false,
+                              // keyboardType: TextInputType.numberWithOptions(
+                              //     signed: true, decimal: true),
+                              inputBorder: OutlineInputBorder(),
                               validator: (val) {
                                 return val.isEmpty || val.length < 5
                                     ? "Provide a valid phone"
                                     : null;
                               },
-                              onChanged: (phone) {
-                                print(phone.completeNumber);
-                                mobileNumber = phone.completeNumber;
-                                print(mobileNumber);
-                              },
+                              // onSaved: (PhoneNumber number) {
+                              //   print('On Saved: $number');
+                              // },
                             ),
+
+                            // IntlPhoneField(
+                            //   decoration: InputDecoration(
+                            //     labelText: 'Phone Number',
+                            //     border: OutlineInputBorder(
+                            //       borderSide: BorderSide(),
+                            //     ),
+                            //   ),
+                            //   // controller: phoneController,
+                            //   initialCountryCode: 'KE',
+                            //   validator: (val) {
+                            //     return val.isEmpty || val.length < 5
+                            //         ? "Provide a valid phone"
+                            //         : null;
+                            //   },
+                            //   onChanged: (phone) {
+                            //     print(phone.completeNumber);
+                            //     mobileNumber = phone.completeNumber;
+                            //     print(mobileNumber);
+                            //   },
+                            // ),
                             TextFormField(
                                 validator: (val) {
                                   return val.isEmpty || val.length < 2

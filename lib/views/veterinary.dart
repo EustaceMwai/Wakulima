@@ -11,6 +11,7 @@ class RegisterVet extends StatefulWidget {
 class _RegisterVetState extends State<RegisterVet> {
   final formKey = GlobalKey<FormState>();
   TextEditingController priceController = new TextEditingController();
+  TextEditingController experienceController = new TextEditingController();
   DatabaseMethods databaseMethods = new DatabaseMethods();
 
   String selected;
@@ -117,6 +118,7 @@ class _RegisterVetState extends State<RegisterVet> {
         "specialization": selected,
         "Charges": priceController.text,
         "working hours": selectedHour,
+        "experience": experienceController.text,
       };
 
       databaseMethods.uploadVetInfo(userInfoMap);
@@ -205,6 +207,41 @@ class _RegisterVetState extends State<RegisterVet> {
                 ),
                 SizedBox(
                   height: 30,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(color: Colors.green, spreadRadius: 3),
+                      ],
+                    ),
+                    child: TextFormField(
+                      keyboardType: TextInputType.number,
+                      validator: (val) {
+                        return val.length > 2 || val.isEmpty
+                            ? "Value cannot be more than this"
+                            : null;
+                      },
+                      controller: experienceController,
+                      style: TextStyle(color: Colors.black),
+                      decoration: InputDecoration(
+                          hintText: 'Years of Experience?',
+                          fillColor: Colors.white54,
+                          filled: true,
+                          enabledBorder: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: Colors.white, width: 2.0)),
+                          focusedBorder: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: Colors.pink, width: 2.0))),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 30.0,
                 ),
                 showWorkingHours(),
                 SizedBox(
