@@ -38,9 +38,9 @@ class _managerState extends State<manager> {
             shrinkWrap: true,
             itemBuilder: (context, index) {
               return recordTile(
-                email: recordsSnapshot.documents[index].data["email"],
+                name: recordsSnapshot.documents[index].data["name"],
                 loan: recordsSnapshot.documents[index].data["loan"],
-                id: recordsSnapshot.documents[index].data["id"],
+                id: recordsSnapshot.documents[index].data["farmerId"],
               );
             })
         : Container();
@@ -71,9 +71,11 @@ class _managerState extends State<manager> {
                                 .collection("loans")
                                 .document(
                                     recordsSnapshot.documents[index].data["id"])
-                                .setData({
-                              "loan status": "approved",
-                            }, merge: true);
+                                .updateData(
+                              {
+                                "loan status": "approved",
+                              },
+                            );
                           },
                         ),
                 ),
@@ -110,9 +112,11 @@ class _managerState extends State<manager> {
                                 .collection("loans")
                                 .document(
                                     recordsSnapshot.documents[index].data["id"])
-                                .setData({
+                                .collection('farmerLoans')
+                                .document()
+                                .updateData({
                               "loan status": "denied",
-                            }, merge: true);
+                            });
                           },
                         ),
                 ),
@@ -129,7 +133,7 @@ class _managerState extends State<manager> {
     });
   }
 
-  Widget recordTile({String email, int loan, dynamic id}) {
+  Widget recordTile({String name, int loan, dynamic id}) {
     return Column(
       children: [
         Container(
@@ -137,7 +141,7 @@ class _managerState extends State<manager> {
           child: Card(
             child: Center(
               child: Text(
-                '$email\nLoan requested: Ksh $loan',
+                '$name\nFarmer Id: $id\nLoan requested: Ksh $loan',
 
                 // style: mediumTextStyle(),
                 style: TextStyle(

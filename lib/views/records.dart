@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:wakulima/model/user.dart';
 import 'package:wakulima/services/auth.dart';
 import 'package:wakulima/services/database.dart';
+import 'package:wakulima/views/showVet.dart';
 import 'package:wakulima/widgets/widget.dart';
 
 import 'loan.dart';
@@ -27,10 +28,15 @@ class _RecordsState extends State<Records> {
 
   QuerySnapshot recordsSnapshot;
   FirebaseUser username;
-  String name = 'eustace';
+  String name;
   String email;
   double total = 0.0;
-
+  double firstAmount;
+  double secondAmount;
+  double difference;
+  double price = 15.0;
+  double earnedAmount;
+  int farmerId;
   User _userFromFirebaseUser(FirebaseUser user) {
     return user != null ? User(userId: user.uid) : null;
   }
@@ -55,8 +61,25 @@ class _RecordsState extends State<Records> {
     databaseMethods.getFarmerRecordsByEmail().then((val) {
       setState(() {
         recordsSnapshot = val;
+        firstAmount = recordsSnapshot.documents[0].data['kilograms'];
+        secondAmount = recordsSnapshot.documents[1].data['kilograms'];
+
+        difference = secondAmount - firstAmount;
+        name = recordsSnapshot.documents[1].data['name'];
+        farmerId = recordsSnapshot.documents[0].data['farmerId'];
+        recommendVet();
       });
     });
+  }
+
+  recommendVet() {
+    if (difference >= 5) {
+      print('contact a vet');
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => _buildAboutDialog(context),
+      );
+    }
   }
 
   Future queryValues() async {
@@ -71,6 +94,7 @@ class _RecordsState extends State<Records> {
           val.documents.fold(0, (tot, doc) => tot + doc.data['kilograms']);
       setState(() {
         total = tempTotal;
+        earnedAmount = total * price;
       });
       debugPrint(total.toString());
       Firestore.instance
@@ -223,9 +247,63 @@ class _RecordsState extends State<Records> {
 //    };
 //}
   //  databaseMethods.uploadMilkInfo();
+
+  Widget _buildAboutText() {
+    return new RichText(
+      text: new TextSpan(
+        text:
+            'Your milk production levels seems to have dropped by $difference litres. This is a significant margin and could be caused by various issues with your cows. If this is the case we recommend that you visit our veterinary page and get help .\n\n',
+        style: const TextStyle(color: Colors.black87),
+        children: <TextSpan>[
+          const TextSpan(text: 'Thank You '),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAboutDialog(BuildContext context) {
+    return new AlertDialog(
+      title: Text('Hello $name'),
+      content: new Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          _buildAboutText(),
+          // _buildLogoAttribution(),
+        ],
+      ),
+      actions: <Widget>[
+        Row(
+          children: [
+            FlatButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              textColor: Theme.of(context).primaryColor,
+              child: const Text('Ok, got it!'),
+            ),
+            FlatButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Vets(
+                              name: name,
+                            )));
+              },
+              textColor: Colors.green,
+              child: const Text('Contact Vet!'),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
   @override
   void initState() {
     initiateSearch();
+
     super.initState();
     queryValues();
   }
@@ -258,31 +336,34 @@ class _RecordsState extends State<Records> {
                         SizedBox(
                           height: 10,
                         ),
+                        Container(
+                          alignment: Alignment.bottomCenter,
+                          width: MediaQuery.of(context).size.width,
+                          padding: EdgeInsets.symmetric(vertical: 20),
+                          decoration: BoxDecoration(
+                              gradient: LinearGradient(colors: [
+                                const Color(0xff007EF4),
+                                const Color(0xff2A75BC)
+                              ]),
+                              borderRadius: BorderRadius.circular(30)),
+                          child: Center(
+                            child: Column(
+                              children: [
+                                Text(
+                                  "Cumulative amount of  Milk sold: $total litres",
+                                  style: mediumTextStyle(),
+                                ),
+                                Text(
+                                  "Amount Earned: $earnedAmount Kshs",
+                                  style: mediumTextStyle(),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                         recordList(),
                         SizedBox(
                           height: 12.0,
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            initiateSearch();
-                          },
-                          child: Container(
-                            alignment: Alignment.bottomCenter,
-                            width: MediaQuery.of(context).size.width,
-                            padding: EdgeInsets.symmetric(vertical: 20),
-                            decoration: BoxDecoration(
-                                gradient: LinearGradient(colors: [
-                                  const Color(0xff007EF4),
-                                  const Color(0xff2A75BC)
-                                ]),
-                                borderRadius: BorderRadius.circular(30)),
-                            child: Center(
-                              child: Text(
-                                "Cumulative amount of  Milk sold: $total litres",
-                                style: mediumTextStyle(),
-                              ),
-                            ),
-                          ),
                         ),
                         SizedBox(
                           height: 50,
@@ -292,7 +373,10 @@ class _RecordsState extends State<Records> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => Loan(total.round())));
+                                    builder: (context) => Loan(
+                                          total.round(),
+                                          name, farmerId
+                                        )));
                           },
                           child: Container(
                             alignment: Alignment.bottomCenter,

@@ -113,7 +113,7 @@ class _loanStatusState extends State<loanStatus> {
             Expanded(
                 child: Center(
               child: Text(
-                'The amount you are going to repay is Ksh: $repayableLoan ',
+                'The amount you are going to repay is Ksh $repayableLoan ',
                 // style: mediumTextStyle(),
               ),
             )),

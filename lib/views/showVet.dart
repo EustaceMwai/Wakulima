@@ -161,7 +161,7 @@ class _VetsState extends State<Vets> {
                               ),
                               Center(
                                 child: Text(
-                                    'Experience: ${recordsSnapshot.documents[index].data["experience"]}',
+                                    'Experience: ${recordsSnapshot.documents[index].data["experience"]} years',
                                     style: TextStyle(
                                       fontSize: 17.0,
                                       fontFamily: 'Nunito-Regular',

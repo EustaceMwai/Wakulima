@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:wakulima/services/auth.dart';
 import 'package:wakulima/services/database.dart';
 import 'package:wakulima/views/loanStatus.dart';
-import 'package:wakulima/views/slider.dart';
 
 class Loan extends StatefulWidget {
   final int total;
+  final String name;
+  int farmerId;
 
-  Loan(this.total);
+  Loan(this.total, this.name, this.farmerId);
 
   int get t {
     return total;
@@ -24,7 +25,8 @@ class _LoanState extends State<Loan> {
   final formKey = GlobalKey<FormState>();
   int selected;
   bool isLoading = false;
-  double _loanPeriod = 36.0;
+  double loanPeriod = 36.0;
+  double period;
   double payableLoan;
   int rate;
   double interest;
@@ -120,10 +122,6 @@ class _LoanState extends State<Loan> {
           submitLoan();
           setState(() {
             isLoading = false;
-            final snackBar = SnackBar(
-                duration: Duration(seconds: 3),
-                content: Text('Loan submitted successfully'));
-            _scaffoldKey.currentState.showSnackBar(snackBar);
           });
         },
       ),
@@ -362,7 +360,8 @@ class _LoanState extends State<Loan> {
 
   calculateInterest() {
     if (formKey.currentState.validate()) {
-      payableLoan = selected + (selected * 0.4 * _loanPeriod / 36);
+      payableLoan = selected + (selected * 0.4 * loanPeriod / 36);
+      print("loan period is $loanPeriod");
       print(payableLoan);
     }
   }
@@ -372,14 +371,26 @@ class _LoanState extends State<Loan> {
       final FirebaseAuth _auth = FirebaseAuth.instance;
       final Firestore _firestore = Firestore.instance;
       FirebaseUser user = await _auth.currentUser();
-      Firestore.instance.collection("loans").add({
-        'id': user.uid,
-        'email': user.email,
-        'loan': selected,
-        'loan status': "inactive",
-        'repayment period': _loanPeriod.toInt(),
-        'payableLoan': payableLoan.toInt(),
-      });
+      Firestore.instance
+          .collection("loans")
+          .document(user.uid)
+          .collection('farmerLoans')
+          .add(
+        {
+          'id': user.uid,
+          'name': widget.name,
+          'farmerId': widget.farmerId,
+          'email': user.email,
+          'loan': selected,
+          'loan status': "inactive",
+          'repayment period': loanPeriod.toInt(),
+          'payableLoan': payableLoan.toInt(),
+        },
+      );
+      final snackBar = SnackBar(
+          duration: Duration(seconds: 3),
+          content: Text('Loan submitted successfully'));
+      _scaffoldKey.currentState.showSnackBar(snackBar);
     }
   }
 
@@ -404,16 +415,16 @@ class _LoanState extends State<Loan> {
         ),
       ),
       child: Slider(
-        value: _loanPeriod,
+        value: loanPeriod,
         min: 0,
         max: 36,
         divisions: 12,
-        label: '${_loanPeriod.toStringAsFixed(0)} months',
+        label: '${loanPeriod.toStringAsFixed(0)} months',
         onChanged: (value) {
           setState(
             () {
-              _loanPeriod = value;
-              print(_loanPeriod);
+              loanPeriod = value;
+              print("the loan period is $loanPeriod");
             },
           );
         },
@@ -440,7 +451,7 @@ class _LoanState extends State<Loan> {
             final snackBar = SnackBar(
                 duration: Duration(seconds: 5),
                 content: Text(
-                    'You have chosen a loan amount of $selected\n You will pay back Ksh ${payableLoan.toStringAsFixed(0)} within a payment period of ${_loanPeriod.toStringAsFixed(0)} months  \n Click submit to proceed with loan application'));
+                    'You have chosen a loan amount of $selected\n You will pay back Ksh ${payableLoan.toStringAsFixed(0)} within a payment period of ${loanPeriod.toStringAsFixed(0)} months  \n Click submit to proceed with loan application'));
 
             _scaffoldKey.currentState.showSnackBar(snackBar);
           },
@@ -565,7 +576,7 @@ class _LoanState extends State<Loan> {
                               ],
                             ),
                             height: 30.0,
-                            child: Card(child: SliderExample())),
+                            child: Card(child: slider())),
                       ),
                       SizedBox(height: 30),
                       confirmButton(),

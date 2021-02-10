@@ -33,6 +33,7 @@ class _MissedRecordsState extends State<MissedRecords> {
   QuerySnapshot recordsSnapshot;
   bool isLoading = false;
 
+
   String username;
 
   @override
@@ -153,16 +154,22 @@ class _MissedRecordsState extends State<MissedRecords> {
   }
 
   submitMilk() async {
-    await Firestore.instance.collection("farmers").add({
-      "email": widget.email,
-      'date': _currentDate.toString(),
-      'kilograms': int.parse(todayMilkController.text),
-      'reasons': reasonsController.text,
-      'farmerId': widget.farmerId,
-      'name': widget.name,
-      "location": selected,
-      "servedBy": userSnapshot["name"],
-    });
+    if (formKey.currentState.validate()) {
+      await Firestore.instance.collection("farmers").add({
+        "email": widget.email,
+        'date': _currentDate.toString(),
+        'kilograms': double.parse(todayMilkController.text),
+        'reasons': reasonsController.text,
+        'farmerId': widget.farmerId,
+        'name': widget.name,
+        "location": selected,
+        "servedBy": userSnapshot["name"],
+      });
+      final snackBar = SnackBar(
+          duration: Duration(seconds: 3),
+          content: Text('Milk recorded successfully'));
+      _scaffoldKey.currentState.showSnackBar(snackBar);
+    }
   }
 
   Widget displayBoard() {
@@ -283,9 +290,11 @@ class _MissedRecordsState extends State<MissedRecords> {
                                   TextFormField(
                                     keyboardType: TextInputType.number,
                                     validator: (val) {
-                                      return val.isEmpty
-                                          ? "Cannot be empty"
-                                          : null;
+                                      if (double.parse(val) > 120)
+                                        return "Value is cannot be more than 100";
+                                      if (val.isEmpty)
+                                        return "Value cannot be empty";
+                                      return null;
                                     },
                                     controller: todayMilkController,
                                     style: simpleTextStyle(),
@@ -370,10 +379,6 @@ class _MissedRecordsState extends State<MissedRecords> {
                                   isLoading = false;
                                   todayMilkController.clear();
                                   reasonsController.clear();
-                                  final snackBar = SnackBar(
-                                      duration: Duration(seconds: 3),
-                                      content: Text('Milk recorded successfully'));
-                                  _scaffoldKey.currentState.showSnackBar(snackBar);
                                 });
                               },
                               child: Container(

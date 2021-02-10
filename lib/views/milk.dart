@@ -175,12 +175,17 @@ class _MilkRecordsState extends State<MilkRecords> {
       await Firestore.instance.collection("farmers").add({
         "email": widget.email,
         'date': new DateFormat.yMd().add_jm().format(DateTime.now()),
-        'kilograms': int.parse(todayMilkController.text),
+        'kilograms': double.parse(todayMilkController.text),
         'farmerId': widget.farmerId,
         'name': widget.name,
         "location": selected,
         "servedBy": userSnapshot["name"],
       });
+      final snackBar = SnackBar(
+          duration: Duration(seconds: 3),
+          content: Text('Milk recorded successfully'));
+
+      _scaffoldKey.currentState.showSnackBar(snackBar);
     }
   }
 
@@ -325,9 +330,11 @@ class _MilkRecordsState extends State<MilkRecords> {
                                   TextFormField(
                                     keyboardType: TextInputType.number,
                                     validator: (val) {
-                                      return val.length > 3
-                                          ? "Value cannot be more than 100"
-                                          : null;
+                                      if (double.parse(val) > 120)
+                                        return "Value is cannot be more than 100";
+                                      if (val.isEmpty)
+                                        return "Value cannot be empty";
+                                      return null;
                                     },
                                     controller: todayMilkController,
                                     style: simpleTextStyle(),
@@ -389,12 +396,6 @@ class _MilkRecordsState extends State<MilkRecords> {
                                   isLoading = false;
 
                                   todayMilkController.clear();
-                                  final snackBar = SnackBar(
-                                      duration: Duration(seconds: 3),
-                                      content:
-                                          Text('Milk recorded successfully'));
-                                  _scaffoldKey.currentState
-                                      .showSnackBar(snackBar);
                                 });
                               },
                               child: Container(

@@ -61,6 +61,7 @@ class DatabaseMethods {
     return await Firestore.instance
         .collection("farmers")
         .where("email", isEqualTo: user.email)
+        .orderBy("date", descending: true)
         .getDocuments();
   }
 
