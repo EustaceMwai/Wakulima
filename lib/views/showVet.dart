@@ -303,6 +303,13 @@ class _VetsState extends State<Vets> {
                       builder: (context) => RegisterVet(name: widget.name)));
             },
           ),
+          ListTile(
+            title: Text('Chats'),
+            onTap: () {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => ChatRoom()));
+            },
+          ),
         ],
       ),
     );

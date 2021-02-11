@@ -96,40 +96,60 @@ class _LoanState extends State<Loan> {
     //         })
     //     : Container(
     //         child: RaisedButton(
+    //           onPressed: submitLoan,
     //           child: Text("Submit"),
     //         ),
     //       );
-    // if (loanSnapshot == null) return CircularProgressIndicator();
-    // return !loanSnapshot.exists
-    //     ?
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.blue,
-        boxShadow: [
-          BoxShadow(color: Colors.blue, spreadRadius: 3),
-        ],
-      ),
-      child: FlatButton(
-        child: Text('submit'),
-        color: Colors.blueAccent,
-        textColor: Colors.white,
-        onPressed: () async {
-          setState(() {
-            isLoading = true;
-          });
-          print(selected);
-          submitLoan();
-          setState(() {
-            isLoading = false;
-          });
-        },
-      ),
-    );
-    // : Center(
-    //     child: Text("You already have a existing Loan!",
-    //         style: TextStyle(color: Colors.white, fontSize: 20.0)),
-    //   );
+    if (loanSnapshot == null) return CircularProgressIndicator();
+    return !loanSnapshot.exists
+        ? Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Colors.blue,
+              boxShadow: [
+                BoxShadow(color: Colors.blue, spreadRadius: 3),
+              ],
+            ),
+            child: FlatButton(
+              child: Text('submit'),
+              color: Colors.blueAccent,
+              textColor: Colors.white,
+              onPressed: () async {
+                setState(() {
+                  isLoading = true;
+                });
+                print(selected);
+                submitLoan();
+                setState(() {
+                  isLoading = false;
+                });
+              },
+            ),
+          )
+        : Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Colors.blue,
+              boxShadow: [
+                BoxShadow(color: Colors.blue, spreadRadius: 3),
+              ],
+            ),
+            child: FlatButton(
+              child: Text('submit another loan'),
+              color: Colors.blueAccent,
+              textColor: Colors.white,
+              onPressed: () async {
+                setState(() {
+                  isLoading = true;
+                });
+                print(selected);
+                submitAnotherLoan();
+                setState(() {
+                  isLoading = false;
+                });
+              },
+            ),
+          );
 
     // if (!loanSnapshot.exists || loanSnapshot == null) {
     //   return Container(
@@ -366,16 +386,38 @@ class _LoanState extends State<Loan> {
     }
   }
 
-  submitLoan() async {
+  submitAnotherLoan() async {
     if (formKey.currentState.validate()) {
+      calculateInterest();
       final FirebaseAuth _auth = FirebaseAuth.instance;
       final Firestore _firestore = Firestore.instance;
       FirebaseUser user = await _auth.currentUser();
-      Firestore.instance
-          .collection("loans")
-          .document(user.uid)
-          .collection('farmerLoans')
-          .add(
+      Firestore.instance.collection("additionalLoans").add(
+        {
+          'id': user.uid,
+          'name': widget.name,
+          'farmerId': widget.farmerId,
+          'email': user.email,
+          'loan': selected,
+          'loan status': "inactive",
+          'repayment period': loanPeriod.toInt(),
+          'payableLoan': payableLoan.toInt(),
+        },
+      );
+      final snackBar = SnackBar(
+          duration: Duration(seconds: 3),
+          content: Text('Another loan submitted successfully'));
+      _scaffoldKey.currentState.showSnackBar(snackBar);
+    }
+  }
+
+  submitLoan() async {
+    if (formKey.currentState.validate()) {
+      calculateInterest();
+      final FirebaseAuth _auth = FirebaseAuth.instance;
+      final Firestore _firestore = Firestore.instance;
+      FirebaseUser user = await _auth.currentUser();
+      Firestore.instance.collection("loans").document(user.uid).setData(
         {
           'id': user.uid,
           'name': widget.name,

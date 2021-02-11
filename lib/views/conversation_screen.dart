@@ -33,7 +33,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                     snapshot.data.documents[index].data["message"],
                     snapshot.data.documents[index].data["sendBy"] ==
                         Constants.myName,
-                    snapshot.data.documents[index].data["time"],
+                    snapshot.data.documents[index].data["time"].toString(),
                   );
                 })
             : Container();

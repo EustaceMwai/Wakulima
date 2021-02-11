@@ -112,8 +112,6 @@ class _managerState extends State<manager> {
                                 .collection("loans")
                                 .document(
                                     recordsSnapshot.documents[index].data["id"])
-                                .collection('farmerLoans')
-                                .document()
                                 .updateData({
                               "loan status": "denied",
                             });

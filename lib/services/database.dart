@@ -108,8 +108,8 @@ class DatabaseMethods {
     FirebaseUser user = await _auth.currentUser();
     return await Firestore.instance
         .collection("loans")
-        .where("id", isEqualTo: user.uid)
-        .getDocuments();
+        .document(user.uid)
+        .get();
   }
 
   getAllUserLoans() async {
