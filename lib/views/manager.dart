@@ -123,6 +123,36 @@ class _managerState extends State<manager> {
         : Container();
   }
 
+  Widget ClearLoan() {
+    return recordsSnapshot != null
+        ? ListView.builder(
+            itemCount: recordsSnapshot.documents.length,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Container(
+                  height: 60.0,
+                  child: FlatButton(
+                    child: Text('Clear'),
+                    color: Colors.green,
+                    textColor: Colors.white,
+                    onPressed: () async {
+                      final FirebaseAuth _auth = FirebaseAuth.instance;
+                      final Firestore _firestore = Firestore.instance;
+                      FirebaseUser user = await _auth.currentUser();
+                      Firestore.instance
+                          .collection("loans")
+                          .document(recordsSnapshot.documents[index].data["id"])
+                          .delete();
+                    },
+                  ),
+                ),
+              );
+            })
+        : Container();
+  }
+
   initiateSearch() {
     databaseMethods.getAllUserLoans().then((val) {
       setState(() {
@@ -258,6 +288,10 @@ class _managerState extends State<manager> {
                     Container(
                       width: 160.0,
                       child: loanList2(),
+                    ),
+                    Container(
+                      width: 160.0,
+                      child: ClearLoan(),
                     ),
                   ],
                 );

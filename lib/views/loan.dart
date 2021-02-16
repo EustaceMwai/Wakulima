@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:wakulima/services/auth.dart';
 import 'package:wakulima/services/database.dart';
 import 'package:wakulima/views/loanStatus.dart';
+import 'package:wakulima/views/slider.dart';
 
 class Loan extends StatefulWidget {
   final int total;
@@ -25,15 +26,16 @@ class _LoanState extends State<Loan> {
   final formKey = GlobalKey<FormState>();
   int selected;
   bool isLoading = false;
-  double loanPeriod = 36.0;
+
   double period;
   double payableLoan;
   int rate;
   double interest;
   double _value = 50.0;
-
+  double loanPeriod = 36.0;
   TextEditingController loanAmountController = new TextEditingController();
   DatabaseMethods databaseMethods = new DatabaseMethods();
+  SliderExample sliderVariable = new SliderExample();
   AuthMethods authMethods = new AuthMethods();
 
   QuerySnapshot recordsSnapshot;
@@ -381,7 +383,7 @@ class _LoanState extends State<Loan> {
   calculateInterest() {
     if (formKey.currentState.validate()) {
       payableLoan = selected + (selected * 0.4 * loanPeriod / 36);
-      print("loan period is $loanPeriod");
+      print("loan period is ${loanPeriod}");
       print(payableLoan);
     }
   }
@@ -466,7 +468,7 @@ class _LoanState extends State<Loan> {
           setState(
             () {
               loanPeriod = value;
-              print("the loan period is $loanPeriod");
+              print("the loan period is ${loanPeriod}");
             },
           );
         },
@@ -610,15 +612,23 @@ class _LoanState extends State<Loan> {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(color: Colors.green, spreadRadius: 3),
-                              ],
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(color: Colors.green, spreadRadius: 3),
+                            ],
+                          ),
+                          height: 30.0,
+                          child: Card(
+                            child: SliderExample(
+                              updateValue: (double value) {
+                                loanPeriod = value;
+                                print("value from another world is: $value");
+                              },
                             ),
-                            height: 30.0,
-                            child: Card(child: slider())),
+                          ),
+                        ),
                       ),
                       SizedBox(height: 30),
                       confirmButton(),

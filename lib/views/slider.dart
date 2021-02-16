@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 
 class SliderExample extends StatefulWidget {
+  final Function(double) updateValue;
+
+  const SliderExample({Key key, this.updateValue}) : super(key: key);
   @override
-  _SliderExampleState createState() {
-    return _SliderExampleState();
-  }
+  _SliderExampleState createState() => _SliderExampleState();
 }
 
-class _SliderExampleState extends State {
-  double _loanPeriod = 36.0;
+class _SliderExampleState extends State<SliderExample> {
+  Function get _updateValue => widget.updateValue;
+
+  double loanPeriod = 36.0;
+  // getLoanPeriod() {
+  //   return loanPeriod;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -69,16 +75,17 @@ class _SliderExampleState extends State {
                   ),
                 ),
                 child: Slider(
-                  value: _loanPeriod,
+                  value: loanPeriod,
                   min: 1,
                   max: 36,
                   divisions: 36,
-                  label: '${_loanPeriod.toStringAsFixed(0)} months',
+                  label: '${loanPeriod.toStringAsFixed(0)} months',
                   onChanged: (value) {
                     setState(
                       () {
-                        _loanPeriod = value;
-                        print(_loanPeriod);
+                        _updateValue(value);
+                        loanPeriod = value;
+                        print(loanPeriod);
                       },
                     );
                   },

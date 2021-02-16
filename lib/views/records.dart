@@ -374,9 +374,11 @@ class _RecordsState extends State<Records> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => Loan(
-                                          total.round(),
-                                          name, farmerId
-                                        )));
+                                        total.round(),
+                                        recordsSnapshot
+                                            .documents[0].data['name'],
+                                        recordsSnapshot
+                                            .documents[0].data['farmerId'])));
                           },
                           child: Container(
                             alignment: Alignment.bottomCenter,
