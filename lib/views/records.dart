@@ -27,6 +27,7 @@ class _RecordsState extends State<Records> {
   AuthMethods authMethods = new AuthMethods();
 
   QuerySnapshot recordsSnapshot;
+  DocumentSnapshot userWakulimaSnapshot;
   FirebaseUser username;
   String name;
   String email;
@@ -55,6 +56,15 @@ class _RecordsState extends State<Records> {
                   name: recordsSnapshot.documents[index].data["name"]);
             })
         : Container();
+  }
+
+  checkExistingUser() async {
+    databaseMethods.getUserDetails().then((val) {
+      setState(() {
+        userWakulimaSnapshot = val;
+        print("Eustero is ${userWakulimaSnapshot.data['name']}");
+      });
+    });
   }
 
   initiateSearch() {
@@ -302,6 +312,7 @@ class _RecordsState extends State<Records> {
 
   @override
   void initState() {
+    checkExistingUser();
     initiateSearch();
 
     super.initState();
@@ -375,10 +386,9 @@ class _RecordsState extends State<Records> {
                                 MaterialPageRoute(
                                     builder: (context) => Loan(
                                         total.round(),
-                                        recordsSnapshot
-                                            .documents[0].data['name'],
-                                        recordsSnapshot
-                                            .documents[0].data['farmerId'])));
+                                        userWakulimaSnapshot.data['name'],
+                                        userWakulimaSnapshot
+                                            .data['farmerId'])));
                           },
                           child: Container(
                             alignment: Alignment.bottomCenter,

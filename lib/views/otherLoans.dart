@@ -5,14 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:wakulima/model/user.dart';
 import 'package:wakulima/services/auth.dart';
 import 'package:wakulima/services/database.dart';
-import 'package:wakulima/views/otherLoans.dart';
 
-class manager extends StatefulWidget {
+class otherLoans extends StatefulWidget {
   @override
-  _managerState createState() => _managerState();
+  _otherLoansState createState() => _otherLoansState();
 }
 
-class _managerState extends State<manager> {
+class _otherLoansState extends State<otherLoans> {
   final formKey = GlobalKey<FormState>();
   TextEditingController todayMilkController = new TextEditingController();
   TextEditingController previousMilkController = new TextEditingController();
@@ -35,127 +34,127 @@ class _managerState extends State<manager> {
   Widget recordList() {
     return recordsSnapshot != null
         ? ListView.builder(
-            itemCount: recordsSnapshot.documents.length,
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              return recordTile(
-                name: recordsSnapshot.documents[index].data["name"],
-                loan: recordsSnapshot.documents[index].data["loan"],
-                id: recordsSnapshot.documents[index].data["farmerId"],
-              );
-            })
+        itemCount: recordsSnapshot.documents.length,
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          return recordTile(
+            name: recordsSnapshot.documents[index].data["name"],
+            loan: recordsSnapshot.documents[index].data["loan"],
+            id: recordsSnapshot.documents[index].data["farmerId"],
+          );
+        })
         : Container();
   }
 
   Widget loanList() {
     return recordsSnapshot != null
         ? ListView.builder(
-            itemCount: recordsSnapshot.documents.length,
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: Container(
-                  height: 60.0,
-                  child: recordsSnapshot.documents[index].data["loan status"] ==
-                          "approved"
-                      ? Icon(Icons.check)
-                      : FlatButton(
-                          child: Text('approve'),
-                          color: Colors.blueAccent,
-                          textColor: Colors.white,
-                          onPressed: () async {
-                            final FirebaseAuth _auth = FirebaseAuth.instance;
-                            final Firestore _firestore = Firestore.instance;
-                            FirebaseUser user = await _auth.currentUser();
-                            Firestore.instance
-                                .collection("loans")
-                                .document(
-                                    recordsSnapshot.documents[index].data["id"])
-                                .updateData(
-                              {
-                                "loan status": "approved",
-                              },
-                            );
-                          },
-                        ),
-                ),
-              );
-            })
+        itemCount: recordsSnapshot.documents.length,
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: Container(
+              height: 60.0,
+              child: recordsSnapshot.documents[index].data["loan status"] ==
+                  "approved"
+                  ? Icon(Icons.check)
+                  : FlatButton(
+                child: Text('approve'),
+                color: Colors.blueAccent,
+                textColor: Colors.white,
+                onPressed: () async {
+                  final FirebaseAuth _auth = FirebaseAuth.instance;
+                  final Firestore _firestore = Firestore.instance;
+                  FirebaseUser user = await _auth.currentUser();
+                  Firestore.instance
+                      .collection("additionalLoans")
+                      .document(
+                      recordsSnapshot.documents[index].data["id"])
+                      .updateData(
+                    {
+                      "loan status": "approved",
+                    },
+                  );
+                },
+              ),
+            ),
+          );
+        })
         : Container();
   }
 
   Widget loanList2() {
     return recordsSnapshot != null
         ? ListView.builder(
-            itemCount: recordsSnapshot.documents.length,
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: Container(
-                  height: 60.0,
-                  child: recordsSnapshot.documents[index].data["loan status"] ==
-                          "denied"
-                      ? Icon(
-                          Icons.close,
-                          color: Colors.red,
-                        )
-                      : FlatButton(
-                          child: Text('Deny'),
-                          color: Colors.redAccent,
-                          textColor: Colors.white,
-                          onPressed: () async {
-                            final FirebaseAuth _auth = FirebaseAuth.instance;
-                            final Firestore _firestore = Firestore.instance;
-                            FirebaseUser user = await _auth.currentUser();
-                            Firestore.instance
-                                .collection("loans")
-                                .document(
-                                    recordsSnapshot.documents[index].data["id"])
-                                .updateData({
-                              "loan status": "denied",
-                            });
-                          },
-                        ),
-                ),
-              );
-            })
+        itemCount: recordsSnapshot.documents.length,
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: Container(
+              height: 60.0,
+              child: recordsSnapshot.documents[index].data["loan status"] ==
+                  "denied"
+                  ? Icon(
+                Icons.close,
+                color: Colors.red,
+              )
+                  : FlatButton(
+                child: Text('Deny'),
+                color: Colors.redAccent,
+                textColor: Colors.white,
+                onPressed: () async {
+                  final FirebaseAuth _auth = FirebaseAuth.instance;
+                  final Firestore _firestore = Firestore.instance;
+                  FirebaseUser user = await _auth.currentUser();
+                  Firestore.instance
+                      .collection("additionalLoans")
+                      .document(
+                      recordsSnapshot.documents[index].data["id"])
+                      .updateData({
+                    "loan status": "denied",
+                  });
+                },
+              ),
+            ),
+          );
+        })
         : Container();
   }
 
   Widget ClearLoan() {
     return recordsSnapshot != null
         ? ListView.builder(
-            itemCount: recordsSnapshot.documents.length,
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: Container(
-                  height: 60.0,
-                  child: FlatButton(
-                    child: Text('Clear'),
-                    color: Colors.green,
-                    textColor: Colors.white,
-                    onPressed: () async {
-                      final FirebaseAuth _auth = FirebaseAuth.instance;
-                      final Firestore _firestore = Firestore.instance;
-                      FirebaseUser user = await _auth.currentUser();
-                      Firestore.instance
-                          .collection("loans")
-                          .document(recordsSnapshot.documents[index].data["id"])
-                          .delete();
-                    },
-                  ),
-                ),
-              );
-            })
+        itemCount: recordsSnapshot.documents.length,
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: Container(
+              height: 60.0,
+              child: FlatButton(
+                child: Text('Clear'),
+                color: Colors.green,
+                textColor: Colors.white,
+                onPressed: () async {
+                  final FirebaseAuth _auth = FirebaseAuth.instance;
+                  final Firestore _firestore = Firestore.instance;
+                  FirebaseUser user = await _auth.currentUser();
+                  Firestore.instance
+                      .collection("additionalLoans")
+                      .document(recordsSnapshot.documents[index].data["id"])
+                      .delete();
+                },
+              ),
+            ),
+          );
+        })
         : Container();
   }
 
   initiateSearch() {
-    databaseMethods.getAllUserLoans().then((val) {
+    databaseMethods.getAllOtherLoans().then((val) {
       setState(() {
         recordsSnapshot = val;
       });
@@ -244,25 +243,12 @@ class _managerState extends State<manager> {
       appBar: AppBar(
         title: Text('Farmers Loans'),
       ),
-      drawer: Drawer(
-        child: Padding(
-          padding: const EdgeInsets.only(top: 32.0),
-          child: ListTile(
-            title: GestureDetector(
-                onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => otherLoans()));
-                },
-                child: Text('other loans')),
-          ),
-        ),
-      ),
       body: SingleChildScrollView(
         child: Container(
           height: MediaQuery.of(context).size.height - 50,
           alignment: Alignment.topCenter,
           child: StreamBuilder(
-              stream: Firestore.instance.collection("loans").snapshots(),
+              stream: Firestore.instance.collection("additionalLoans").snapshots(),
               builder: (context, snapshot) {
                 // return Row(
                 //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,

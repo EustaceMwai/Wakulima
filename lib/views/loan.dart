@@ -394,7 +394,10 @@ class _LoanState extends State<Loan> {
       final FirebaseAuth _auth = FirebaseAuth.instance;
       final Firestore _firestore = Firestore.instance;
       FirebaseUser user = await _auth.currentUser();
-      Firestore.instance.collection("additionalLoans").add(
+      Firestore.instance
+          .collection("additionalLoans")
+          .document(user.uid)
+          .setData(
         {
           'id': user.uid,
           'name': widget.name,

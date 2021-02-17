@@ -112,11 +112,27 @@ class DatabaseMethods {
         .get();
   }
 
+  getUserDetails() async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final Firestore _firestore = Firestore.instance;
+    FirebaseUser user = await _auth.currentUser();
+    return await Firestore.instance
+        .collection("wakulima")
+        .document(user.uid)
+        .get();
+  }
+
   getAllUserLoans() async {
     final FirebaseAuth _auth = FirebaseAuth.instance;
     final Firestore _firestore = Firestore.instance;
     FirebaseUser user = await _auth.currentUser();
     return await Firestore.instance.collection("loans").getDocuments();
+  }
+  getAllOtherLoans() async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final Firestore _firestore = Firestore.instance;
+    FirebaseUser user = await _auth.currentUser();
+    return await Firestore.instance.collection("additionalLoans").getDocuments();
   }
 
   Future uploadUserInfo(
