@@ -217,6 +217,20 @@ class _RecordsState extends State<Records> {
                   ),
                 ),
 
+                SizedBox(
+                  height: 12.0,
+                ),
+                Center(
+                  child: Text(
+                    'Amount earned: ${kilograms * price} Kshs',
+                    // style: mediumTextStyle(),
+                    style: TextStyle(
+                      fontSize: 17.0,
+                      fontFamily: 'Nunito',
+                    ),
+                  ),
+                ),
+
                 // Padding(
                 //   padding: EdgeInsets.only(top: 8.0),
                 //   child: Card(

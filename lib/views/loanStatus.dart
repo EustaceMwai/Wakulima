@@ -24,6 +24,7 @@ class _loanStatusState extends State<loanStatus> {
   AuthMethods authMethods = new AuthMethods();
 
   QuerySnapshot recordsSnapshot;
+  QuerySnapshot additionalSnapshot;
   FirebaseUser username;
   String name = 'eustace';
   String email;
@@ -56,10 +57,41 @@ class _loanStatusState extends State<loanStatus> {
           );
   }
 
+  Widget record2List() {
+    return additionalSnapshot != null
+        ? Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ListView.builder(
+                itemCount: additionalSnapshot.documents.length,
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  return record2Tile(
+                      loan: additionalSnapshot.documents[index].data["loan"],
+                      loanStatus: additionalSnapshot
+                          .documents[index].data["loan status"],
+                      repayment: additionalSnapshot
+                          .documents[index].data["repayment period"],
+                      repayableLoan: additionalSnapshot
+                          .documents[index].data["payableLoan"]);
+                }),
+          )
+        : Container(
+            child: Text('no additional loans'),
+          );
+  }
+
   initiateSearch() {
     databaseMethods.getFarmerLoanState().then((val) {
       setState(() {
         recordsSnapshot = val;
+      });
+    });
+  }
+
+  searchAdditionalLoan() {
+    databaseMethods.getFarmerAdditionalLoanState().then((val) {
+      setState(() {
+        additionalSnapshot = val;
       });
     });
   }
@@ -117,29 +149,65 @@ class _loanStatusState extends State<loanStatus> {
                 // style: mediumTextStyle(),
               ),
             )),
-            // Padding(
-            //   padding: EdgeInsets.only(top: 8.0),
-            //   child: Card(
-            //     margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
-            //     child: ListTile(
-            //       leading: CircleAvatar(
-            //         radius: 25.0,
-            //       ),
-            //       title: Text(
-            //         '$date',
-            //         style: mediumTextStyle(),
-            //       ),
-            //       subtitle: Text(
-            //         '$name',
-            //         style: mediumTextStyle(),
-            //       ),
-            //       trailing: Text(
-            //         '$kilograms',
-            //         style: mediumTextStyle(),
-            //       ),
-            //     ),
-            //   ),
-            // )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget record2Tile(
+      {int loan, String loanStatus, int repayment, int repayableLoan}) {
+    return Container(
+      height: 250,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(color: Colors.green, spreadRadius: 3),
+        ],
+      ),
+      child: Card(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Expanded(
+              flex: 2,
+              child: Center(
+                child: Image.asset(
+                  'assets/images/logo-sacco.jpg',
+                ),
+              ),
+            ),
+            Divider(),
+            Expanded(
+              child: Center(
+                child: Text(
+                  'Loan applied: Ksh $loan',
+                  // style: mediumTextStyle(),
+                ),
+              ),
+            ),
+            Expanded(
+                child: Center(
+              child: Text(
+                'The status of the loan is: $loanStatus',
+                // style: mediumTextStyle(),
+              ),
+            )),
+            Expanded(
+                child: Center(
+              child: Text(
+                'The repayment period of your loan is: $repayment months',
+                // style: mediumTextStyle(),
+              ),
+            )),
+            Expanded(
+                child: Center(
+              child: Text(
+                'The amount you are going to repay is Ksh $repayableLoan ',
+                // style: mediumTextStyle(),
+              ),
+            )),
           ],
         ),
       ),
@@ -158,6 +226,7 @@ class _loanStatusState extends State<loanStatus> {
   @override
   void initState() {
     initiateSearch();
+    searchAdditionalLoan();
     super.initState();
   }
 
@@ -213,52 +282,62 @@ class _loanStatusState extends State<loanStatus> {
                           ),
                           recordList(),
                           SizedBox(
-                            height: 50,
+                            height: 10,
                           ),
-                          TextFormField(
-                            keyboardType: TextInputType.number,
-                            validator: (val) {
-                              return val.isEmpty
-                                  ? "Value cannot be empty"
-                                  : null;
-                            },
-                            controller: payLoanController,
-                            style: simpleTextStyle(),
-                            decoration: InputDecoration(
-                                hintText: 'Enter amount to pay',
-                                fillColor: Colors.white54,
-                                filled: true,
-                                enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Colors.white, width: 2.0)),
-                                focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Colors.green, width: 2.0))),
-                          ),
+                          record2List(),
                           SizedBox(
                             height: 50,
                           ),
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(color: Colors.green, spreadRadius: 3),
-                              ],
-                            ),
-                            child: RaisedButton(
-                              elevation: 1,
-                              onPressed: () {
-                                if (formKey.currentState.validate()) {
-                                  startTransaction(
-                                      amount:
-                                          double.parse(payLoanController.text),
-                                      phone: "254718273753");
-                                }
-                              },
-                              child: Text("Pay Loan"),
-                            ),
+                          additionalSnapshot == null || recordsSnapshot == null
+                              ? TextFormField(
+                                  keyboardType: TextInputType.number,
+                                  validator: (val) {
+                                    return val.isEmpty
+                                        ? "Value cannot be empty"
+                                        : null;
+                                  },
+                                  controller: payLoanController,
+                                  style: simpleTextStyle(),
+                                  decoration: InputDecoration(
+                                      hintText: 'Enter amount to pay',
+                                      fillColor: Colors.white54,
+                                      filled: true,
+                                      enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.white, width: 2.0)),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.green,
+                                              width: 2.0))),
+                                )
+                              : Text("You have no loans"),
+                          SizedBox(
+                            height: 50,
                           ),
+                          additionalSnapshot == null || recordsSnapshot == null
+                              ? Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: Colors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                          color: Colors.green, spreadRadius: 3),
+                                    ],
+                                  ),
+                                  child: RaisedButton(
+                                    elevation: 1,
+                                    onPressed: () {
+                                      if (formKey.currentState.validate()) {
+                                        startTransaction(
+                                            amount: double.parse(
+                                                payLoanController.text),
+                                            phone: "254718273753");
+                                      }
+                                    },
+                                    child: Text("Pay Loan"),
+                                  ),
+                                )
+                              : Text("You have no loans"),
                         ]),
                   );
                 }),

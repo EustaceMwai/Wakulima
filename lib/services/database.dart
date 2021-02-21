@@ -95,6 +95,16 @@ class DatabaseMethods {
         .getDocuments();
   }
 
+  getFarmerAdditionalLoanState() async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final Firestore _firestore = Firestore.instance;
+    FirebaseUser user = await _auth.currentUser();
+    return await Firestore.instance
+        .collection("additionalLoans")
+        .where("email", isEqualTo: user.email)
+        .getDocuments();
+  }
+
   getAllUsers() async {
     final FirebaseAuth _auth = FirebaseAuth.instance;
     final Firestore _firestore = Firestore.instance;
@@ -128,11 +138,14 @@ class DatabaseMethods {
     FirebaseUser user = await _auth.currentUser();
     return await Firestore.instance.collection("loans").getDocuments();
   }
+
   getAllOtherLoans() async {
     final FirebaseAuth _auth = FirebaseAuth.instance;
     final Firestore _firestore = Firestore.instance;
     FirebaseUser user = await _auth.currentUser();
-    return await Firestore.instance.collection("additionalLoans").getDocuments();
+    return await Firestore.instance
+        .collection("additionalLoans")
+        .getDocuments();
   }
 
   Future uploadUserInfo(
