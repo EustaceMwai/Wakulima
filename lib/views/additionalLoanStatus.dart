@@ -8,16 +8,14 @@ import 'package:wakulima/services/auth.dart';
 import 'package:wakulima/services/database.dart';
 import 'package:wakulima/widgets/widget.dart';
 
-import '../views/additionalLoanStatus.dart';
-
-class loanStatus extends StatefulWidget {
+class AdditionalLoanStatus extends StatefulWidget {
   String userId;
 
   @override
-  _loanStatusState createState() => _loanStatusState();
+  _AdditionalLoanStatusState createState() => _AdditionalLoanStatusState();
 }
 
-class _loanStatusState extends State<loanStatus> {
+class _AdditionalLoanStatusState extends State<AdditionalLoanStatus> {
   final formKey = GlobalKey<FormState>();
   TextEditingController payLoanController = new TextEditingController();
   TextEditingController payLoan2Controller = new TextEditingController();
@@ -26,7 +24,6 @@ class _loanStatusState extends State<loanStatus> {
   DatabaseMethods databaseMethods = new DatabaseMethods();
   AuthMethods authMethods = new AuthMethods();
 
-  QuerySnapshot recordsSnapshot;
   QuerySnapshot additionalSnapshot;
   FirebaseUser username;
   String name = 'eustace';
@@ -37,94 +34,35 @@ class _loanStatusState extends State<loanStatus> {
     return user != null ? User(userId: user.uid) : null;
   }
 
-  Widget recordList() {
-    return recordsSnapshot != null
+  Widget record2List() {
+    return additionalSnapshot != null
         ? Padding(
             padding: const EdgeInsets.all(8.0),
             child: ListView.builder(
-                itemCount: recordsSnapshot.documents.length,
+                itemCount: additionalSnapshot.documents.length,
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
-                  return recordTile(
-                      loan: recordsSnapshot.documents[index].data["loan"],
-                      loanStatus:
-                          recordsSnapshot.documents[index].data["loan status"],
-                      repayment: recordsSnapshot
+                  return record2Tile(
+                      loan: additionalSnapshot.documents[index].data["loan"],
+                      loanStatus: additionalSnapshot
+                          .documents[index].data["loan status"],
+                      repayment: additionalSnapshot
                           .documents[index].data["repayment period"],
-                      repayableLoan:
-                          recordsSnapshot.documents[index].data["payableLoan"]);
+                      repayableLoan: additionalSnapshot
+                          .documents[index].data["payableLoan"]);
                 }),
           )
         : Container(
-            child: Text('no loans'),
+            child: Text('no additional loans'),
           );
   }
 
-  initiateSearch() {
-    databaseMethods.getFarmerLoanState().then((val) {
+  searchAdditionalLoan() {
+    databaseMethods.getFarmerAdditionalLoanState().then((val) {
       setState(() {
-        recordsSnapshot = val;
+        additionalSnapshot = val;
       });
     });
-  }
-
-  Widget recordTile(
-      {int loan, String loanStatus, int repayment, int repayableLoan}) {
-    return Container(
-      height: 250,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(color: Colors.green, spreadRadius: 3),
-        ],
-      ),
-      child: Card(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Expanded(
-              flex: 2,
-              child: Center(
-                child: Image.asset(
-                  'assets/images/logo-sacco.jpg',
-                ),
-              ),
-            ),
-            Divider(),
-            Expanded(
-              child: Center(
-                child: Text(
-                  'Loan applied: Ksh $loan',
-                  // style: mediumTextStyle(),
-                ),
-              ),
-            ),
-            Expanded(
-                child: Center(
-              child: Text(
-                'The status of the loan is: $loanStatus',
-                // style: mediumTextStyle(),
-              ),
-            )),
-            Expanded(
-                child: Center(
-              child: Text(
-                'The repayment period of your loan is: $repayment months',
-                // style: mediumTextStyle(),
-              ),
-            )),
-            Expanded(
-                child: Center(
-              child: Text(
-                'The amount you are going to repay is Ksh $repayableLoan ',
-                // style: mediumTextStyle(),
-              ),
-            )),
-          ],
-        ),
-      ),
-    );
   }
 
   Widget record2Tile(
@@ -197,8 +135,7 @@ class _loanStatusState extends State<loanStatus> {
   //  databaseMethods.uploadMilkInfo();
   @override
   void initState() {
-    initiateSearch();
-
+    searchAdditionalLoan();
     super.initState();
   }
 
@@ -242,7 +179,9 @@ class _loanStatusState extends State<loanStatus> {
             // height: MediaQuery.of(context).size.height - 50,
             alignment: Alignment.topCenter,
             child: StreamBuilder(
-                stream: Firestore.instance.collection("loans").snapshots(),
+                stream: Firestore.instance
+                    .collection("additionalLoans")
+                    .snapshots(),
                 builder: (context, snapshot) {
                   return Container(
                     // padding: EdgeInsets.symmetric(horizontal: 24),
@@ -252,11 +191,11 @@ class _loanStatusState extends State<loanStatus> {
                           SizedBox(
                             height: 20,
                           ),
-                          recordList(),
+                          record2List(),
                           SizedBox(
                             height: 50,
                           ),
-                          recordsSnapshot != null
+                          additionalSnapshot != null
                               ? TextFormField(
                                   keyboardType: TextInputType.number,
                                   validator: (val) {
@@ -264,7 +203,7 @@ class _loanStatusState extends State<loanStatus> {
                                         ? "Value cannot be empty"
                                         : null;
                                   },
-                                  controller: payLoanController,
+                                  controller: payLoan2Controller,
                                   style: simpleTextStyle(),
                                   decoration: InputDecoration(
                                       hintText: 'Enter amount to pay',
@@ -282,7 +221,7 @@ class _loanStatusState extends State<loanStatus> {
                           SizedBox(
                             height: 50,
                           ),
-                          recordsSnapshot != null
+                          additionalSnapshot != null
                               ? Container(
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
@@ -298,37 +237,14 @@ class _loanStatusState extends State<loanStatus> {
                                       if (formKey.currentState.validate()) {
                                         startTransaction(
                                             amount: double.parse(
-                                                payLoanController.text),
+                                                payLoan2Controller.text),
                                             phone: "254718273753");
                                       }
                                     },
                                     child: Text("Pay Loan"),
                                   ),
                                 )
-                              : Text("You have no loans"),
-                          SizedBox(
-                            height: 40,
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(color: Colors.green, spreadRadius: 3),
-                              ],
-                            ),
-                            child: RaisedButton(
-                              elevation: 1,
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            AdditionalLoanStatus()));
-                              },
-                              child: Text("Other Loans"),
-                            ),
-                          )
+                              : Text("You have no additional loans"),
                         ]),
                   );
                 }),
