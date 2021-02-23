@@ -195,7 +195,8 @@ class _AdditionalLoanStatusState extends State<AdditionalLoanStatus> {
                           SizedBox(
                             height: 50,
                           ),
-                          additionalSnapshot != null
+                          additionalSnapshot != null &&
+                                  additionalSnapshot.documents.length > 0
                               ? TextFormField(
                                   keyboardType: TextInputType.number,
                                   validator: (val) {
@@ -221,7 +222,8 @@ class _AdditionalLoanStatusState extends State<AdditionalLoanStatus> {
                           SizedBox(
                             height: 50,
                           ),
-                          additionalSnapshot != null
+                          additionalSnapshot != null &&
+                                  additionalSnapshot.documents.length > 0
                               ? Container(
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),

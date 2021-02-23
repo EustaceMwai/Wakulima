@@ -27,7 +27,7 @@ class _loanStatusState extends State<loanStatus> {
   AuthMethods authMethods = new AuthMethods();
 
   QuerySnapshot recordsSnapshot;
-  QuerySnapshot additionalSnapshot;
+
   FirebaseUser username;
   String name = 'eustace';
   String email;
@@ -64,6 +64,7 @@ class _loanStatusState extends State<loanStatus> {
     databaseMethods.getFarmerLoanState().then((val) {
       setState(() {
         recordsSnapshot = val;
+        print("this snapshot contains $recordsSnapshot");
       });
     });
   }
@@ -256,7 +257,8 @@ class _loanStatusState extends State<loanStatus> {
                           SizedBox(
                             height: 50,
                           ),
-                          recordsSnapshot != null
+                          recordsSnapshot != null &&
+                                  recordsSnapshot.documents.length > 0
                               ? TextFormField(
                                   keyboardType: TextInputType.number,
                                   validator: (val) {
@@ -282,7 +284,8 @@ class _loanStatusState extends State<loanStatus> {
                           SizedBox(
                             height: 50,
                           ),
-                          recordsSnapshot != null
+                          recordsSnapshot != null &&
+                                  recordsSnapshot.documents.length > 0
                               ? Container(
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
